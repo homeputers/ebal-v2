@@ -1,0 +1,22 @@
+# Node
+node_modules/
+dist/
+build/
+yarn-error.log
+npm-debug.log*
+
+# Java
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# macOS
+.DS_Store
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
