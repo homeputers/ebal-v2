@@ -6,7 +6,13 @@
     "packages/*"
   ],
   "scripts": {
-    "lint": "eslint .",
-    "format": "prettier --write ."
+    "lint": "eslint . -c packages/config/eslint.cjs",
+    "format": "prettier --write . --config packages/config/prettier.cjs",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.7.2",
+    "@commitlint/config-conventional": "^17.7.2",
+    "husky": "^8.0.3"
   }
 }
