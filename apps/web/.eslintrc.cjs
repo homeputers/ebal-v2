@@ -1,1 +1,1 @@
-module.exports = require("@ebal/config/eslint.cjs");
+module.exports = require("@ebal/config/eslint");
