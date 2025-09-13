@@ -1,3 +1,1 @@
-export default function Members() {
-  return <div>Members</div>;
-}
+export { default } from '@/pages/members/MembersPage';
