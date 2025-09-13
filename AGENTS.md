@@ -46,7 +46,7 @@
 3. **Implement small, vertical slices**
    - Prefer end-to-end vertical changes (DB → API → Web) behind feature flags or toggles.
    - Keep PRs under ~500 lines when possible.
-   - Perform any API changes from the spec file in `/apps/api-java/src/main/resources/openapi.yaml`, then run generator to get implementation classes for controllers, and any request/response DTO objects.
+   - Perform any API changes from the spec file in `/spec/openapi.yaml`, then run generator to get implementation classes for controllers, and any request/response DTO objects.
 
 4. **Validate**
    - **API:** compile, run Flyway, pass tests, open `/v3/api-docs`.
@@ -119,7 +119,7 @@ yarn generate:api   # pulls from http://localhost:8080/v3/api-docs to src/api/ty
 - REST, JSON, versioned under `/api/v1/*`.
 - Pagination: `?page=0&size=20`.
 - Validation: Bean Validation annotations; return RFC-7807 style errors.
-- OpenAPI: spec definitions under `/apps/api-java/src/main/resources/openapi.yaml`; Swagger UI should list all endpoints.
+- OpenAPI: spec definitions under `/spec/openapi.yaml`; Swagger UI should list all endpoints.
 
 ---
 
@@ -194,7 +194,7 @@ Agents SHOULD:
 
 **API: new resource**
 - Migration created and applied.
-- Spec changes performed in `/apps/api-java/src/main/resources/openapi.yaml`
+- Spec changes performed in `/spec/openapi.yaml`
 - Entity + Repository + Service + Controller.
 - DTOs + validation.
 - Happy-path test passes; `/v3/api-docs` updated.
@@ -221,7 +221,7 @@ Agents SHOULD:
 ```
 Goal: Add GET /api/v1/songs/search?query=...&tag=...
 Steps:
-0) Perform appropriate modifications in `/apps/api-java/src/main/resources/openapi.yaml` OpenAPI 3.0 spec file
+0) Perform appropriate modifications in `/spec/openapi.yaml` OpenAPI 3.0 spec file
 1) Run `mvnw generate-sources`
 2) Create a Spring MVC handler in SongsController.
 3) Validate inputs, default page/size.

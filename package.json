@@ -6,7 +6,11 @@
     "packages/*"
   ],
   "scripts": {
-    "lint": "eslint . -c packages/config/eslint.cjs",
+    "dev": "yarn workspace web dev",
+    "build": "yarn workspace web build",
+    "preview": "yarn workspace web preview",
+    "lint": "yarn workspace web lint",
+    "typecheck": "yarn workspace web typecheck",
     "format": "prettier --write . --config packages/config/prettier.cjs",
     "prepare": "husky install"
   },
