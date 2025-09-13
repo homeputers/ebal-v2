@@ -21,3 +21,6 @@ target/
 .vscode/
 *.iml
 
+# Environment files
+.env
+

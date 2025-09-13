@@ -80,10 +80,20 @@ public class SongSetService {
         List<SongSetItem> items = listItems(songSetId);
         for (int i = 0; i < order.size(); i++) {
             UUID id = order.get(i);
-            items.stream().filter(it -> it.id().equals(id)).findFirst().ifPresent(it -> {
-                SongSetItem updated = new SongSetItem(it.id(), it.songSet(), it.arrangement(), i, it.transpose(), it.capo());
-                itemRepository.save(updated);
-            });
+            final int sortOrder = i;
+            items.stream()
+                    .filter(it -> it.id().equals(id))
+                    .findFirst()
+                    .ifPresent(it -> {
+                        SongSetItem updated = new SongSetItem(
+                                it.id(),
+                                it.songSet(),
+                                it.arrangement(),
+                                sortOrder,
+                                it.transpose(),
+                                it.capo());
+                        itemRepository.save(updated);
+                    });
         }
     }
 }
