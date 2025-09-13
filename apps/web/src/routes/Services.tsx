@@ -1,3 +1,1 @@
-export default function Services() {
-  return <div>Services</div>;
-}
+export { default } from '@/pages/services/ServicesPage';
