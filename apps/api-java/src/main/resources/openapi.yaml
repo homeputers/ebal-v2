@@ -3,12 +3,12 @@ info:
   title: ebal API
   version: 1.0.0
 servers:
-  - url: /
+  - url: /api/v1
 paths:
   /health:
     get:
       tags:
-        - system
+        - Health
       operationId: health
       responses:
         '200':
@@ -17,7 +17,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
-  /api/v1/groups:
+  /groups:
     get:
       tags: [Groups]
       operationId: listGroups
@@ -55,7 +55,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GroupResponse'
-  /api/v1/groups/{id}:
+  /groups/{id}:
     parameters:
       - name: id
         in: path
@@ -95,7 +95,7 @@ paths:
       responses:
         '204':
           description: No Content
-  /api/v1/groups/{id}/members/{memberId}:
+  /groups/{id}/members/{memberId}:
     parameters:
       - name: id
         in: path
@@ -121,7 +121,7 @@ paths:
       responses:
         '204':
           description: No Content
-  /api/v1/members:
+  /members:
     get:
       tags: [Members]
       operationId: listMembers
@@ -164,7 +164,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MemberResponse'
-  /api/v1/members/{id}:
+  /members/{id}:
     parameters:
       - name: id
         in: path
@@ -204,7 +204,7 @@ paths:
       responses:
         '204':
           description: No Content
-  /api/v1/services:
+  /services:
     get:
       tags: [Services]
       operationId: listServices
@@ -242,7 +242,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceResponse'
-  /api/v1/services/{id}:
+  /services/{id}:
     parameters:
       - name: id
         in: path
@@ -282,7 +282,7 @@ paths:
       responses:
         '204':
           description: No Content
-  /api/v1/services/{id}/plan-items:
+  /services/{id}/plan-items:
     parameters:
       - name: id
         in: path
@@ -318,7 +318,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServicePlanItemResponse'
-  /api/v1/service-plan-items/{id}:
+  /service-plan-items/{id}:
     parameters:
       - name: id
         in: path
@@ -348,7 +348,7 @@ paths:
       responses:
         '204':
           description: No Content
-  /api/v1/songs:
+  /songs:
     get:
       tags: [Songs]
       operationId: listSongs
@@ -396,7 +396,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SongResponse'
-  /api/v1/songs/{id}:
+  /songs/{id}:
     parameters:
       - name: id
         in: path
@@ -436,7 +436,7 @@ paths:
       responses:
         '204':
           description: No Content
-  /api/v1/songs/{id}/arrangements:
+  /songs/{id}/arrangements:
     parameters:
       - name: id
         in: path
@@ -472,7 +472,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ArrangementResponse'
-  /api/v1/songs/arrangements/{arrangementId}:
+  /songs/arrangements/{arrangementId}:
     parameters:
       - name: arrangementId
         in: path
@@ -502,7 +502,7 @@ paths:
       responses:
         '204':
           description: No Content
-  /api/v1/song-sets:
+  /song-sets:
     get:
       tags: [Song Sets]
       operationId: listSongSets
@@ -540,7 +540,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SongSetResponse'
-  /api/v1/song-sets/{id}:
+  /song-sets/{id}:
     parameters:
       - name: id
         in: path
@@ -580,7 +580,7 @@ paths:
       responses:
         '204':
           description: No Content
-  /api/v1/song-sets/{id}/items:
+  /song-sets/{id}/items:
     parameters:
       - name: id
         in: path
@@ -616,7 +616,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SongSetItemResponse'
-  /api/v1/song-sets/{id}/items/{itemId}:
+  /song-sets/{id}/items/{itemId}:
     parameters:
       - name: id
         in: path
@@ -636,7 +636,7 @@ paths:
       responses:
         '204':
           description: No Content
-  /api/v1/song-sets/{id}/items/reorder:
+  /song-sets/{id}/items/reorder:
     parameters:
       - name: id
         in: path
@@ -659,7 +659,7 @@ paths:
       responses:
         '204':
           description: No Content
-  /api/v1/song-set-items/{id}:
+  /song-set-items/{id}:
     parameters:
       - name: id
         in: path

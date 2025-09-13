@@ -84,6 +84,7 @@
                                 <interfaceOnly>true</interfaceOnly>
                                 <useSpringBoot3>true</useSpringBoot3>
                                 <useJakartaEe>true</useJakartaEe>
+                                <useTags>true</useTags>
                             </configOptions>
                         </configuration>
                     </execution>
