@@ -16,3 +16,10 @@ Lint the repository:
 yarn lint
 ```
 
+Build and typecheck the web app:
+
+```bash
+yarn build
+yarn typecheck
+```
+
