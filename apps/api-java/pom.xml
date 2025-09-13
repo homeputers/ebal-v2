@@ -100,6 +100,7 @@
                                 <useSpringBoot3>true</useSpringBoot3>
                                 <useJakartaEe>true</useJakartaEe>
                                 <useTags>true</useTags>
+                                <contextPath>/api/v1</contextPath>
                             </configOptions>
                         </configuration>
                     </execution>

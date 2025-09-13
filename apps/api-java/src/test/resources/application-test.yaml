@@ -8,3 +8,6 @@ spring:
   test:
     database:
       replace: none
+server:
+  servlet:
+    context-path: /api/v1
