@@ -24,7 +24,7 @@ class SongControllerTest extends AbstractIntegrationTest {
         request.setTitle("Test Song");
 
         ResponseEntity<SongResponse> response =
-                restTemplate.postForEntity("/api/v1/songs", request, SongResponse.class);
+                restTemplate.postForEntity("/songs", request, SongResponse.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isNotNull();
@@ -37,7 +37,7 @@ class SongControllerTest extends AbstractIntegrationTest {
         SongRequest request = new SongRequest();
 
         ResponseEntity<String> response =
-                restTemplate.postForEntity("/api/v1/songs", request, String.class);
+                restTemplate.postForEntity("/songs", request, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).contains("title");
