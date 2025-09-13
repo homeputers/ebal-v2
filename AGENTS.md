@@ -2,7 +2,7 @@
 
 **Project:** Every Breath And Life (ebal) — worship planning tool  
 **Monorepo:** mixed tech (React/Vite + Spring Boot 3)  
-**Primary goals for agents:** keep v2 lean, parity with v1 features, future-proof for auth/attachments.
+**Primary goals for agents:** keep v2 lean, parity with v1 features, future-proof for auth/attachments, API first design changes with OpenAPI 3.0 spec definition.
 
 ---
 
@@ -20,7 +20,7 @@
 ```
 
 **Tech choices**
-- **API:** Spring Boot 3, Java 21, Spring Data JPA, Flyway, PostgreSQL.
+- **API:** Spring Boot 3, Java 21, Spring Data JPA, Flyway, PostgreSQL, OpenAPI 3.0 spec.
 - **Web:** React 18, Vite, React Router, TanStack Query, Tailwind, RHF + Zod.
 - **Auth:** disabled by default; prepared for OIDC later.
 - **Attachments:** disabled by default; prepared for MinIO/S3 later.
@@ -46,6 +46,7 @@
 3. **Implement small, vertical slices**
    - Prefer end-to-end vertical changes (DB → API → Web) behind feature flags or toggles.
    - Keep PRs under ~500 lines when possible.
+   - Perform any API changes from the spec file in `/apps/api-java/src/main/resources/openapi.yaml`, then run generator to get implementation classes for controllers, and any request/response DTO objects.
 
 4. **Validate**
    - **API:** compile, run Flyway, pass tests, open `/v3/api-docs`.
@@ -60,7 +61,7 @@
 **Definition of Done (DoD)**
 - Code compiles; lint/typecheck clean.
 - DB migrations idempotent; reversible if feasible.
-- API has validation, pagination where applicable, and OpenAPI annotations.
+- API has validation, pagination where applicable, and OpenAPI spec changes.
 - UI has loading/error states and basic a11y.
 - Unit/E2E happy path exists for at least one representative path.
 - Docs: minimal usage note added.
@@ -118,7 +119,7 @@ yarn generate:api   # pulls from http://localhost:8080/v3/api-docs to src/api/ty
 - REST, JSON, versioned under `/api/v1/*`.
 - Pagination: `?page=0&size=20`.
 - Validation: Bean Validation annotations; return RFC-7807 style errors.
-- OpenAPI: annotate controllers; Swagger UI should list all endpoints.
+- OpenAPI: spec definitions under `/apps/api-java/src/main/resources/openapi.yaml`; Swagger UI should list all endpoints.
 
 ---
 
@@ -193,8 +194,9 @@ Agents SHOULD:
 
 **API: new resource**
 - Migration created and applied.
+- Spec changes performed in `/apps/api-java/src/main/resources/openapi.yaml`
 - Entity + Repository + Service + Controller.
-- DTOs + validation + OpenAPI annotations.
+- DTOs + validation.
 - Happy-path test passes; `/v3/api-docs` updated.
 
 **Web: new screen**
@@ -219,10 +221,11 @@ Agents SHOULD:
 ```
 Goal: Add GET /api/v1/songs/search?query=...&tag=...
 Steps:
-1) Create a Spring MVC handler in SongsController.
-2) Validate inputs, default page/size.
-3) Service method uses repository with ILIKE on title and tag filter.
-4) Add OpenAPI annotations and example responses.
+0) Perform appropriate modifications in `/apps/api-java/src/main/resources/openapi.yaml` OpenAPI 3.0 spec file
+1) Run `mvnw generate-sources`
+2) Create a Spring MVC handler in SongsController.
+3) Validate inputs, default page/size.
+4) Service method uses repository with ILIKE on title and tag filter.
 5) Add a Spring Boot test covering query + tag.
 Acceptance:
 - mvn verify passes.
@@ -300,7 +303,7 @@ Acceptance:
 
 - [ ] Lints & tests pass: API (`mvn verify`), Web (`yarn build && tsc -p .`)
 - [ ] DB: New Flyway migration added (if schema changed)
-- [ ] API: OpenAPI annotations updated; endpoint documented
+- [ ] API: OpenAPI spec updated; generated new sources
 - [ ] Web: Loading/error states; basic a11y; responsive layout
 - [ ] Feature flags respected (`ebal.*`)
 - [ ] Docs updated (`README.md` or `/docs/*`)
