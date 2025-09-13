@@ -17,6 +17,10 @@ public record User(
         String email,
         String role
 ) {
+    public User() {
+        this(null, null, null);
+    }
+
     public User {
         if (id == null) {
             id = UUID.randomUUID();

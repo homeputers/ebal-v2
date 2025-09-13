@@ -16,6 +16,10 @@ public record SongSet(
         UUID id,
         String name
 ) {
+    public SongSet() {
+        this(null, null);
+    }
+
     public SongSet {
         if (id == null) {
             id = UUID.randomUUID();

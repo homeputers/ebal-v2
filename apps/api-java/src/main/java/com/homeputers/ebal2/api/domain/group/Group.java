@@ -26,6 +26,10 @@ public record Group(
         @OneToMany(mappedBy = "group")
         Set<GroupMember> members
 ) {
+    public Group() {
+        this(null, null, null);
+    }
+
     public Group {
         if (id == null) {
             id = UUID.randomUUID();

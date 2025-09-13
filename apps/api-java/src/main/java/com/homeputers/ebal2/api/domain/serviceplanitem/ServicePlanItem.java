@@ -33,6 +33,10 @@ public record ServicePlanItem(
 
         String notes
 ) {
+    public ServicePlanItem() {
+        this(null, null, null, null, null, null);
+    }
+
     public ServicePlanItem {
         if (id == null) {
             id = UUID.randomUUID();

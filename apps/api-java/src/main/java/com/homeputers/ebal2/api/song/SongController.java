@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("${openapi.context-path:/api/v1}")
+@RequestMapping("/api/v1")
 public class SongController implements SongsApi {
     private final SongService service;
 

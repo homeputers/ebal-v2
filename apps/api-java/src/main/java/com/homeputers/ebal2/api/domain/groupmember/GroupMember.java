@@ -27,6 +27,10 @@ public record GroupMember(
         @JoinColumn(name = "member_id")
         Member member
 ) {
+    public GroupMember() {
+        this(null, null, null);
+    }
+
     public GroupMember {
         if (id == null) {
             id = new GroupMemberId(

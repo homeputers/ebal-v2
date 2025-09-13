@@ -34,6 +34,10 @@ public record SongSetItem(
         Integer transpose,
         Integer capo
 ) {
+    public SongSetItem() {
+        this(null, null, null, null, null, null);
+    }
+
     public SongSetItem {
         if (id == null) {
             id = UUID.randomUUID();

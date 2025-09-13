@@ -30,6 +30,10 @@ public record Arrangement(
         @Column(name = "lyrics_chordpro")
         String lyricsChordpro
 ) {
+    public Arrangement() {
+        this(null, null, null, null, null, null);
+    }
+
     public Arrangement {
         if (id == null) {
             id = UUID.randomUUID();

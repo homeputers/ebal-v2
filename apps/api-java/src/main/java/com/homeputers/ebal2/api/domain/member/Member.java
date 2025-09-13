@@ -27,6 +27,10 @@ public record Member(
         @Column(name = "instruments", columnDefinition = "text[]")
         List<String> instruments
 ) {
+    public Member() {
+        this(null, null, null);
+    }
+
     public Member {
         if (id == null) {
             id = UUID.randomUUID();

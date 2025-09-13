@@ -22,6 +22,10 @@ public record Service(
 
         String location
 ) {
+    public Service() {
+        this(null, null, null);
+    }
+
     public Service {
         if (id == null) {
             id = UUID.randomUUID();
