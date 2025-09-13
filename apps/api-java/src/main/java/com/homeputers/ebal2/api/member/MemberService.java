@@ -2,9 +2,9 @@ package com.homeputers.ebal2.api.member;
 
 import com.homeputers.ebal2.api.domain.member.Member;
 import com.homeputers.ebal2.api.domain.member.MemberRepository;
+import com.homeputers.ebal2.api.generated.model.MemberRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +38,7 @@ public class MemberService {
     @Transactional
     public Member update(UUID id, MemberRequest request) {
         Member existing = get(id);
-        Member updated = new Member(existing.id(), request.displayName(), request.instruments());
+        Member updated = new Member(existing.id(), request.getDisplayName(), request.getInstruments());
         return repository.save(updated);
     }
 
