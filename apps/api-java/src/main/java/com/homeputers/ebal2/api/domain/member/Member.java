@@ -1,6 +1,10 @@
 package com.homeputers.ebal2.api.domain.member;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -11,41 +15,25 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "members")
-public class Member {
+public record Member(
+        @Id
+        @GeneratedValue
+        UUID id,
 
-    @Id
-    @GeneratedValue
-    private UUID id;
+        @Column(name = "display_name")
+        String displayName,
 
-    @Column(name = "display_name")
-    private String displayName;
-
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(name = "instruments", columnDefinition = "text[]")
-    private List<String> instruments = new ArrayList<>();
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public List<String> getInstruments() {
-        return instruments;
-    }
-
-    public void setInstruments(List<String> instruments) {
-        this.instruments = instruments;
+        @JdbcTypeCode(SqlTypes.ARRAY)
+        @Column(name = "instruments", columnDefinition = "text[]")
+        List<String> instruments
+) {
+    public Member {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
+        if (instruments == null) {
+            instruments = new ArrayList<>();
+        }
     }
 
     @Override
@@ -61,3 +49,4 @@ public class Member {
         return Objects.hash(id);
     }
 }
+

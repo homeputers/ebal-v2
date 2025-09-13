@@ -1,7 +1,12 @@
 package com.homeputers.ebal2.api.domain.group;
 
 import com.homeputers.ebal2.api.domain.groupmember.GroupMember;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -10,40 +15,24 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "groups")
-public class Group {
+public record Group(
+        @Id
+        @GeneratedValue
+        UUID id,
 
-    @Id
-    @GeneratedValue
-    private UUID id;
+        @Column(unique = true)
+        String name,
 
-    @Column(unique = true)
-    private String name;
-
-    @OneToMany(mappedBy = "group")
-    private Set<GroupMember> members = new HashSet<>();
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Set<GroupMember> getMembers() {
-        return members;
-    }
-
-    public void setMembers(Set<GroupMember> members) {
-        this.members = members;
+        @OneToMany(mappedBy = "group")
+        Set<GroupMember> members
+) {
+    public Group {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
+        if (members == null) {
+            members = new HashSet<>();
+        }
     }
 
     @Override
@@ -59,3 +48,4 @@ public class Group {
         return Objects.hash(id);
     }
 }
+

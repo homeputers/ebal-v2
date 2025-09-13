@@ -1,6 +1,10 @@
 package com.homeputers.ebal2.api.domain.service;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -8,39 +12,20 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "services")
-public class Service {
+public record Service(
+        @Id
+        @GeneratedValue
+        UUID id,
 
-    @Id
-    @GeneratedValue
-    private UUID id;
+        @Column(name = "starts_at")
+        OffsetDateTime startsAt,
 
-    @Column(name = "starts_at")
-    private OffsetDateTime startsAt;
-
-    private String location;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public OffsetDateTime getStartsAt() {
-        return startsAt;
-    }
-
-    public void setStartsAt(OffsetDateTime startsAt) {
-        this.startsAt = startsAt;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
+        String location
+) {
+    public Service {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
     }
 
     @Override
@@ -56,3 +41,4 @@ public class Service {
         return Objects.hash(id);
     }
 }
+

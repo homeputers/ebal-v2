@@ -1,79 +1,42 @@
 package com.homeputers.ebal2.api.domain.serviceplanitem;
 
 import com.homeputers.ebal2.api.domain.service.Service;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "service_plan_items")
-public class ServicePlanItem {
+public record ServicePlanItem(
+        @Id
+        @GeneratedValue
+        UUID id,
 
-    @Id
-    @GeneratedValue
-    private UUID id;
+        @ManyToOne
+        @JoinColumn(name = "service_id")
+        Service service,
 
-    @ManyToOne
-    @JoinColumn(name = "service_id")
-    private Service service;
+        String type,
 
-    private String type;
+        @Column(name = "ref_id")
+        UUID refId,
 
-    @Column(name = "ref_id")
-    private UUID refId;
+        @Column(name = "\"order\"")
+        Integer sortOrder,
 
-    @Column(name = "\"order\"")
-    private Integer sortOrder;
-
-    private String notes;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public Service getService() {
-        return service;
-    }
-
-    public void setService(Service service) {
-        this.service = service;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public UUID getRefId() {
-        return refId;
-    }
-
-    public void setRefId(UUID refId) {
-        this.refId = refId;
-    }
-
-    public Integer getSortOrder() {
-        return sortOrder;
-    }
-
-    public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
+        String notes
+) {
+    public ServicePlanItem {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
     }
 
     @Override
@@ -89,3 +52,4 @@ public class ServicePlanItem {
         return Objects.hash(id);
     }
 }
+

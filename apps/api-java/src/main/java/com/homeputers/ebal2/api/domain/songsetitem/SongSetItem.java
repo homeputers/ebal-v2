@@ -2,80 +2,42 @@ package com.homeputers.ebal2.api.domain.songsetitem;
 
 import com.homeputers.ebal2.api.domain.arrangement.Arrangement;
 import com.homeputers.ebal2.api.domain.songset.SongSet;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "song_set_items")
-public class SongSetItem {
+public record SongSetItem(
+        @Id
+        @GeneratedValue
+        UUID id,
 
-    @Id
-    @GeneratedValue
-    private UUID id;
+        @ManyToOne
+        @JoinColumn(name = "song_set_id")
+        SongSet songSet,
 
-    @ManyToOne
-    @JoinColumn(name = "song_set_id")
-    private SongSet songSet;
+        @ManyToOne
+        @JoinColumn(name = "arrangement_id")
+        Arrangement arrangement,
 
-    @ManyToOne
-    @JoinColumn(name = "arrangement_id")
-    private Arrangement arrangement;
+        @Column(name = "\"order\"")
+        Integer sortOrder,
 
-    @Column(name = "\"order\"")
-    private Integer sortOrder;
-
-    private Integer transpose;
-
-    private Integer capo;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public SongSet getSongSet() {
-        return songSet;
-    }
-
-    public void setSongSet(SongSet songSet) {
-        this.songSet = songSet;
-    }
-
-    public Arrangement getArrangement() {
-        return arrangement;
-    }
-
-    public void setArrangement(Arrangement arrangement) {
-        this.arrangement = arrangement;
-    }
-
-    public Integer getSortOrder() {
-        return sortOrder;
-    }
-
-    public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-    public Integer getTranspose() {
-        return transpose;
-    }
-
-    public void setTranspose(Integer transpose) {
-        this.transpose = transpose;
-    }
-
-    public Integer getCapo() {
-        return capo;
-    }
-
-    public void setCapo(Integer capo) {
-        this.capo = capo;
+        Integer transpose,
+        Integer capo
+) {
+    public SongSetItem {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
     }
 
     @Override
@@ -91,3 +53,4 @@ public class SongSetItem {
         return Objects.hash(id);
     }
 }
+

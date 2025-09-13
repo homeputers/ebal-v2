@@ -1,6 +1,10 @@
 package com.homeputers.ebal2.api.domain.song;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -11,69 +15,29 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "songs")
-public class Song {
+public record Song(
+        @Id
+        @GeneratedValue
+        UUID id,
 
-    @Id
-    @GeneratedValue
-    private UUID id;
+        String title,
+        String ccli,
+        String author,
 
-    private String title;
-    private String ccli;
-    private String author;
+        @Column(name = "default_key")
+        String defaultKey,
 
-    @Column(name = "default_key")
-    private String defaultKey;
-
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(name = "tags", columnDefinition = "text[]")
-    private List<String> tags = new ArrayList<>();
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getCcli() {
-        return ccli;
-    }
-
-    public void setCcli(String ccli) {
-        this.ccli = ccli;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getDefaultKey() {
-        return defaultKey;
-    }
-
-    public void setDefaultKey(String defaultKey) {
-        this.defaultKey = defaultKey;
-    }
-
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+        @JdbcTypeCode(SqlTypes.ARRAY)
+        @Column(name = "tags", columnDefinition = "text[]")
+        List<String> tags
+) {
+    public Song {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
+        if (tags == null) {
+            tags = new ArrayList<>();
+        }
     }
 
     @Override
@@ -89,3 +53,4 @@ public class Song {
         return Objects.hash(id);
     }
 }
+

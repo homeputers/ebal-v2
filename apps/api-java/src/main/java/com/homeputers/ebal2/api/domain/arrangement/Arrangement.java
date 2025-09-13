@@ -1,78 +1,39 @@
 package com.homeputers.ebal2.api.domain.arrangement;
 
 import com.homeputers.ebal2.api.domain.song.Song;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "arrangements")
-public class Arrangement {
+public record Arrangement(
+        @Id
+        @GeneratedValue
+        UUID id,
 
-    @Id
-    @GeneratedValue
-    private UUID id;
+        @ManyToOne
+        @JoinColumn(name = "song_id")
+        Song song,
 
-    @ManyToOne
-    @JoinColumn(name = "song_id")
-    private Song song;
+        String key,
+        Integer bpm,
+        String meter,
 
-    private String key;
-
-    private Integer bpm;
-
-    private String meter;
-
-    @Column(name = "lyrics_chordpro")
-    private String lyricsChordpro;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public Song getSong() {
-        return song;
-    }
-
-    public void setSong(Song song) {
-        this.song = song;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public Integer getBpm() {
-        return bpm;
-    }
-
-    public void setBpm(Integer bpm) {
-        this.bpm = bpm;
-    }
-
-    public String getMeter() {
-        return meter;
-    }
-
-    public void setMeter(String meter) {
-        this.meter = meter;
-    }
-
-    public String getLyricsChordpro() {
-        return lyricsChordpro;
-    }
-
-    public void setLyricsChordpro(String lyricsChordpro) {
-        this.lyricsChordpro = lyricsChordpro;
+        @Column(name = "lyrics_chordpro")
+        String lyricsChordpro
+) {
+    public Arrangement {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
     }
 
     @Override
@@ -88,3 +49,4 @@ public class Arrangement {
         return Objects.hash(id);
     }
 }
+

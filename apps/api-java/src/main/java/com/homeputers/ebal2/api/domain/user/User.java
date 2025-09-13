@@ -4,43 +4,23 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-public class User {
-
-    @Id
-    @GeneratedValue
-    private UUID id;
-
-    private String email;
-
-    private String role;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
+public record User(
+        @Id
+        @GeneratedValue
+        UUID id,
+        String email,
+        String role
+) {
+    public User {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
     }
 
     @Override
@@ -56,3 +36,4 @@ public class User {
         return Objects.hash(id);
     }
 }
+

@@ -2,49 +2,38 @@ package com.homeputers.ebal2.api.domain.groupmember;
 
 import com.homeputers.ebal2.api.domain.group.Group;
 import com.homeputers.ebal2.api.domain.member.Member;
-import jakarta.persistence.*;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.Table;
 
 import java.util.Objects;
 
 @Entity
 @Table(name = "group_members")
-public class GroupMember {
+public record GroupMember(
+        @EmbeddedId
+        GroupMemberId id,
 
-    @EmbeddedId
-    private GroupMemberId id = new GroupMemberId();
+        @ManyToOne
+        @MapsId("groupId")
+        @JoinColumn(name = "group_id")
+        Group group,
 
-    @ManyToOne
-    @MapsId("groupId")
-    @JoinColumn(name = "group_id")
-    private Group group;
-
-    @ManyToOne
-    @MapsId("memberId")
-    @JoinColumn(name = "member_id")
-    private Member member;
-
-    public GroupMemberId getId() {
-        return id;
-    }
-
-    public void setId(GroupMemberId id) {
-        this.id = id;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public void setMember(Member member) {
-        this.member = member;
+        @ManyToOne
+        @MapsId("memberId")
+        @JoinColumn(name = "member_id")
+        Member member
+) {
+    public GroupMember {
+        if (id == null) {
+            id = new GroupMemberId(
+                    group != null ? group.id() : null,
+                    member != null ? member.id() : null
+            );
+        }
     }
 
     @Override
@@ -60,3 +49,4 @@ public class GroupMember {
         return Objects.hash(id);
     }
 }
+
