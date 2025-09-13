@@ -1,0 +1,970 @@
+openapi: 3.0.1
+info:
+  title: ebal API
+  version: 1.0.0
+servers:
+  - url: /
+paths:
+  /health:
+    get:
+      tags:
+        - system
+      operationId: health
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+  /api/v1/groups:
+    get:
+      tags: [Groups]
+      operationId: listGroups
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Groups page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageGroupResponse'
+    post:
+      tags: [Groups]
+      operationId: createGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupResponse'
+  /api/v1/groups/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags: [Groups]
+      operationId: getGroup
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupResponse'
+    put:
+      tags: [Groups]
+      operationId: updateGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupResponse'
+    delete:
+      tags: [Groups]
+      operationId: deleteGroup
+      responses:
+        '204':
+          description: No Content
+  /api/v1/groups/{id}/members/{memberId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: memberId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      tags: [Groups]
+      operationId: addGroupMember
+      responses:
+        '204':
+          description: No Content
+    delete:
+      tags: [Groups]
+      operationId: removeGroupMember
+      responses:
+        '204':
+          description: No Content
+  /api/v1/members:
+    get:
+      tags: [Members]
+      operationId: listMembers
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Members page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageMemberResponse'
+    post:
+      tags: [Members]
+      operationId: createMember
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberResponse'
+  /api/v1/members/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags: [Members]
+      operationId: getMember
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberResponse'
+    put:
+      tags: [Members]
+      operationId: updateMember
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberResponse'
+    delete:
+      tags: [Members]
+      operationId: deleteMember
+      responses:
+        '204':
+          description: No Content
+  /api/v1/services:
+    get:
+      tags: [Services]
+      operationId: listServices
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Services page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageServiceResponse'
+    post:
+      tags: [Services]
+      operationId: createService
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+  /api/v1/services/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags: [Services]
+      operationId: getService
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+    put:
+      tags: [Services]
+      operationId: updateService
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+    delete:
+      tags: [Services]
+      operationId: deleteService
+      responses:
+        '204':
+          description: No Content
+  /api/v1/services/{id}/plan-items:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags: [Services]
+      operationId: listServicePlanItems
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServicePlanItemResponse'
+    post:
+      tags: [Services]
+      operationId: addServicePlanItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServicePlanItemRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServicePlanItemResponse'
+  /api/v1/service-plan-items/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    put:
+      tags: [Service Plan Items]
+      operationId: updateServicePlanItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServicePlanItemRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServicePlanItemResponse'
+    delete:
+      tags: [Service Plan Items]
+      operationId: deleteServicePlanItem
+      responses:
+        '204':
+          description: No Content
+  /api/v1/songs:
+    get:
+      tags: [Songs]
+      operationId: listSongs
+      parameters:
+        - name: title
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: tag
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Songs page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageSongResponse'
+    post:
+      tags: [Songs]
+      operationId: createSong
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SongResponse'
+  /api/v1/songs/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags: [Songs]
+      operationId: getSong
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SongResponse'
+    put:
+      tags: [Songs]
+      operationId: updateSong
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SongResponse'
+    delete:
+      tags: [Songs]
+      operationId: deleteSong
+      responses:
+        '204':
+          description: No Content
+  /api/v1/songs/{id}/arrangements:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags: [Songs]
+      operationId: listArrangements
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArrangementResponse'
+    post:
+      tags: [Songs]
+      operationId: addArrangement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArrangementRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrangementResponse'
+  /api/v1/songs/arrangements/{arrangementId}:
+    parameters:
+      - name: arrangementId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    put:
+      tags: [Songs]
+      operationId: updateArrangement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArrangementRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrangementResponse'
+    delete:
+      tags: [Songs]
+      operationId: deleteArrangement
+      responses:
+        '204':
+          description: No Content
+  /api/v1/song-sets:
+    get:
+      tags: [Song Sets]
+      operationId: listSongSets
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Song sets page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageSongSetResponse'
+    post:
+      tags: [Song Sets]
+      operationId: createSongSet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongSetRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SongSetResponse'
+  /api/v1/song-sets/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags: [Song Sets]
+      operationId: getSongSet
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SongSetResponse'
+    put:
+      tags: [Song Sets]
+      operationId: updateSongSet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongSetRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SongSetResponse'
+    delete:
+      tags: [Song Sets]
+      operationId: deleteSongSet
+      responses:
+        '204':
+          description: No Content
+  /api/v1/song-sets/{id}/items:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags: [Song Sets]
+      operationId: listSongSetItems
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SongSetItemResponse'
+    post:
+      tags: [Song Sets]
+      operationId: addSongSetItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongSetItemRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SongSetItemResponse'
+  /api/v1/song-sets/{id}/items/{itemId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    delete:
+      tags: [Song Sets]
+      operationId: removeSongSetItem
+      responses:
+        '204':
+          description: No Content
+  /api/v1/song-sets/{id}/items/reorder:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      tags: [Song Sets]
+      operationId: reorderSongSetItems
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                format: uuid
+      responses:
+        '204':
+          description: No Content
+  /api/v1/song-set-items/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    put:
+      tags: [Song Set Items]
+      operationId: updateSongSetItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongSetItemRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SongSetItemResponse'
+    delete:
+      tags: [Song Set Items]
+      operationId: deleteSongSetItem
+      responses:
+        '204':
+          description: No Content
+components:
+  schemas:
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+    GroupRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+    GroupResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        memberIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+    PageGroupResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupResponse'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        number:
+          type: integer
+        size:
+          type: integer
+    MemberRequest:
+      type: object
+      required: [displayName]
+      properties:
+        displayName:
+          type: string
+        instruments:
+          type: array
+          items:
+            type: string
+    MemberResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        displayName:
+          type: string
+        instruments:
+          type: array
+          items:
+            type: string
+    PageMemberResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberResponse'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        number:
+          type: integer
+        size:
+          type: integer
+    ServiceRequest:
+      type: object
+      required: [startsAt]
+      properties:
+        startsAt:
+          type: string
+          format: date-time
+        location:
+          type: string
+    ServiceResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        startsAt:
+          type: string
+          format: date-time
+        location:
+          type: string
+    PageServiceResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceResponse'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        number:
+          type: integer
+        size:
+          type: integer
+    ServicePlanItemRequest:
+      type: object
+      properties:
+        type:
+          type: string
+        refId:
+          type: string
+          format: uuid
+        sortOrder:
+          type: integer
+        notes:
+          type: string
+    ServicePlanItemResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        serviceId:
+          type: string
+          format: uuid
+        type:
+          type: string
+        refId:
+          type: string
+          format: uuid
+        sortOrder:
+          type: integer
+        notes:
+          type: string
+    SongRequest:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+        ccli:
+          type: string
+        author:
+          type: string
+        defaultKey:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+    SongResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        ccli:
+          type: string
+        author:
+          type: string
+        defaultKey:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+    PageSongResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/SongResponse'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        number:
+          type: integer
+        size:
+          type: integer
+    ArrangementRequest:
+      type: object
+      properties:
+        key:
+          type: string
+        bpm:
+          type: integer
+        meter:
+          type: string
+        lyricsChordpro:
+          type: string
+    ArrangementResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        songId:
+          type: string
+          format: uuid
+        key:
+          type: string
+        bpm:
+          type: integer
+        meter:
+          type: string
+        lyricsChordpro:
+          type: string
+    SongSetRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+    SongSetResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    PageSongSetResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/SongSetResponse'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        number:
+          type: integer
+        size:
+          type: integer
+    SongSetItemRequest:
+      type: object
+      properties:
+        arrangementId:
+          type: string
+          format: uuid
+        sortOrder:
+          type: integer
+        transpose:
+          type: integer
+        capo:
+          type: integer
+    SongSetItemResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        songSetId:
+          type: string
+          format: uuid
+        arrangementId:
+          type: string
+          format: uuid
+        sortOrder:
+          type: integer
+        transpose:
+          type: integer
+        capo:
+          type: integer
