@@ -4,7 +4,6 @@ import com.homeputers.ebal2.api.domain.arrangement.Arrangement;
 import com.homeputers.ebal2.api.domain.songset.SongSet;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -17,7 +16,6 @@ import java.util.UUID;
 @Table(name = "song_set_items")
 public record SongSetItem(
         @Id
-        @GeneratedValue
         UUID id,
 
         @ManyToOne
@@ -34,6 +32,10 @@ public record SongSetItem(
         Integer transpose,
         Integer capo
 ) {
+    public SongSetItem() {
+        this(null, null, null, null, null, null);
+    }
+
     public SongSetItem {
         if (id == null) {
             id = UUID.randomUUID();

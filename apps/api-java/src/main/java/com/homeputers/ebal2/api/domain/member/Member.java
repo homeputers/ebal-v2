@@ -2,7 +2,6 @@ package com.homeputers.ebal2.api.domain.member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -17,7 +16,6 @@ import java.util.UUID;
 @Table(name = "members")
 public record Member(
         @Id
-        @GeneratedValue
         UUID id,
 
         @Column(name = "display_name")
@@ -27,6 +25,10 @@ public record Member(
         @Column(name = "instruments", columnDefinition = "text[]")
         List<String> instruments
 ) {
+    public Member() {
+        this(null, null, null);
+    }
+
     public Member {
         if (id == null) {
             id = UUID.randomUUID();

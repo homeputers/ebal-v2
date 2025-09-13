@@ -13,12 +13,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/api/v1")
 public class SongController implements SongsApi {
     private final SongService service;
 
@@ -38,13 +42,13 @@ public class SongController implements SongsApi {
     }
 
     @Override
-    public ResponseEntity<SongResponse> createSong(SongRequest songRequest) {
+    public ResponseEntity<SongResponse> createSong(@Valid @RequestBody SongRequest songRequest) {
         Song created = service.create(songRequest);
         return new ResponseEntity<>(SongMapper.toResponse(created), HttpStatus.CREATED);
     }
 
     @Override
-    public ResponseEntity<SongResponse> updateSong(UUID id, SongRequest songRequest) {
+    public ResponseEntity<SongResponse> updateSong(UUID id, @Valid @RequestBody SongRequest songRequest) {
         Song updated = service.update(id, songRequest);
         return ResponseEntity.ok(SongMapper.toResponse(updated));
     }

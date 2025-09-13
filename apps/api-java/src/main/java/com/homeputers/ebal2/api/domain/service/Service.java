@@ -2,7 +2,6 @@ package com.homeputers.ebal2.api.domain.service;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -14,7 +13,6 @@ import java.util.UUID;
 @Table(name = "services")
 public record Service(
         @Id
-        @GeneratedValue
         UUID id,
 
         @Column(name = "starts_at")
@@ -22,6 +20,10 @@ public record Service(
 
         String location
 ) {
+    public Service() {
+        this(null, null, null);
+    }
+
     public Service {
         if (id == null) {
             id = UUID.randomUUID();
