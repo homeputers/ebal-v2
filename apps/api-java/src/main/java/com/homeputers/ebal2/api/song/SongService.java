@@ -1,12 +1,12 @@
 package com.homeputers.ebal2.api.song;
 
 import com.homeputers.ebal2.api.arrangement.ArrangementMapper;
-import com.homeputers.ebal2.api.arrangement.ArrangementRequest;
-import com.homeputers.ebal2.api.arrangement.ArrangementResponse;
 import com.homeputers.ebal2.api.domain.arrangement.Arrangement;
 import com.homeputers.ebal2.api.domain.arrangement.ArrangementRepository;
 import com.homeputers.ebal2.api.domain.song.Song;
 import com.homeputers.ebal2.api.domain.song.SongRepository;
+import com.homeputers.ebal2.api.generated.model.ArrangementRequest;
+import com.homeputers.ebal2.api.generated.model.SongRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,7 +42,14 @@ public class SongService {
     @Transactional
     public Song update(UUID id, SongRequest request) {
         Song existing = get(id);
-        Song updated = new Song(existing.id(), request.title(), request.ccli(), request.author(), request.defaultKey(), request.tags());
+        Song updated = new Song(
+                existing.id(),
+                request.getTitle(),
+                request.getCcli(),
+                request.getAuthor(),
+                request.getDefaultKey(),
+                request.getTags()
+        );
         return songRepository.save(updated);
     }
 
@@ -65,7 +72,14 @@ public class SongService {
     @Transactional
     public Arrangement updateArrangement(UUID id, ArrangementRequest request) {
         Arrangement existing = arrangementRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Arrangement not found"));
-        Arrangement updated = new Arrangement(existing.id(), existing.song(), request.key(), request.bpm(), request.meter(), request.lyricsChordpro());
+        Arrangement updated = new Arrangement(
+                existing.id(),
+                existing.song(),
+                request.getKey(),
+                request.getBpm(),
+                request.getMeter(),
+                request.getLyricsChordpro()
+        );
         return arrangementRepository.save(updated);
     }
 

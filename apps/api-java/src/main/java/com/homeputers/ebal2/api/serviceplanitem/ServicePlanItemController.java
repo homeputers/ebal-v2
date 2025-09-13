@@ -1,30 +1,30 @@
 package com.homeputers.ebal2.api.serviceplanitem;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.homeputers.ebal2.api.generated.ServicePlanItemsApi;
+import com.homeputers.ebal2.api.generated.model.ServicePlanItemRequest;
+import com.homeputers.ebal2.api.generated.model.ServicePlanItemResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/service-plan-items")
-@Tag(name = "Service Plan Items")
-public class ServicePlanItemController {
+public class ServicePlanItemController implements ServicePlanItemsApi {
     private final ServicePlanItemService service;
 
     public ServicePlanItemController(ServicePlanItemService service) {
         this.service = service;
     }
 
-    @PutMapping("/{id}")
-    public ServicePlanItemResponse update(@PathVariable UUID id, @Valid @RequestBody ServicePlanItemRequest request) {
-        return ServicePlanItemMapper.toResponse(service.update(id, request));
+    @Override
+    public ResponseEntity<ServicePlanItemResponse> updateServicePlanItem(UUID id, ServicePlanItemRequest servicePlanItemRequest) {
+        return ResponseEntity.ok(ServicePlanItemMapper.toResponse(service.update(id, servicePlanItemRequest)));
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
+    @Override
+    public ResponseEntity<Void> deleteServicePlanItem(UUID id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

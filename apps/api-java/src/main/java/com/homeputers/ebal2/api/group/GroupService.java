@@ -7,6 +7,7 @@ import com.homeputers.ebal2.api.domain.groupmember.GroupMemberId;
 import com.homeputers.ebal2.api.domain.groupmember.GroupMemberRepository;
 import com.homeputers.ebal2.api.domain.member.Member;
 import com.homeputers.ebal2.api.domain.member.MemberRepository;
+import com.homeputers.ebal2.api.generated.model.GroupRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,7 +44,7 @@ public class GroupService {
     @Transactional
     public Group update(UUID id, GroupRequest request) {
         Group existing = get(id);
-        Group updated = new Group(existing.id(), request.name(), existing.members());
+        Group updated = new Group(existing.id(), request.getName(), existing.members());
         return repository.save(updated);
     }
 

@@ -1,52 +1,52 @@
 package com.homeputers.ebal2.api.member;
 
 import com.homeputers.ebal2.api.domain.member.Member;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.homeputers.ebal2.api.generated.MembersApi;
+import com.homeputers.ebal2.api.generated.model.MemberRequest;
+import com.homeputers.ebal2.api.generated.model.MemberResponse;
+import com.homeputers.ebal2.api.generated.model.PageMemberResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/members")
-@Tag(name = "Members")
-public class MemberController {
+public class MemberController implements MembersApi {
     private final MemberService service;
 
     public MemberController(MemberService service) {
         this.service = service;
     }
 
-    @GetMapping
-    public Page<MemberResponse> list(@RequestParam(name = "q", required = false) String query,
-                                     @RequestParam(defaultValue = "0") int page,
-                                     @RequestParam(defaultValue = "20") int size) {
-        Page<Member> members = service.search(query, PageRequest.of(page, size));
-        return members.map(MemberMapper::toResponse);
+    @Override
+    public ResponseEntity<PageMemberResponse> listMembers(String q, Integer page, Integer size) {
+        Page<Member> members = service.search(q, PageRequest.of(page, size));
+        return ResponseEntity.ok(MemberMapper.toPageResponse(members));
     }
 
-    @GetMapping("/{id}")
-    public MemberResponse get(@PathVariable UUID id) {
-        return MemberMapper.toResponse(service.get(id));
+    @Override
+    public ResponseEntity<MemberResponse> getMember(UUID id) {
+        return ResponseEntity.ok(MemberMapper.toResponse(service.get(id)));
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public MemberResponse create(@Valid @RequestBody MemberRequest request) {
-        return MemberMapper.toResponse(service.create(request));
+    @Override
+    public ResponseEntity<MemberResponse> createMember(MemberRequest memberRequest) {
+        Member created = service.create(memberRequest);
+        return new ResponseEntity<>(MemberMapper.toResponse(created), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public MemberResponse update(@PathVariable UUID id, @Valid @RequestBody MemberRequest request) {
-        return MemberMapper.toResponse(service.update(id, request));
+    @Override
+    public ResponseEntity<MemberResponse> updateMember(UUID id, MemberRequest memberRequest) {
+        Member updated = service.update(id, memberRequest);
+        return ResponseEntity.ok(MemberMapper.toResponse(updated));
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
+    @Override
+    public ResponseEntity<Void> deleteMember(UUID id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
