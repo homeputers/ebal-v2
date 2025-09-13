@@ -1,7 +1,6 @@
 package com.homeputers.ebal2.api.domain.songset;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -12,7 +11,6 @@ import java.util.UUID;
 @Table(name = "song_sets")
 public record SongSet(
         @Id
-        @GeneratedValue
         UUID id,
         String name
 ) {

@@ -3,7 +3,6 @@ package com.homeputers.ebal2.api.domain.serviceplanitem;
 import com.homeputers.ebal2.api.domain.service.Service;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -16,7 +15,6 @@ import java.util.UUID;
 @Table(name = "service_plan_items")
 public record ServicePlanItem(
         @Id
-        @GeneratedValue
         UUID id,
 
         @ManyToOne

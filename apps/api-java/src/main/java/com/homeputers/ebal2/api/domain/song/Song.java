@@ -2,7 +2,6 @@ package com.homeputers.ebal2.api.domain.song;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -17,7 +16,6 @@ import java.util.UUID;
 @Table(name = "songs")
 public record Song(
         @Id
-        @GeneratedValue
         UUID id,
 
         String title,

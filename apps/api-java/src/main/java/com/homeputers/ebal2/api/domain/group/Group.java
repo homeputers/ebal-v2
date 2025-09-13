@@ -3,7 +3,6 @@ package com.homeputers.ebal2.api.domain.group;
 import com.homeputers.ebal2.api.domain.groupmember.GroupMember;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -17,7 +16,6 @@ import java.util.UUID;
 @Table(name = "groups")
 public record Group(
         @Id
-        @GeneratedValue
         UUID id,
 
         @Column(unique = true)
