@@ -6,10 +6,12 @@ import com.homeputers.ebal2.api.generated.model.ServicePlanItemResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/api/v1")
 public class ServicePlanItemController implements ServicePlanItemsApi {
     private final ServicePlanItemService service;
 

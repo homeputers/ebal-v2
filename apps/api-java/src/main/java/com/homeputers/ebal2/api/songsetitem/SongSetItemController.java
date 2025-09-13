@@ -6,10 +6,12 @@ import com.homeputers.ebal2.api.generated.model.SongSetItemResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/api/v1")
 public class SongSetItemController implements SongSetItemsApi {
     private final SongSetItemService service;
 

@@ -4,8 +4,10 @@ import com.homeputers.ebal2.api.generated.HealthApi;
 import com.homeputers.ebal2.api.generated.model.Health;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
+@RequestMapping("/api/v1")
 public class HealthController implements HealthApi {
 
     @Override
