@@ -1,9 +1,7 @@
 package com.homeputers.ebal2.api.domain.song;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import org.springframework.data.domain.Persistable;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -15,8 +13,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "songs")
 public record Song(
-        @Id
-        UUID id,
+        @Id UUID id,
 
         String title,
         String ccli,
@@ -28,7 +25,10 @@ public record Song(
         @JdbcTypeCode(SqlTypes.ARRAY)
         @Column(name = "tags", columnDefinition = "text[]")
         List<String> tags
-) {
+) implements Persistable<UUID> {
+
+    @Transient
+    private boolean persisted;
 
     /**
      * Zero-argument constructor required by JPA. Values default to {@code null} and
@@ -45,6 +45,22 @@ public record Song(
         if (tags == null) {
             tags = new ArrayList<>();
         }
+    }
+
+    @Override
+    public UUID getId() {
+        return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return !persisted;
+    }
+
+    @PostPersist
+    @PostLoad
+    private void markPersisted() {
+        this.persisted = true;
     }
 
     @Override
