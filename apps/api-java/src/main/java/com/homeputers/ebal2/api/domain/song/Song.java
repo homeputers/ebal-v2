@@ -1,14 +1,15 @@
 package com.homeputers.ebal2.api.domain.song;
 
 import jakarta.persistence.*;
-import org.springframework.data.domain.Persistable;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.data.domain.Persistable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Entity
 @Table(name = "songs")
@@ -24,18 +25,18 @@ public record Song(
 
         @JdbcTypeCode(SqlTypes.ARRAY)
         @Column(name = "tags", columnDefinition = "text[]")
-        List<String> tags
-) implements Persistable<UUID> {
+        List<String> tags,
 
-    @Transient
-    private boolean persisted;
+        @Transient
+        AtomicBoolean persisted
+) implements Persistable<UUID> {
 
     /**
      * Zero-argument constructor required by JPA. Values default to {@code null} and
      * are initialized in the canonical constructor.
      */
     public Song() {
-        this(null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null);
     }
 
     public Song {
@@ -44,6 +45,9 @@ public record Song(
         }
         if (tags == null) {
             tags = new ArrayList<>();
+        }
+        if (persisted == null) {
+            persisted = new AtomicBoolean(false);
         }
     }
 
@@ -54,13 +58,13 @@ public record Song(
 
     @Override
     public boolean isNew() {
-        return !persisted;
+        return !persisted.get();
     }
 
     @PostPersist
     @PostLoad
     private void markPersisted() {
-        this.persisted = true;
+        this.persisted.set(true);
     }
 
     @Override
