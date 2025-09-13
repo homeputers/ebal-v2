@@ -13,12 +13,12 @@ public class SongMapper {
 
     public static SongResponse toResponse(Song song) {
         SongResponse response = new SongResponse();
-        response.setId(song.id());
-        response.setTitle(song.title());
-        response.setCcli(song.ccli());
-        response.setAuthor(song.author());
-        response.setDefaultKey(song.defaultKey());
-        response.setTags(song.tags());
+        response.setId(song.getId());
+        response.setTitle(song.getTitle());
+        response.setCcli(song.getCcli());
+        response.setAuthor(song.getAuthor());
+        response.setDefaultKey(song.getDefaultKey());
+        response.setTags(song.getTags());
         return response;
     }
 

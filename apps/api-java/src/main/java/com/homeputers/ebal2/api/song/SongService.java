@@ -43,7 +43,7 @@ public class SongService {
     public Song update(UUID id, SongRequest request) {
         Song existing = get(id);
         Song updated = new Song(
-                existing.id(),
+                existing.getId(),
                 request.getTitle(),
                 request.getCcli(),
                 request.getAuthor(),

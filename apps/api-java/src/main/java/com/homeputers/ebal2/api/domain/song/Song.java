@@ -15,29 +15,59 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "songs")
-public record Song(
-        @Id
-        @GeneratedValue
-        UUID id,
+public class Song {
 
-        String title,
-        String ccli,
-        String author,
+    @Id
+    @GeneratedValue
+    private UUID id;
 
-        @Column(name = "default_key")
-        String defaultKey,
+    private String title;
+    private String ccli;
+    private String author;
 
-        @JdbcTypeCode(SqlTypes.ARRAY)
-        @Column(name = "tags", columnDefinition = "text[]")
-        List<String> tags
-) {
-    public Song {
-        if (id == null) {
-            id = UUID.randomUUID();
+    @Column(name = "default_key")
+    private String defaultKey;
+
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "tags", columnDefinition = "text[]")
+    private List<String> tags = new ArrayList<>();
+
+    protected Song() {
+    }
+
+    public Song(UUID id, String title, String ccli, String author, String defaultKey, List<String> tags) {
+        this.id = id == null ? UUID.randomUUID() : id;
+        this.title = title;
+        this.ccli = ccli;
+        this.author = author;
+        this.defaultKey = defaultKey;
+        if (tags != null) {
+            this.tags = tags;
         }
-        if (tags == null) {
-            tags = new ArrayList<>();
-        }
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getCcli() {
+        return ccli;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getDefaultKey() {
+        return defaultKey;
+    }
+
+    public List<String> getTags() {
+        return tags;
     }
 
     @Override
