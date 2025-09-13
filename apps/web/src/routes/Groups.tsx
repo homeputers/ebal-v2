@@ -1,3 +1,1 @@
-export default function Groups() {
-  return <div>Groups</div>;
-}
+export { default } from '@/pages/groups/GroupsPage';

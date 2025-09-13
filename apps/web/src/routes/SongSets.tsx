@@ -1,3 +1,1 @@
-export default function SongSets() {
-  return <div>Song Sets</div>;
-}
+export { default } from '@/pages/sets/SetsPage';
