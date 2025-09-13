@@ -160,7 +160,7 @@ yarn generate:api   # pulls from http://localhost:8080/v3/api-docs to src/api/ty
 - `docs: update plan print view`
 
 **Naming**
-- Java packages: `dev.ebal.api.<module>`
+- Java packages: `com.homeputers.ebal2.api.<module>`
 - Controllers end with `Controller`, services with `Service`, repos with `Repository`.
 - React components: `PascalCase.tsx`; hooks: `useThing.ts`.
 
