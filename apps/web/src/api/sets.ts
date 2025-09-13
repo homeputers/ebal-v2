@@ -1,9 +1,9 @@
-import type { paths } from './types';
 import apiClient from './client';
+import type { QueryOf, ResponseOf } from './type-helpers';
 
-type ListSetsResponse = paths['/song-sets']['get']['responses']['200']['content']['application/json'];
-type ListSetsParams = paths['/song-sets']['get']['parameters']['query'];
-type GetSetResponse = paths['/song-sets/{id}']['get']['responses']['200']['content']['application/json'];
+type ListSetsResponse = ResponseOf<'/song-sets', 'get', 200>;
+type ListSetsParams = QueryOf<'/song-sets', 'get'>;
+type GetSetResponse = ResponseOf<'/song-sets/{id}', 'get', 200>;
 
 export async function listSets(params?: ListSetsParams) {
   const { data } = await apiClient.get<ListSetsResponse>('/song-sets', { params });

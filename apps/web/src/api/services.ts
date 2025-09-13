@@ -1,9 +1,9 @@
-import type { paths } from './types';
 import apiClient from './client';
+import type { QueryOf, ResponseOf } from './type-helpers';
 
-type ListServicesResponse = paths['/services']['get']['responses']['200']['content']['application/json'];
-type ListServicesParams = paths['/services']['get']['parameters']['query'];
-type GetServiceResponse = paths['/services/{id}']['get']['responses']['200']['content']['application/json'];
+type ListServicesResponse = ResponseOf<'/services', 'get', 200>;
+type ListServicesParams = QueryOf<'/services', 'get'>;
+type GetServiceResponse = ResponseOf<'/services/{id}', 'get', 200>;
 
 export async function listServices(params?: ListServicesParams) {
   const { data } = await apiClient.get<ListServicesResponse>('/services', { params });
