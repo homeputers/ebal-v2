@@ -3,997 +3,1480 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
-  "/health": {
-    get: operations["health"];
-  };
-  "/groups": {
-    get: operations["listGroups"];
-    post: operations["createGroup"];
-  };
-  "/groups/{id}": {
-    get: operations["getGroup"];
-    put: operations["updateGroup"];
-    delete: operations["deleteGroup"];
-    parameters: {
-      path: {
-        id: string;
-      };
+    "/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["health"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/groups/{id}/members/{memberId}": {
-    post: operations["addGroupMember"];
-    delete: operations["removeGroupMember"];
-    parameters: {
-      path: {
-        id: string;
-        memberId: string;
-      };
+    "/groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listGroups"];
+        put?: never;
+        post: operations["createGroup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/members": {
-    get: operations["listMembers"];
-    post: operations["createMember"];
-  };
-  "/members/{id}": {
-    get: operations["getMember"];
-    put: operations["updateMember"];
-    delete: operations["deleteMember"];
-    parameters: {
-      path: {
-        id: string;
-      };
+    "/groups/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get: operations["getGroup"];
+        put: operations["updateGroup"];
+        post?: never;
+        delete: operations["deleteGroup"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/services": {
-    get: operations["listServices"];
-    post: operations["createService"];
-  };
-  "/services/{id}": {
-    get: operations["getService"];
-    put: operations["updateService"];
-    delete: operations["deleteService"];
-    parameters: {
-      path: {
-        id: string;
-      };
+    "/groups/{id}/members/{memberId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["addGroupMember"];
+        delete: operations["removeGroupMember"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/services/{id}/plan-items": {
-    get: operations["listServicePlanItems"];
-    post: operations["addServicePlanItem"];
-    parameters: {
-      path: {
-        id: string;
-      };
+    "/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listMembers"];
+        put?: never;
+        post: operations["createMember"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/service-plan-items/{id}": {
-    put: operations["updateServicePlanItem"];
-    delete: operations["deleteServicePlanItem"];
-    parameters: {
-      path: {
-        id: string;
-      };
+    "/members/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get: operations["getMember"];
+        put: operations["updateMember"];
+        post?: never;
+        delete: operations["deleteMember"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/songs": {
-    get: operations["listSongs"];
-    post: operations["createSong"];
-  };
-  "/songs/{id}": {
-    get: operations["getSong"];
-    put: operations["updateSong"];
-    delete: operations["deleteSong"];
-    parameters: {
-      path: {
-        id: string;
-      };
+    "/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listServices"];
+        put?: never;
+        post: operations["createService"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/songs/{id}/arrangements": {
-    get: operations["listArrangements"];
-    post: operations["addArrangement"];
-    parameters: {
-      path: {
-        id: string;
-      };
+    "/services/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get: operations["getService"];
+        put: operations["updateService"];
+        post?: never;
+        delete: operations["deleteService"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/songs/arrangements/{arrangementId}": {
-    put: operations["updateArrangement"];
-    delete: operations["deleteArrangement"];
-    parameters: {
-      path: {
-        arrangementId: string;
-      };
+    "/services/{id}/plan-items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get: operations["listServicePlanItems"];
+        put?: never;
+        post: operations["addServicePlanItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/song-sets": {
-    get: operations["listSongSets"];
-    post: operations["createSongSet"];
-  };
-  "/song-sets/{id}": {
-    get: operations["getSongSet"];
-    put: operations["updateSongSet"];
-    delete: operations["deleteSongSet"];
-    parameters: {
-      path: {
-        id: string;
-      };
+    "/service-plan-items/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["updateServicePlanItem"];
+        post?: never;
+        delete: operations["deleteServicePlanItem"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/song-sets/{id}/items": {
-    get: operations["listSongSetItems"];
-    post: operations["addSongSetItem"];
-    parameters: {
-      path: {
-        id: string;
-      };
+    "/songs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listSongs"];
+        put?: never;
+        post: operations["createSong"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/song-sets/{id}/items/{itemId}": {
-    delete: operations["removeSongSetItem"];
-    parameters: {
-      path: {
-        id: string;
-        itemId: string;
-      };
+    "/songs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get: operations["getSong"];
+        put: operations["updateSong"];
+        post?: never;
+        delete: operations["deleteSong"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/song-sets/{id}/items/reorder": {
-    post: operations["reorderSongSetItems"];
-    parameters: {
-      path: {
-        id: string;
-      };
+    "/songs/{id}/arrangements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get: operations["listArrangements"];
+        put?: never;
+        post: operations["addArrangement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/song-set-items/{id}": {
-    put: operations["updateSongSetItem"];
-    delete: operations["deleteSongSetItem"];
-    parameters: {
-      path: {
-        id: string;
-      };
+    "/songs/arrangements/{arrangementId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                arrangementId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["updateArrangement"];
+        post?: never;
+        delete: operations["deleteArrangement"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
+    "/song-sets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listSongSets"];
+        put?: never;
+        post: operations["createSongSet"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/song-sets/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get: operations["getSongSet"];
+        put: operations["updateSongSet"];
+        post?: never;
+        delete: operations["deleteSongSet"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/song-sets/{id}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get: operations["listSongSetItems"];
+        put?: never;
+        post: operations["addSongSetItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/song-sets/{id}/items/{itemId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                itemId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["removeSongSetItem"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/song-sets/{id}/items/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["reorderSongSetItems"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/song-set-items/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["updateSongSetItem"];
+        post?: never;
+        delete: operations["deleteSongSetItem"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
 export type webhooks = Record<string, never>;
-
 export interface components {
-  schemas: {
-    Health: {
-      status?: string;
+    schemas: {
+        Health: {
+            status?: string;
+        };
+        GroupRequest: {
+            name: string;
+        };
+        GroupResponse: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            memberIds?: string[];
+        };
+        PageGroupResponse: {
+            content?: components["schemas"]["GroupResponse"][];
+            totalElements?: number;
+            totalPages?: number;
+            number?: number;
+            size?: number;
+        };
+        MemberRequest: {
+            displayName: string;
+            instruments?: string[];
+        };
+        MemberResponse: {
+            /** Format: uuid */
+            id?: string;
+            displayName?: string;
+            instruments?: string[];
+        };
+        PageMemberResponse: {
+            content?: components["schemas"]["MemberResponse"][];
+            totalElements?: number;
+            totalPages?: number;
+            number?: number;
+            size?: number;
+        };
+        ServiceRequest: {
+            /** Format: date-time */
+            startsAt: string;
+            location?: string;
+        };
+        ServiceResponse: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            startsAt?: string;
+            location?: string;
+        };
+        PageServiceResponse: {
+            content?: components["schemas"]["ServiceResponse"][];
+            totalElements?: number;
+            totalPages?: number;
+            number?: number;
+            size?: number;
+        };
+        ServicePlanItemRequest: {
+            type?: string;
+            /** Format: uuid */
+            refId?: string;
+            sortOrder?: number;
+            notes?: string;
+        };
+        ServicePlanItemResponse: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            serviceId?: string;
+            type?: string;
+            /** Format: uuid */
+            refId?: string;
+            sortOrder?: number;
+            notes?: string;
+        };
+        SongRequest: {
+            title: string;
+            ccli?: string;
+            author?: string;
+            defaultKey?: string;
+            tags?: string[];
+        };
+        SongResponse: {
+            /** Format: uuid */
+            id?: string;
+            title?: string;
+            ccli?: string;
+            author?: string;
+            defaultKey?: string;
+            tags?: string[];
+        };
+        PageSongResponse: {
+            content?: components["schemas"]["SongResponse"][];
+            totalElements?: number;
+            totalPages?: number;
+            number?: number;
+            size?: number;
+        };
+        ArrangementRequest: {
+            key?: string;
+            bpm?: number;
+            meter?: string;
+            lyricsChordpro?: string;
+        };
+        ArrangementResponse: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            songId?: string;
+            key?: string;
+            bpm?: number;
+            meter?: string;
+            lyricsChordpro?: string;
+        };
+        SongSetRequest: {
+            name: string;
+        };
+        SongSetResponse: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+        };
+        PageSongSetResponse: {
+            content?: components["schemas"]["SongSetResponse"][];
+            totalElements?: number;
+            totalPages?: number;
+            number?: number;
+            size?: number;
+        };
+        SongSetItemRequest: {
+            /** Format: uuid */
+            arrangementId?: string;
+            sortOrder?: number;
+            transpose?: number;
+            capo?: number;
+        };
+        SongSetItemResponse: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            songSetId?: string;
+            /** Format: uuid */
+            arrangementId?: string;
+            sortOrder?: number;
+            transpose?: number;
+            capo?: number;
+        };
     };
-    GroupRequest: {
-      name: string;
-    };
-    GroupResponse: {
-      /** Format: uuid */
-      id?: string;
-      name?: string;
-      memberIds?: string[];
-    };
-    PageGroupResponse: {
-      content?: components["schemas"]["GroupResponse"][];
-      totalElements?: number;
-      totalPages?: number;
-      number?: number;
-      size?: number;
-    };
-    MemberRequest: {
-      displayName: string;
-      instruments?: string[];
-    };
-    MemberResponse: {
-      /** Format: uuid */
-      id?: string;
-      displayName?: string;
-      instruments?: string[];
-    };
-    PageMemberResponse: {
-      content?: components["schemas"]["MemberResponse"][];
-      totalElements?: number;
-      totalPages?: number;
-      number?: number;
-      size?: number;
-    };
-    ServiceRequest: {
-      /** Format: date-time */
-      startsAt: string;
-      location?: string;
-    };
-    ServiceResponse: {
-      /** Format: uuid */
-      id?: string;
-      /** Format: date-time */
-      startsAt?: string;
-      location?: string;
-    };
-    PageServiceResponse: {
-      content?: components["schemas"]["ServiceResponse"][];
-      totalElements?: number;
-      totalPages?: number;
-      number?: number;
-      size?: number;
-    };
-    ServicePlanItemRequest: {
-      type?: string;
-      /** Format: uuid */
-      refId?: string;
-      sortOrder?: number;
-      notes?: string;
-    };
-    ServicePlanItemResponse: {
-      /** Format: uuid */
-      id?: string;
-      /** Format: uuid */
-      serviceId?: string;
-      type?: string;
-      /** Format: uuid */
-      refId?: string;
-      sortOrder?: number;
-      notes?: string;
-    };
-    SongRequest: {
-      title: string;
-      ccli?: string;
-      author?: string;
-      defaultKey?: string;
-      tags?: string[];
-    };
-    SongResponse: {
-      /** Format: uuid */
-      id?: string;
-      title?: string;
-      ccli?: string;
-      author?: string;
-      defaultKey?: string;
-      tags?: string[];
-    };
-    PageSongResponse: {
-      content?: components["schemas"]["SongResponse"][];
-      totalElements?: number;
-      totalPages?: number;
-      number?: number;
-      size?: number;
-    };
-    ArrangementRequest: {
-      key?: string;
-      bpm?: number;
-      meter?: string;
-      lyricsChordpro?: string;
-    };
-    ArrangementResponse: {
-      /** Format: uuid */
-      id?: string;
-      /** Format: uuid */
-      songId?: string;
-      key?: string;
-      bpm?: number;
-      meter?: string;
-      lyricsChordpro?: string;
-    };
-    SongSetRequest: {
-      name: string;
-    };
-    SongSetResponse: {
-      /** Format: uuid */
-      id?: string;
-      name?: string;
-    };
-    PageSongSetResponse: {
-      content?: components["schemas"]["SongSetResponse"][];
-      totalElements?: number;
-      totalPages?: number;
-      number?: number;
-      size?: number;
-    };
-    SongSetItemRequest: {
-      /** Format: uuid */
-      arrangementId?: string;
-      sortOrder?: number;
-      transpose?: number;
-      capo?: number;
-    };
-    SongSetItemResponse: {
-      /** Format: uuid */
-      id?: string;
-      /** Format: uuid */
-      songSetId?: string;
-      /** Format: uuid */
-      arrangementId?: string;
-      sortOrder?: number;
-      transpose?: number;
-      capo?: number;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
 export type $defs = Record<string, never>;
-
-export type external = Record<string, never>;
-
 export interface operations {
-
-  health: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Health"];
+    health: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  listGroups: {
-    parameters: {
-      query?: {
-        page?: number;
-        size?: number;
-      };
-    };
-    responses: {
-      /** @description Groups page */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PageGroupResponse"];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Health"];
+                };
+            };
         };
-      };
     };
-  };
-  createGroup: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["GroupRequest"];
-      };
-    };
-    responses: {
-      /** @description Created */
-      201: {
-        content: {
-          "application/json": components["schemas"]["GroupResponse"];
+    listGroups: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  getGroup: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GroupResponse"];
+        requestBody?: never;
+        responses: {
+            /** @description Groups page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageGroupResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  updateGroup: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["GroupRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GroupResponse"];
+    createGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  deleteGroup: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
-    };
-  };
-  addGroupMember: {
-    parameters: {
-      path: {
-        id: string;
-        memberId: string;
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
-    };
-  };
-  removeGroupMember: {
-    parameters: {
-      path: {
-        id: string;
-        memberId: string;
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
-    };
-  };
-  listMembers: {
-    parameters: {
-      query?: {
-        q?: string;
-        page?: number;
-        size?: number;
-      };
-    };
-    responses: {
-      /** @description Members page */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PageMemberResponse"];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupRequest"];
+            };
         };
-      };
-    };
-  };
-  createMember: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["MemberRequest"];
-      };
-    };
-    responses: {
-      /** @description Created */
-      201: {
-        content: {
-          "application/json": components["schemas"]["MemberResponse"];
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  getMember: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["MemberResponse"];
+    getGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  updateMember: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["MemberRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["MemberResponse"];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  deleteMember: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
-    };
-  };
-  listServices: {
-    parameters: {
-      query?: {
-        page?: number;
-        size?: number;
-      };
-    };
-    responses: {
-      /** @description Services page */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PageServiceResponse"];
+    updateGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  createService: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ServiceRequest"];
-      };
-    };
-    responses: {
-      /** @description Created */
-      201: {
-        content: {
-          "application/json": components["schemas"]["ServiceResponse"];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupRequest"];
+            };
         };
-      };
-    };
-  };
-  getService: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ServiceResponse"];
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  updateService: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ServiceRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ServiceResponse"];
+    deleteGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  deleteService: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
-    };
-  };
-  listServicePlanItems: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ServicePlanItemResponse"][];
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-      };
     };
-  };
-  addServicePlanItem: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ServicePlanItemRequest"];
-      };
-    };
-    responses: {
-      /** @description Created */
-      201: {
-        content: {
-          "application/json": components["schemas"]["ServicePlanItemResponse"];
+    addGroupMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                memberId: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  updateServicePlanItem: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ServicePlanItemRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ServicePlanItemResponse"];
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-      };
     };
-  };
-  deleteServicePlanItem: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
-    };
-  };
-  listSongs: {
-    parameters: {
-      query?: {
-        title?: string;
-        tag?: string;
-        page?: number;
-        size?: number;
-      };
-    };
-    responses: {
-      /** @description Songs page */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PageSongResponse"];
+    removeGroupMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                memberId: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  createSong: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SongRequest"];
-      };
-    };
-    responses: {
-      /** @description Created */
-      201: {
-        content: {
-          "application/json": components["schemas"]["SongResponse"];
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-      };
     };
-  };
-  getSong: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SongResponse"];
+    listMembers: {
+        parameters: {
+            query?: {
+                q?: string;
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  updateSong: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SongRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SongResponse"];
+        requestBody?: never;
+        responses: {
+            /** @description Members page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageMemberResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  deleteSong: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
-    };
-  };
-  listArrangements: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ArrangementResponse"][];
+    createMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  addArrangement: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ArrangementRequest"];
-      };
-    };
-    responses: {
-      /** @description Created */
-      201: {
-        content: {
-          "application/json": components["schemas"]["ArrangementResponse"];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MemberRequest"];
+            };
         };
-      };
-    };
-  };
-  updateArrangement: {
-    parameters: {
-      path: {
-        arrangementId: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ArrangementRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ArrangementResponse"];
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  deleteArrangement: {
-    parameters: {
-      path: {
-        arrangementId: string;
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
-    };
-  };
-  listSongSets: {
-    parameters: {
-      query?: {
-        page?: number;
-        size?: number;
-      };
-    };
-    responses: {
-      /** @description Song sets page */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PageSongSetResponse"];
+    getMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  createSongSet: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SongSetRequest"];
-      };
-    };
-    responses: {
-      /** @description Created */
-      201: {
-        content: {
-          "application/json": components["schemas"]["SongSetResponse"];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  getSongSet: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SongSetResponse"];
+    updateMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  updateSongSet: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SongSetRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SongSetResponse"];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MemberRequest"];
+            };
         };
-      };
-    };
-  };
-  deleteSongSet: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
-    };
-  };
-  listSongSetItems: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SongSetItemResponse"][];
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberResponse"];
+                };
+            };
         };
-      };
     };
-  };
-  addSongSetItem: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SongSetItemRequest"];
-      };
-    };
-    responses: {
-      /** @description Created */
-      201: {
-        content: {
-          "application/json": components["schemas"]["SongSetItemResponse"];
+    deleteMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
         };
-      };
-    };
-  };
-  removeSongSetItem: {
-    parameters: {
-      path: {
-        id: string;
-        itemId: string;
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
-    };
-  };
-  reorderSongSetItems: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": string[];
-      };
-    };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
-    };
-  };
-  updateSongSetItem: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SongSetItemRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["SongSetItemResponse"];
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-      };
     };
-  };
-  deleteSongSetItem: {
-    parameters: {
-      path: {
-        id: string;
-      };
+    listServices: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Services page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageServiceResponse"];
+                };
+            };
+        };
     };
-    responses: {
-      /** @description No Content */
-      204: {
-        content: never;
-      };
+    createService: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceResponse"];
+                };
+            };
+        };
     };
-  };
+    getService: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceResponse"];
+                };
+            };
+        };
+    };
+    updateService: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceResponse"];
+                };
+            };
+        };
+    };
+    deleteService: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listServicePlanItems: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServicePlanItemResponse"][];
+                };
+            };
+        };
+    };
+    addServicePlanItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServicePlanItemRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServicePlanItemResponse"];
+                };
+            };
+        };
+    };
+    updateServicePlanItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServicePlanItemRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServicePlanItemResponse"];
+                };
+            };
+        };
+    };
+    deleteServicePlanItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listSongs: {
+        parameters: {
+            query?: {
+                title?: string;
+                tag?: string;
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Songs page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageSongResponse"];
+                };
+            };
+        };
+    };
+    createSong: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SongRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongResponse"];
+                };
+            };
+        };
+    };
+    getSong: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongResponse"];
+                };
+            };
+        };
+    };
+    updateSong: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SongRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongResponse"];
+                };
+            };
+        };
+    };
+    deleteSong: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listArrangements: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArrangementResponse"][];
+                };
+            };
+        };
+    };
+    addArrangement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ArrangementRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArrangementResponse"];
+                };
+            };
+        };
+    };
+    updateArrangement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                arrangementId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ArrangementRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArrangementResponse"];
+                };
+            };
+        };
+    };
+    deleteArrangement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                arrangementId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listSongSets: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Song sets page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageSongSetResponse"];
+                };
+            };
+        };
+    };
+    createSongSet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SongSetRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongSetResponse"];
+                };
+            };
+        };
+    };
+    getSongSet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongSetResponse"];
+                };
+            };
+        };
+    };
+    updateSongSet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SongSetRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongSetResponse"];
+                };
+            };
+        };
+    };
+    deleteSongSet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listSongSetItems: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongSetItemResponse"][];
+                };
+            };
+        };
+    };
+    addSongSetItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SongSetItemRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongSetItemResponse"];
+                };
+            };
+        };
+    };
+    removeSongSetItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                itemId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    reorderSongSetItems: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": string[];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateSongSetItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SongSetItemRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongSetItemResponse"];
+                };
+            };
+        };
+    };
+    deleteSongSetItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
 }

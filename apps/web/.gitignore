@@ -1,0 +1,7 @@
+# build
+dist
+# deps
+node_modules
+# generated
+src/api/types.d.ts
+!src/api/types.d.ts
