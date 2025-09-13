@@ -4,6 +4,7 @@ dist/
 build/
 yarn-error.log
 npm-debug.log*
+package-lock.json
 
 # Java
 target/
