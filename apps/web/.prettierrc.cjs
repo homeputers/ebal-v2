@@ -1,1 +1,1 @@
-module.exports = require('@ebal/config/prettier.cjs');
+module.exports = require('@ebal/config/prettier');
