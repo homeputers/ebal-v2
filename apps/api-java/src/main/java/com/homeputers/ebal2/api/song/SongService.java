@@ -48,7 +48,8 @@ public class SongService {
                 request.getCcli(),
                 request.getAuthor(),
                 request.getDefaultKey(),
-                request.getTags()
+                request.getTags(),
+                existing.persisted()
         );
         return songRepository.save(updated);
     }

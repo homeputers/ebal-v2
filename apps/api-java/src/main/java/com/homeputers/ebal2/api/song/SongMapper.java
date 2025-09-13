@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 
 public class SongMapper {
     public static Song toEntity(SongRequest request) {
-        return new Song(null, request.getTitle(), request.getCcli(), request.getAuthor(), request.getDefaultKey(), request.getTags());
+        return new Song(null, request.getTitle(), request.getCcli(), request.getAuthor(), request.getDefaultKey(), request.getTags(), null);
     }
 
     public static SongResponse toResponse(Song song) {
