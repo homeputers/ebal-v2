@@ -2,13 +2,22 @@ package com.homeputers.ebal2.api.serviceplanitem;
 
 import com.homeputers.ebal2.api.domain.service.Service;
 import com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItem;
+import com.homeputers.ebal2.api.generated.model.ServicePlanItemRequest;
+import com.homeputers.ebal2.api.generated.model.ServicePlanItemResponse;
 
 public class ServicePlanItemMapper {
     public static ServicePlanItem toEntity(Service service, ServicePlanItemRequest request) {
-        return new ServicePlanItem(null, service, request.type(), request.refId(), request.sortOrder(), request.notes());
+        return new ServicePlanItem(null, service, request.getType(), request.getRefId(), request.getSortOrder(), request.getNotes());
     }
 
     public static ServicePlanItemResponse toResponse(ServicePlanItem item) {
-        return new ServicePlanItemResponse(item.id(), item.service().id(), item.type(), item.refId(), item.sortOrder(), item.notes());
+        ServicePlanItemResponse response = new ServicePlanItemResponse();
+        response.setId(item.id());
+        response.setServiceId(item.service().id());
+        response.setType(item.type());
+        response.setRefId(item.refId());
+        response.setSortOrder(item.sortOrder());
+        response.setNotes(item.notes());
+        return response;
     }
 }

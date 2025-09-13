@@ -3,8 +3,8 @@ package com.homeputers.ebal2.api.service;
 import com.homeputers.ebal2.api.domain.service.ServiceRepository;
 import com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItem;
 import com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItemRepository;
-import com.homeputers.ebal2.api.serviceplanitem.ServicePlanItemMapper;
-import com.homeputers.ebal2.api.serviceplanitem.ServicePlanItemRequest;
+import com.homeputers.ebal2.api.generated.model.ServicePlanItemRequest;
+import com.homeputers.ebal2.api.generated.model.ServiceRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +39,11 @@ public class ServiceService {
     @Transactional
     public com.homeputers.ebal2.api.domain.service.Service update(UUID id, ServiceRequest request) {
         com.homeputers.ebal2.api.domain.service.Service existing = get(id);
-        com.homeputers.ebal2.api.domain.service.Service updated = new com.homeputers.ebal2.api.domain.service.Service(existing.id(), request.startsAt(), request.location());
+        com.homeputers.ebal2.api.domain.service.Service updated = new com.homeputers.ebal2.api.domain.service.Service(
+                existing.id(),
+                request.getStartsAt(),
+                request.getLocation()
+        );
         return repository.save(updated);
     }
 
@@ -55,7 +59,7 @@ public class ServiceService {
     @Transactional
     public ServicePlanItem addPlanItem(UUID serviceId, ServicePlanItemRequest request) {
         com.homeputers.ebal2.api.domain.service.Service service = get(serviceId);
-        ServicePlanItem item = ServicePlanItemMapper.toEntity(service, request);
+        ServicePlanItem item = com.homeputers.ebal2.api.serviceplanitem.ServicePlanItemMapper.toEntity(service, request);
         return planItemRepository.save(item);
     }
 }

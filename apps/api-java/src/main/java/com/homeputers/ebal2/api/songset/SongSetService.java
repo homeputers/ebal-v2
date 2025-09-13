@@ -6,8 +6,8 @@ import com.homeputers.ebal2.api.domain.songset.SongSet;
 import com.homeputers.ebal2.api.domain.songset.SongSetRepository;
 import com.homeputers.ebal2.api.domain.songsetitem.SongSetItem;
 import com.homeputers.ebal2.api.domain.songsetitem.SongSetItemRepository;
-import com.homeputers.ebal2.api.songsetitem.SongSetItemMapper;
-import com.homeputers.ebal2.api.songsetitem.SongSetItemRequest;
+import com.homeputers.ebal2.api.generated.model.SongSetItemRequest;
+import com.homeputers.ebal2.api.generated.model.SongSetRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,7 +45,7 @@ public class SongSetService {
     @Transactional
     public SongSet update(UUID id, SongSetRequest request) {
         SongSet existing = get(id);
-        SongSet updated = new SongSet(existing.id(), request.name());
+        SongSet updated = new SongSet(existing.id(), request.getName());
         return repository.save(updated);
     }
 
@@ -61,8 +61,8 @@ public class SongSetService {
     @Transactional
     public SongSetItem addItem(UUID songSetId, SongSetItemRequest request) {
         SongSet songSet = get(songSetId);
-        Arrangement arrangement = arrangementRepository.findById(request.arrangementId()).orElseThrow(() -> new NoSuchElementException("Arrangement not found"));
-        SongSetItem item = SongSetItemMapper.toEntity(songSet, arrangement, request);
+        Arrangement arrangement = arrangementRepository.findById(request.getArrangementId()).orElseThrow(() -> new NoSuchElementException("Arrangement not found"));
+        SongSetItem item = com.homeputers.ebal2.api.songsetitem.SongSetItemMapper.toEntity(songSet, arrangement, request);
         return itemRepository.save(item);
     }
 

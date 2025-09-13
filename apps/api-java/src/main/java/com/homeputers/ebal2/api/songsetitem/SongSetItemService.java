@@ -2,6 +2,7 @@ package com.homeputers.ebal2.api.songsetitem;
 
 import com.homeputers.ebal2.api.domain.songsetitem.SongSetItem;
 import com.homeputers.ebal2.api.domain.songsetitem.SongSetItemRepository;
+import com.homeputers.ebal2.api.generated.model.SongSetItemRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,14 @@ public class SongSetItemService {
     @Transactional
     public SongSetItem update(UUID id, SongSetItemRequest request) {
         SongSetItem existing = get(id);
-        SongSetItem updated = new SongSetItem(existing.id(), existing.songSet(), existing.arrangement(), request.sortOrder(), request.transpose(), request.capo());
+        SongSetItem updated = new SongSetItem(
+                existing.id(),
+                existing.songSet(),
+                existing.arrangement(),
+                request.getSortOrder(),
+                request.getTranspose(),
+                request.getCapo()
+        );
         return repository.save(updated);
     }
 

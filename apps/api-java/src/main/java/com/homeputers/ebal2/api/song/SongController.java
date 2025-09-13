@@ -1,77 +1,81 @@
 package com.homeputers.ebal2.api.song;
 
 import com.homeputers.ebal2.api.arrangement.ArrangementMapper;
-import com.homeputers.ebal2.api.arrangement.ArrangementRequest;
-import com.homeputers.ebal2.api.arrangement.ArrangementResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.homeputers.ebal2.api.domain.arrangement.Arrangement;
+import com.homeputers.ebal2.api.domain.song.Song;
+import com.homeputers.ebal2.api.generated.SongsApi;
+import com.homeputers.ebal2.api.generated.model.ArrangementRequest;
+import com.homeputers.ebal2.api.generated.model.ArrangementResponse;
+import com.homeputers.ebal2.api.generated.model.PageSongResponse;
+import com.homeputers.ebal2.api.generated.model.SongRequest;
+import com.homeputers.ebal2.api.generated.model.SongResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/songs")
-@Tag(name = "Songs")
-public class SongController {
+public class SongController implements SongsApi {
     private final SongService service;
 
     public SongController(SongService service) {
         this.service = service;
     }
 
-    @GetMapping
-    public Page<SongResponse> list(@RequestParam(name = "title", required = false) String title,
-                                   @RequestParam(name = "tag", required = false) String tag,
-                                   @RequestParam(defaultValue = "0") int page,
-                                   @RequestParam(defaultValue = "20") int size) {
-        return service.search(title, tag, PageRequest.of(page, size)).map(SongMapper::toResponse);
+    @Override
+    public ResponseEntity<PageSongResponse> listSongs(String title, String tag, Integer page, Integer size) {
+        Page<Song> songs = service.search(title, tag, PageRequest.of(page, size));
+        return ResponseEntity.ok(SongMapper.toPageResponse(songs));
     }
 
-    @GetMapping("/{id}")
-    public SongResponse get(@PathVariable UUID id) {
-        return SongMapper.toResponse(service.get(id));
+    @Override
+    public ResponseEntity<SongResponse> getSong(UUID id) {
+        return ResponseEntity.ok(SongMapper.toResponse(service.get(id)));
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public SongResponse create(@Valid @RequestBody SongRequest request) {
-        return SongMapper.toResponse(service.create(request));
+    @Override
+    public ResponseEntity<SongResponse> createSong(SongRequest songRequest) {
+        Song created = service.create(songRequest);
+        return new ResponseEntity<>(SongMapper.toResponse(created), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public SongResponse update(@PathVariable UUID id, @Valid @RequestBody SongRequest request) {
-        return SongMapper.toResponse(service.update(id, request));
+    @Override
+    public ResponseEntity<SongResponse> updateSong(UUID id, SongRequest songRequest) {
+        Song updated = service.update(id, songRequest);
+        return ResponseEntity.ok(SongMapper.toResponse(updated));
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
+    @Override
+    public ResponseEntity<Void> deleteSong(UUID id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}/arrangements")
-    public List<ArrangementResponse> listArrangements(@PathVariable UUID id) {
-        return service.listArrangements(id).stream().map(ArrangementMapper::toResponse).toList();
+    @Override
+    public ResponseEntity<List<ArrangementResponse>> listArrangements(UUID id) {
+        List<Arrangement> arrangements = service.listArrangements(id);
+        return ResponseEntity.ok(arrangements.stream().map(ArrangementMapper::toResponse).toList());
     }
 
-    @PostMapping("/{id}/arrangements")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ArrangementResponse addArrangement(@PathVariable UUID id, @RequestBody ArrangementRequest request) {
-        return ArrangementMapper.toResponse(service.addArrangement(id, request));
+    @Override
+    public ResponseEntity<ArrangementResponse> addArrangement(UUID id, ArrangementRequest arrangementRequest) {
+        Arrangement created = service.addArrangement(id, arrangementRequest);
+        return new ResponseEntity<>(ArrangementMapper.toResponse(created), HttpStatus.CREATED);
     }
 
-    @PutMapping("/arrangements/{arrangementId}")
-    public ArrangementResponse updateArrangement(@PathVariable UUID arrangementId, @RequestBody ArrangementRequest request) {
-        return ArrangementMapper.toResponse(service.updateArrangement(arrangementId, request));
+    @Override
+    public ResponseEntity<ArrangementResponse> updateArrangement(UUID arrangementId, ArrangementRequest arrangementRequest) {
+        Arrangement updated = service.updateArrangement(arrangementId, arrangementRequest);
+        return ResponseEntity.ok(ArrangementMapper.toResponse(updated));
     }
 
-    @DeleteMapping("/arrangements/{arrangementId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteArrangement(@PathVariable UUID arrangementId) {
+    @Override
+    public ResponseEntity<Void> deleteArrangement(UUID arrangementId) {
         service.deleteArrangement(arrangementId);
+        return ResponseEntity.noContent().build();
     }
 }

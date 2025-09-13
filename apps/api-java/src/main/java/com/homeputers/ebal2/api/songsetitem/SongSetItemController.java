@@ -1,30 +1,30 @@
 package com.homeputers.ebal2.api.songsetitem;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.homeputers.ebal2.api.generated.SongSetItemsApi;
+import com.homeputers.ebal2.api.generated.model.SongSetItemRequest;
+import com.homeputers.ebal2.api.generated.model.SongSetItemResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/song-set-items")
-@Tag(name = "Song Set Items")
-public class SongSetItemController {
+public class SongSetItemController implements SongSetItemsApi {
     private final SongSetItemService service;
 
     public SongSetItemController(SongSetItemService service) {
         this.service = service;
     }
 
-    @PutMapping("/{id}")
-    public SongSetItemResponse update(@PathVariable UUID id, @Valid @RequestBody SongSetItemRequest request) {
-        return SongSetItemMapper.toResponse(service.update(id, request));
+    @Override
+    public ResponseEntity<SongSetItemResponse> updateSongSetItem(UUID id, SongSetItemRequest songSetItemRequest) {
+        return ResponseEntity.ok(SongSetItemMapper.toResponse(service.update(id, songSetItemRequest)));
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
+    @Override
+    public ResponseEntity<Void> deleteSongSetItem(UUID id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
