@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit",
     "generate:api": "openapi-typescript ../../spec/openapi.yaml -o src/api/types.d.ts",
+    "typecheck": "tsc -p .",
+    "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write ."
   },
   "dependencies": {
@@ -28,7 +28,7 @@
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.17",
     "eslint": "^8.57.0",
-    "openapi-typescript": "^6.7.0",
+    "openapi-typescript": "^7.4.2",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.0.0",
