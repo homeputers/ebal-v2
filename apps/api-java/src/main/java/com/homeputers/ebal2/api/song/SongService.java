@@ -59,8 +59,7 @@ public class SongService {
                 request.getCcli(),
                 request.getAuthor(),
                 request.getDefaultKey(),
-                request.getTags(),
-                existing.persisted()
+                request.getTags()
         );
         songMapper.update(updated);
         return updated;
