@@ -17,16 +17,28 @@
 
     <select id="search" resultMap="songResult">
         select id, title, ccli, author, default_key, tags from songs
-        where (#{title} is null or lower(title) like lower(concat('%', #{title}, '%')))
-          and (#{tag} is null or tags &amp;&amp; array[#{tag}]::text[])
+        <where>
+            <if test="title != null and title != ''">
+                lower(title) like lower(concat('%', #{title}, '%'))
+            </if>
+            <if test="tag != null and tag != ''">
+                and tags &amp;&amp; array[#{tag,jdbcType=VARCHAR}::text]
+            </if>
+        </where>
         order by title
         limit #{limit} offset #{offset}
     </select>
 
     <select id="countSearch" resultType="int">
         select count(*) from songs
-        where (#{title} is null or lower(title) like lower(concat('%', #{title}, '%')))
-          and (#{tag} is null or tags &amp;&amp; array[#{tag}]::text[])
+        <where>
+            <if test="title != null and title != ''">
+                lower(title) like lower(concat('%', #{title}, '%'))
+            </if>
+            <if test="tag != null and tag != ''">
+                and tags &amp;&amp; array[#{tag,jdbcType=VARCHAR}::text]
+            </if>
+        </where>
     </select>
 
     <insert id="insert">
