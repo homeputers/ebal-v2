@@ -3,7 +3,7 @@ package com.homeputers.ebal2.api.serviceplanitem;
 import com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItem;
 import com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItemMapper;
 import com.homeputers.ebal2.api.generated.model.ServicePlanItemRequest;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;

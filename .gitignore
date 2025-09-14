@@ -5,6 +5,10 @@ build/
 yarn-error.log
 npm-debug.log*
 package-lock.json
+.pnp.cjs
+.pnp.loader.mjs
+.yarn/
+*.tsbuildinfo
 
 # Java
 target/

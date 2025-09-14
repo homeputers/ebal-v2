@@ -3,7 +3,7 @@ package com.homeputers.ebal2.api.songsetitem;
 import com.homeputers.ebal2.api.domain.songsetitem.SongSetItem;
 import com.homeputers.ebal2.api.domain.songsetitem.SongSetItemMapper;
 import com.homeputers.ebal2.api.generated.model.SongSetItemRequest;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;

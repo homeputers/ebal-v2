@@ -5,7 +5,7 @@ import com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItem;
 import com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItemMapper;
 import com.homeputers.ebal2.api.generated.model.ServicePlanItemRequest;
 import com.homeputers.ebal2.api.generated.model.ServiceRequest;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

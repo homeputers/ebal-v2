@@ -7,7 +7,7 @@ import com.homeputers.ebal2.api.domain.groupmember.GroupMemberMapper;
 import com.homeputers.ebal2.api.domain.member.Member;
 import com.homeputers.ebal2.api.domain.member.MemberMapper;
 import com.homeputers.ebal2.api.generated.model.GroupRequest;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

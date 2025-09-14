@@ -7,7 +7,7 @@ import com.homeputers.ebal2.api.domain.song.Song;
 import com.homeputers.ebal2.api.domain.song.SongMapper;
 import com.homeputers.ebal2.api.generated.model.ArrangementRequest;
 import com.homeputers.ebal2.api.generated.model.SongRequest;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
