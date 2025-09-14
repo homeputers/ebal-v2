@@ -1,7 +1,7 @@
 package com.homeputers.ebal2.api.member;
 
 import com.homeputers.ebal2.api.domain.member.Member;
-import com.homeputers.ebal2.api.domain.member.MemberRepository;
+import org.springframework.data.domain.PageImpl;
 import com.homeputers.ebal2.api.generated.model.MemberRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -13,37 +13,45 @@ import java.util.UUID;
 
 @Service
 public class MemberService {
-    private final MemberRepository repository;
+    private final com.homeputers.ebal2.api.domain.member.MemberMapper mapper;
 
-    public MemberService(MemberRepository repository) {
-        this.repository = repository;
+    public MemberService(com.homeputers.ebal2.api.domain.member.MemberMapper mapper) {
+        this.mapper = mapper;
     }
 
     public Member get(UUID id) {
-        return repository.findById(id).orElseThrow(() -> new NoSuchElementException("Member not found"));
+        Member member = mapper.findById(id);
+        if (member == null) {
+            throw new NoSuchElementException("Member not found");
+        }
+        return member;
     }
 
     public Page<Member> search(String query, Pageable pageable) {
-        if (query != null && !query.isBlank()) {
-            return repository.findByDisplayNameContainingIgnoreCase(query, pageable);
-        }
-        return repository.findAll(pageable);
+        int offset = (int) pageable.getOffset();
+        int limit = pageable.getPageSize();
+        var content = mapper.findPage(query, offset, limit);
+        int total = mapper.count(query);
+        return new PageImpl<>(content, pageable, total);
     }
 
     @Transactional
     public Member create(MemberRequest request) {
-        return repository.save(MemberMapper.toEntity(request));
+        Member member = MemberMapper.toEntity(request);
+        mapper.insert(member);
+        return member;
     }
 
     @Transactional
     public Member update(UUID id, MemberRequest request) {
-        Member existing = get(id);
-        Member updated = new Member(existing.id(), request.getDisplayName(), request.getInstruments());
-        return repository.save(updated);
+        get(id);
+        Member updated = new Member(id, request.getDisplayName(), request.getInstruments());
+        mapper.update(updated);
+        return updated;
     }
 
     @Transactional
     public void delete(UUID id) {
-        repository.deleteById(id);
+        mapper.delete(id);
     }
 }
