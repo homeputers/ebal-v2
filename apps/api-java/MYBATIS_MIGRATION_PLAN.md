@@ -1,4 +1,5 @@
 # MyBatis Migration Plan
+<!-- Option A chosen: map Postgres `uuid` and `text[]` columns via custom MyBatis TypeHandlers living under `com.homeputers.ebal2.api.mybatis.typehandler`; services paginate with `OFFSET`/`LIMIT` and compute `totalElements`/`totalPages` from companion count queries. -->
 
 ## Goal
 Replace Spring Data JPA/Hibernate with MyBatis while preserving the existing REST API contract (OpenAPI), Flyway migrations, and domain models.
@@ -19,7 +20,7 @@ Replace Spring Data JPA/Hibernate with MyBatis while preserving the existing RES
 
 2. **Domain Models**
    - Remove JPA annotations (`@Entity`, `@Table`, `@Id`, relationship annotations, `@JdbcTypeCode`, lifecycle methods) from domain records.
-   - Keep the record structure and constructors; arrays (`List<String>`) will use a custom MyBatis `TypeHandler` for `text[]` columns.
+   - Keep the record structure and constructors; `UUID` and array (`List<String>`) fields use custom MyBatis `TypeHandler`s for `uuid` and `text[]` columns.
 
 3. **MyBatis Mappers**
    - For each former `*Repository`, create a MyBatis mapper interface in `com.homeputers.ebal2.api.domain.<entity>` annotated with `@Mapper`.
@@ -29,7 +30,7 @@ Replace Spring Data JPA/Hibernate with MyBatis while preserving the existing RES
      - `GroupMapper.java` / `GroupMapper.xml`
      - ... (repeat for all repositories)
    - Queries will cover CRUD operations and any custom lookups (e.g., `Member` search uses `ILIKE` on `display_name`).
-   - Pagination: implement methods that accept `limit`/`offset` parameters and companion `count` queries to build `Page` objects in services.
+   - Pagination: methods accept `limit`/`offset` parameters with companion `count` queries so services can compute `totalElements` and `totalPages`.
    - Relationship loading: explicit joins or dedicated queries. For example, `GroupMapper` includes a query to fetch member IDs by group; `SongSetItemMapper` joins `arrangements` and `song_sets` as needed.
 
 4. **Services**
