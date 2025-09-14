@@ -3,7 +3,7 @@ package com.homeputers.ebal2.api.member;
 import com.homeputers.ebal2.api.domain.member.Member;
 import org.springframework.data.domain.PageImpl;
 import com.homeputers.ebal2.api.generated.model.MemberRequest;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

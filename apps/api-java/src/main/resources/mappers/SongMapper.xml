@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homeputers.ebal2.api.domain.song.SongMapper">
+    <resultMap id="songResult" type="com.homeputers.ebal2.api.domain.song.Song">
+        <id property="id" column="id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+        <result property="title" column="title"/>
+        <result property="ccli" column="ccli"/>
+        <result property="author" column="author"/>
+        <result property="defaultKey" column="default_key"/>
+        <result property="tags" column="tags" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.StringArrayTypeHandler"/>
+    </resultMap>
+
+    <select id="findById" resultMap="songResult">
+        select id, title, ccli, author, default_key, tags from songs
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </select>
+
+    <select id="search" resultMap="songResult">
+        select id, title, ccli, author, default_key, tags from songs
+        <where>
+            <if test="title != null and title != ''">
+                lower(title) like lower(concat('%', #{title}, '%'))
+            </if>
+            <if test="tag != null and tag != ''">
+                and tags &amp;&amp; array[#{tag,jdbcType=VARCHAR}::text]
+            </if>
+        </where>
+        order by title
+        limit #{limit} offset #{offset}
+    </select>
+
+    <select id="countSearch" resultType="int">
+        select count(*) from songs
+        <where>
+            <if test="title != null and title != ''">
+                lower(title) like lower(concat('%', #{title}, '%'))
+            </if>
+            <if test="tag != null and tag != ''">
+                and tags &amp;&amp; array[#{tag,jdbcType=VARCHAR}::text]
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert">
+        insert into songs (id, title, ccli, author, default_key, tags)
+        values (
+            #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{title},
+            #{ccli},
+            #{author},
+            #{defaultKey},
+            #{tags, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.StringArrayTypeHandler}
+        )
+    </insert>
+
+    <update id="update">
+        update songs set
+            title = #{title},
+            ccli = #{ccli},
+            author = #{author},
+            default_key = #{defaultKey},
+            tags = #{tags, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.StringArrayTypeHandler}
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
+    <delete id="delete">
+        delete from songs where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </delete>
+</mapper>

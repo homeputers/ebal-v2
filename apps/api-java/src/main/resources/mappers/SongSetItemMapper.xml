@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homeputers.ebal2.api.domain.songsetitem.SongSetItemMapper">
+    <resultMap id="songSetItemResult" type="com.homeputers.ebal2.api.domain.songsetitem.SongSetItem">
+        <id property="id" column="id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+        <result property="sortOrder" column="order"/>
+        <result property="transpose" column="transpose"/>
+        <result property="capo" column="capo"/>
+        <association property="songSet" column="song_set_id" javaType="com.homeputers.ebal2.api.domain.songset.SongSet" select="com.homeputers.ebal2.api.domain.songset.SongSetMapper.findById"/>
+        <association property="arrangement" column="arrangement_id" javaType="com.homeputers.ebal2.api.domain.arrangement.Arrangement" select="com.homeputers.ebal2.api.domain.arrangement.ArrangementMapper.findById"/>
+    </resultMap>
+
+    <select id="findById" resultMap="songSetItemResult">
+        select id, song_set_id, arrangement_id, "order", transpose, capo from song_set_items
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </select>
+
+    <select id="findBySongSetId" resultMap="songSetItemResult">
+        select id, song_set_id, arrangement_id, "order", transpose, capo from song_set_items
+        where song_set_id = #{songSetId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+        order by "order"
+    </select>
+
+    <insert id="insert">
+        insert into song_set_items (id, song_set_id, arrangement_id, "order", transpose, capo)
+        values (
+            #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{songSet.id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{arrangement.id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{sortOrder},
+            #{transpose},
+            #{capo}
+        )
+    </insert>
+
+    <update id="update">
+        update song_set_items set
+            song_set_id = #{songSet.id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            arrangement_id = #{arrangement.id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            "order" = #{sortOrder},
+            transpose = #{transpose},
+            capo = #{capo}
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
+    <update id="updateOrder">
+        update song_set_items set "order" = #{sortOrder}
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
+    <delete id="delete">
+        delete from song_set_items where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </delete>
+</mapper>

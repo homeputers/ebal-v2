@@ -5,7 +5,7 @@ import com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItem;
 import com.homeputers.ebal2.api.generated.model.ServicePlanItemRequest;
 import com.homeputers.ebal2.api.generated.model.ServicePlanItemResponse;
 
-public class ServicePlanItemMapper {
+public class ServicePlanItemDtoMapper {
     public static ServicePlanItem toEntity(Service service, ServicePlanItemRequest request) {
         return new ServicePlanItem(null, service, request.getType(), request.getRefId(), request.getSortOrder(), request.getNotes());
     }

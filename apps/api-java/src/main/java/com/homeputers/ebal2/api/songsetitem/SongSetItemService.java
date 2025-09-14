@@ -1,9 +1,9 @@
 package com.homeputers.ebal2.api.songsetitem;
 
 import com.homeputers.ebal2.api.domain.songsetitem.SongSetItem;
-import com.homeputers.ebal2.api.domain.songsetitem.SongSetItemRepository;
+import com.homeputers.ebal2.api.domain.songsetitem.SongSetItemMapper;
 import com.homeputers.ebal2.api.generated.model.SongSetItemRequest;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -11,14 +11,18 @@ import java.util.UUID;
 
 @Service
 public class SongSetItemService {
-    private final SongSetItemRepository repository;
+    private final SongSetItemMapper mapper;
 
-    public SongSetItemService(SongSetItemRepository repository) {
-        this.repository = repository;
+    public SongSetItemService(SongSetItemMapper mapper) {
+        this.mapper = mapper;
     }
 
     public SongSetItem get(UUID id) {
-        return repository.findById(id).orElseThrow(() -> new NoSuchElementException("Item not found"));
+        SongSetItem item = mapper.findById(id);
+        if (item == null) {
+            throw new NoSuchElementException("Item not found");
+        }
+        return item;
     }
 
     @Transactional
@@ -32,11 +36,12 @@ public class SongSetItemService {
                 request.getTranspose(),
                 request.getCapo()
         );
-        return repository.save(updated);
+        mapper.update(updated);
+        return updated;
     }
 
     @Transactional
     public void delete(UUID id) {
-        repository.deleteById(id);
+        mapper.delete(id);
     }
 }

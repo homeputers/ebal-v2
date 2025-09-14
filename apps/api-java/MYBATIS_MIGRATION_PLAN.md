@@ -6,8 +6,8 @@ Replace Spring Data JPA/Hibernate with MyBatis while preserving the existing RES
 
 ## Current JPA Usage
 - **Dependencies**: `spring-boot-starter-data-jpa` brings in Hibernate and Spring Data JPA. `application.yaml` sets `spring.jpa.hibernate.ddl-auto` and `open-in-view`.
-- **Entities (@Entity)**: `Arrangement`, `Group`, `GroupMember`, `Member`, `Service`, `ServicePlanItem`, `Song`, `SongSet`, `SongSetItem`, `User`.
-- **Repositories (JpaRepository)**: `ArrangementRepository`, `GroupRepository`, `GroupMemberRepository`, `MemberRepository`, `ServiceRepository`, `ServicePlanItemRepository`, `SongRepository`, `SongSetRepository`, `SongSetItemRepository`, `UserRepository`.
+- **Entities (@Entity)**: None (all domain types are plain records).
+- **Repositories (JpaRepository)**: None (replaced by MyBatis mappers).
 - **Lazy loading risks**: `Group.members`, `GroupMember.group/member`, `SongSetItem.songSet/arrangement`, `Arrangement.song`, `ServicePlanItem.service` rely on JPA-managed relationships and may trigger `LazyInitializationException` when mapped to DTOs.
 - **Hibernate-specific features**: `@JdbcTypeCode(SqlTypes.ARRAY)` for Postgres array columns in `Member` and `Song`; `Song` implements `Persistable` with lifecycle callbacks.
 
