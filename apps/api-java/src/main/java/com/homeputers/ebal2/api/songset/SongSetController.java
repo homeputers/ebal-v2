@@ -30,24 +30,24 @@ public class SongSetController implements SongSetsApi {
     @Override
     public ResponseEntity<PageSongSetResponse> listSongSets(Integer page, Integer size) {
         Page<SongSet> sets = service.list(PageRequest.of(page, size));
-        return ResponseEntity.ok(SongSetMapper.toPageResponse(sets));
+        return ResponseEntity.ok(SongSetDtoMapper.toPageResponse(sets));
     }
 
     @Override
     public ResponseEntity<SongSetResponse> getSongSet(UUID id) {
-        return ResponseEntity.ok(SongSetMapper.toResponse(service.get(id)));
+        return ResponseEntity.ok(SongSetDtoMapper.toResponse(service.get(id)));
     }
 
     @Override
     public ResponseEntity<SongSetResponse> createSongSet(SongSetRequest songSetRequest) {
         SongSet created = service.create(songSetRequest);
-        return new ResponseEntity<>(SongSetMapper.toResponse(created), HttpStatus.CREATED);
+        return new ResponseEntity<>(SongSetDtoMapper.toResponse(created), HttpStatus.CREATED);
     }
 
     @Override
     public ResponseEntity<SongSetResponse> updateSongSet(UUID id, SongSetRequest songSetRequest) {
         SongSet updated = service.update(id, songSetRequest);
-        return ResponseEntity.ok(SongSetMapper.toResponse(updated));
+        return ResponseEntity.ok(SongSetDtoMapper.toResponse(updated));
     }
 
     @Override
@@ -59,13 +59,13 @@ public class SongSetController implements SongSetsApi {
     @Override
     public ResponseEntity<List<SongSetItemResponse>> listSongSetItems(UUID id) {
         List<SongSetItem> items = service.listItems(id);
-        return ResponseEntity.ok(items.stream().map(com.homeputers.ebal2.api.songsetitem.SongSetItemMapper::toResponse).toList());
+        return ResponseEntity.ok(items.stream().map(com.homeputers.ebal2.api.songsetitem.SongSetItemDtoMapper::toResponse).toList());
     }
 
     @Override
     public ResponseEntity<SongSetItemResponse> addSongSetItem(UUID id, SongSetItemRequest songSetItemRequest) {
         SongSetItem created = service.addItem(id, songSetItemRequest);
-        return new ResponseEntity<>(com.homeputers.ebal2.api.songsetitem.SongSetItemMapper.toResponse(created), HttpStatus.CREATED);
+        return new ResponseEntity<>(com.homeputers.ebal2.api.songsetitem.SongSetItemDtoMapper.toResponse(created), HttpStatus.CREATED);
     }
 
     @Override

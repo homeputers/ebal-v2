@@ -21,7 +21,7 @@ public class SongSetItemController implements SongSetItemsApi {
 
     @Override
     public ResponseEntity<SongSetItemResponse> updateSongSetItem(UUID id, SongSetItemRequest songSetItemRequest) {
-        return ResponseEntity.ok(SongSetItemMapper.toResponse(service.update(id, songSetItemRequest)));
+        return ResponseEntity.ok(SongSetItemDtoMapper.toResponse(service.update(id, songSetItemRequest)));
     }
 
     @Override

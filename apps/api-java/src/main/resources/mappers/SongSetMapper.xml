@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homeputers.ebal2.api.domain.songset.SongSetMapper">
+    <resultMap id="songSetResult" type="com.homeputers.ebal2.api.domain.songset.SongSet">
+        <id property="id" column="id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+    <select id="findById" resultMap="songSetResult">
+        select id, name from song_sets
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </select>
+
+    <select id="findPage" resultMap="songSetResult">
+        select id, name from song_sets
+        order by name
+        limit #{limit} offset #{offset}
+    </select>
+
+    <select id="count" resultType="int">
+        select count(*) from song_sets
+    </select>
+
+    <insert id="insert">
+        insert into song_sets (id, name)
+        values (
+            #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{name}
+        )
+    </insert>
+
+    <update id="update">
+        update song_sets set name = #{name}
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
+    <delete id="delete">
+        delete from song_sets where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </delete>
+</mapper>

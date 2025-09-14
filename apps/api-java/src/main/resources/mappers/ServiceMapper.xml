@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homeputers.ebal2.api.domain.service.ServiceMapper">
+    <resultMap id="serviceResult" type="com.homeputers.ebal2.api.domain.service.Service">
+        <id property="id" column="id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+        <result property="startsAt" column="starts_at"/>
+        <result property="location" column="location"/>
+    </resultMap>
+
+    <select id="findById" resultMap="serviceResult">
+        select id, starts_at, location from services
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </select>
+
+    <select id="findPage" resultMap="serviceResult">
+        select id, starts_at, location from services
+        order by starts_at
+        limit #{limit} offset #{offset}
+    </select>
+
+    <select id="count" resultType="int">
+        select count(*) from services
+    </select>
+
+    <insert id="insert">
+        insert into services (id, starts_at, location)
+        values (
+            #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{startsAt},
+            #{location}
+        )
+    </insert>
+
+    <update id="update">
+        update services set
+            starts_at = #{startsAt},
+            location = #{location}
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
+    <delete id="delete">
+        delete from services where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </delete>
+</mapper>

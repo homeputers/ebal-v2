@@ -1,6 +1,6 @@
 package com.homeputers.ebal2.api.song;
 
-import com.homeputers.ebal2.api.arrangement.ArrangementMapper;
+import com.homeputers.ebal2.api.arrangement.ArrangementDtoMapper;
 import com.homeputers.ebal2.api.domain.arrangement.Arrangement;
 import com.homeputers.ebal2.api.domain.song.Song;
 import com.homeputers.ebal2.api.generated.SongsApi;
@@ -33,24 +33,24 @@ public class SongController implements SongsApi {
     @Override
     public ResponseEntity<PageSongResponse> listSongs(String title, String tag, Integer page, Integer size) {
         Page<Song> songs = service.search(title, tag, PageRequest.of(page, size));
-        return ResponseEntity.ok(SongMapper.toPageResponse(songs));
+        return ResponseEntity.ok(SongDtoMapper.toPageResponse(songs));
     }
 
     @Override
     public ResponseEntity<SongResponse> getSong(UUID id) {
-        return ResponseEntity.ok(SongMapper.toResponse(service.get(id)));
+        return ResponseEntity.ok(SongDtoMapper.toResponse(service.get(id)));
     }
 
     @Override
     public ResponseEntity<SongResponse> createSong(@Valid @RequestBody SongRequest songRequest) {
         Song created = service.create(songRequest);
-        return new ResponseEntity<>(SongMapper.toResponse(created), HttpStatus.CREATED);
+        return new ResponseEntity<>(SongDtoMapper.toResponse(created), HttpStatus.CREATED);
     }
 
     @Override
     public ResponseEntity<SongResponse> updateSong(UUID id, @Valid @RequestBody SongRequest songRequest) {
         Song updated = service.update(id, songRequest);
-        return ResponseEntity.ok(SongMapper.toResponse(updated));
+        return ResponseEntity.ok(SongDtoMapper.toResponse(updated));
     }
 
     @Override
@@ -62,19 +62,19 @@ public class SongController implements SongsApi {
     @Override
     public ResponseEntity<List<ArrangementResponse>> listArrangements(UUID id) {
         List<Arrangement> arrangements = service.listArrangements(id);
-        return ResponseEntity.ok(arrangements.stream().map(ArrangementMapper::toResponse).toList());
+        return ResponseEntity.ok(arrangements.stream().map(ArrangementDtoMapper::toResponse).toList());
     }
 
     @Override
     public ResponseEntity<ArrangementResponse> addArrangement(UUID id, ArrangementRequest arrangementRequest) {
         Arrangement created = service.addArrangement(id, arrangementRequest);
-        return new ResponseEntity<>(ArrangementMapper.toResponse(created), HttpStatus.CREATED);
+        return new ResponseEntity<>(ArrangementDtoMapper.toResponse(created), HttpStatus.CREATED);
     }
 
     @Override
     public ResponseEntity<ArrangementResponse> updateArrangement(UUID arrangementId, ArrangementRequest arrangementRequest) {
         Arrangement updated = service.updateArrangement(arrangementId, arrangementRequest);
-        return ResponseEntity.ok(ArrangementMapper.toResponse(updated));
+        return ResponseEntity.ok(ArrangementDtoMapper.toResponse(updated));
     }
 
     @Override

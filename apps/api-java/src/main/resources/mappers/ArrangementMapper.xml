@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homeputers.ebal2.api.domain.arrangement.ArrangementMapper">
+    <resultMap id="arrangementResult" type="com.homeputers.ebal2.api.domain.arrangement.Arrangement">
+        <id property="id" column="id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+        <association property="song" column="song_id" javaType="com.homeputers.ebal2.api.domain.song.Song" select="com.homeputers.ebal2.api.domain.song.SongMapper.findById"/>
+        <result property="key" column="key"/>
+        <result property="bpm" column="bpm"/>
+        <result property="meter" column="meter"/>
+        <result property="lyricsChordpro" column="lyrics_chordpro"/>
+    </resultMap>
+
+    <select id="findById" resultMap="arrangementResult">
+        select id, song_id, key, bpm, meter, lyrics_chordpro from arrangements
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </select>
+
+    <select id="findBySongId" resultMap="arrangementResult">
+        select id, song_id, key, bpm, meter, lyrics_chordpro from arrangements
+        where song_id = #{songId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+        order by key
+    </select>
+
+    <insert id="insert">
+        insert into arrangements (id, song_id, key, bpm, meter, lyrics_chordpro)
+        values (
+            #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{song.id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{key},
+            #{bpm},
+            #{meter},
+            #{lyricsChordpro}
+        )
+    </insert>
+
+    <update id="update">
+        update arrangements set
+            key = #{key},
+            bpm = #{bpm},
+            meter = #{meter},
+            lyrics_chordpro = #{lyricsChordpro}
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
+    <delete id="delete">
+        delete from arrangements where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </delete>
+</mapper>

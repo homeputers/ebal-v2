@@ -5,7 +5,7 @@ import com.homeputers.ebal2.api.domain.song.Song;
 import com.homeputers.ebal2.api.generated.model.ArrangementRequest;
 import com.homeputers.ebal2.api.generated.model.ArrangementResponse;
 
-public class ArrangementMapper {
+public class ArrangementDtoMapper {
     public static Arrangement toEntity(Song song, ArrangementRequest request) {
         return new Arrangement(
                 null,

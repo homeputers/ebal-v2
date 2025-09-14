@@ -6,7 +6,7 @@ import com.homeputers.ebal2.api.generated.model.SongRequest;
 import com.homeputers.ebal2.api.generated.model.SongResponse;
 import org.springframework.data.domain.Page;
 
-public class SongMapper {
+public class SongDtoMapper {
     public static Song toEntity(SongRequest request) {
         return new Song(null, request.getTitle(), request.getCcli(), request.getAuthor(), request.getDefaultKey(), request.getTags(), null);
     }
@@ -24,7 +24,7 @@ public class SongMapper {
 
     public static PageSongResponse toPageResponse(Page<Song> page) {
         PageSongResponse response = new PageSongResponse();
-        response.setContent(page.getContent().stream().map(SongMapper::toResponse).toList());
+        response.setContent(page.getContent().stream().map(SongDtoMapper::toResponse).toList());
         response.setTotalElements((int) page.getTotalElements());
         response.setTotalPages(page.getTotalPages());
         response.setNumber(page.getNumber());

@@ -1,12 +1,13 @@
 package com.homeputers.ebal2.api.service;
 
-import com.homeputers.ebal2.api.domain.service.ServiceRepository;
+import com.homeputers.ebal2.api.domain.service.ServiceMapper;
 import com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItem;
-import com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItemRepository;
+import com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItemMapper;
 import com.homeputers.ebal2.api.generated.model.ServicePlanItemRequest;
 import com.homeputers.ebal2.api.generated.model.ServiceRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -15,25 +16,35 @@ import java.util.UUID;
 
 @org.springframework.stereotype.Service
 public class ServiceService {
-    private final ServiceRepository repository;
-    private final ServicePlanItemRepository planItemRepository;
+    private final ServiceMapper serviceMapper;
+    private final ServicePlanItemMapper planItemMapper;
 
-    public ServiceService(ServiceRepository repository, ServicePlanItemRepository planItemRepository) {
-        this.repository = repository;
-        this.planItemRepository = planItemRepository;
+    public ServiceService(ServiceMapper serviceMapper, ServicePlanItemMapper planItemMapper) {
+        this.serviceMapper = serviceMapper;
+        this.planItemMapper = planItemMapper;
     }
 
     public Page<com.homeputers.ebal2.api.domain.service.Service> list(Pageable pageable) {
-        return repository.findAll(pageable);
+        int offset = (int) pageable.getOffset();
+        int limit = pageable.getPageSize();
+        var results = serviceMapper.findPage(offset, limit);
+        int total = serviceMapper.count();
+        return new PageImpl<>(results, pageable, total);
     }
 
     public com.homeputers.ebal2.api.domain.service.Service get(UUID id) {
-        return repository.findById(id).orElseThrow(() -> new NoSuchElementException("Service not found"));
+        var service = serviceMapper.findById(id);
+        if (service == null) {
+            throw new NoSuchElementException("Service not found");
+        }
+        return service;
     }
 
     @Transactional
     public com.homeputers.ebal2.api.domain.service.Service create(ServiceRequest request) {
-        return repository.save(ServiceMapper.toEntity(request));
+        var service = ServiceDtoMapper.toEntity(request);
+        serviceMapper.insert(service);
+        return service;
     }
 
     @Transactional
@@ -44,22 +55,24 @@ public class ServiceService {
                 request.getStartsAt(),
                 request.getLocation()
         );
-        return repository.save(updated);
+        serviceMapper.update(updated);
+        return updated;
     }
 
     @Transactional
     public void delete(UUID id) {
-        repository.deleteById(id);
+        serviceMapper.delete(id);
     }
 
     public List<ServicePlanItem> listPlanItems(UUID serviceId) {
-        return planItemRepository.findByServiceIdOrderBySortOrder(serviceId);
+        return planItemMapper.findByServiceId(serviceId);
     }
 
     @Transactional
     public ServicePlanItem addPlanItem(UUID serviceId, ServicePlanItemRequest request) {
         com.homeputers.ebal2.api.domain.service.Service service = get(serviceId);
-        ServicePlanItem item = com.homeputers.ebal2.api.serviceplanitem.ServicePlanItemMapper.toEntity(service, request);
-        return planItemRepository.save(item);
+        ServicePlanItem item = com.homeputers.ebal2.api.serviceplanitem.ServicePlanItemDtoMapper.toEntity(service, request);
+        planItemMapper.insert(item);
+        return item;
     }
 }

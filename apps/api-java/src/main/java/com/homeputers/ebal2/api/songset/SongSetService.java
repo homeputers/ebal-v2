@@ -1,15 +1,16 @@
 package com.homeputers.ebal2.api.songset;
 
 import com.homeputers.ebal2.api.domain.arrangement.Arrangement;
-import com.homeputers.ebal2.api.domain.arrangement.ArrangementRepository;
+import com.homeputers.ebal2.api.domain.arrangement.ArrangementMapper;
 import com.homeputers.ebal2.api.domain.songset.SongSet;
-import com.homeputers.ebal2.api.domain.songset.SongSetRepository;
+import com.homeputers.ebal2.api.domain.songset.SongSetMapper;
 import com.homeputers.ebal2.api.domain.songsetitem.SongSetItem;
-import com.homeputers.ebal2.api.domain.songsetitem.SongSetItemRepository;
+import com.homeputers.ebal2.api.domain.songsetitem.SongSetItemMapper;
 import com.homeputers.ebal2.api.generated.model.SongSetItemRequest;
 import com.homeputers.ebal2.api.generated.model.SongSetRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -19,81 +20,84 @@ import java.util.UUID;
 
 @Service
 public class SongSetService {
-    private final SongSetRepository repository;
-    private final SongSetItemRepository itemRepository;
-    private final ArrangementRepository arrangementRepository;
+    private final SongSetMapper songSetMapper;
+    private final SongSetItemMapper itemMapper;
+    private final ArrangementMapper arrangementMapper;
 
-    public SongSetService(SongSetRepository repository, SongSetItemRepository itemRepository, ArrangementRepository arrangementRepository) {
-        this.repository = repository;
-        this.itemRepository = itemRepository;
-        this.arrangementRepository = arrangementRepository;
+    public SongSetService(SongSetMapper songSetMapper, SongSetItemMapper itemMapper, ArrangementMapper arrangementMapper) {
+        this.songSetMapper = songSetMapper;
+        this.itemMapper = itemMapper;
+        this.arrangementMapper = arrangementMapper;
     }
 
     public Page<SongSet> list(Pageable pageable) {
-        return repository.findAll(pageable);
+        int offset = (int) pageable.getOffset();
+        int limit = pageable.getPageSize();
+        var results = songSetMapper.findPage(offset, limit);
+        int total = songSetMapper.count();
+        return new PageImpl<>(results, pageable, total);
     }
 
     public SongSet get(UUID id) {
-        return repository.findById(id).orElseThrow(() -> new NoSuchElementException("Song set not found"));
+        SongSet set = songSetMapper.findById(id);
+        if (set == null) {
+            throw new NoSuchElementException("Song set not found");
+        }
+        return set;
     }
 
     @Transactional
     public SongSet create(SongSetRequest request) {
-        return repository.save(SongSetMapper.toEntity(request));
+        SongSet songSet = SongSetDtoMapper.toEntity(request);
+        songSetMapper.insert(songSet);
+        return songSet;
     }
 
     @Transactional
     public SongSet update(UUID id, SongSetRequest request) {
         SongSet existing = get(id);
         SongSet updated = new SongSet(existing.id(), request.getName());
-        return repository.save(updated);
+        songSetMapper.update(updated);
+        return updated;
     }
 
     @Transactional
     public void delete(UUID id) {
-        repository.deleteById(id);
+        songSetMapper.delete(id);
     }
 
     public List<SongSetItem> listItems(UUID songSetId) {
-        return itemRepository.findBySongSetIdOrderBySortOrder(songSetId);
+        return itemMapper.findBySongSetId(songSetId);
     }
 
     @Transactional
     public SongSetItem addItem(UUID songSetId, SongSetItemRequest request) {
         SongSet songSet = get(songSetId);
-        Arrangement arrangement = arrangementRepository.findById(request.getArrangementId()).orElseThrow(() -> new NoSuchElementException("Arrangement not found"));
-        SongSetItem item = com.homeputers.ebal2.api.songsetitem.SongSetItemMapper.toEntity(songSet, arrangement, request);
-        return itemRepository.save(item);
+        Arrangement arrangement = arrangementMapper.findById(request.getArrangementId());
+        if (arrangement == null) {
+            throw new NoSuchElementException("Arrangement not found");
+        }
+        SongSetItem item = com.homeputers.ebal2.api.songsetitem.SongSetItemDtoMapper.toEntity(songSet, arrangement, request);
+        itemMapper.insert(item);
+        return item;
     }
 
     @Transactional
     public void removeItem(UUID songSetId, UUID itemId) {
-        SongSetItem item = itemRepository.findById(itemId).orElseThrow(() -> new NoSuchElementException("Item not found"));
+        SongSetItem item = itemMapper.findById(itemId);
+        if (item == null) {
+            throw new NoSuchElementException("Item not found");
+        }
         if (!item.songSet().id().equals(songSetId)) {
             throw new NoSuchElementException("Item not part of song set");
         }
-        itemRepository.delete(item);
+        itemMapper.delete(itemId);
     }
 
     @Transactional
     public void reorderItems(UUID songSetId, List<UUID> order) {
-        List<SongSetItem> items = listItems(songSetId);
         for (int i = 0; i < order.size(); i++) {
-            UUID id = order.get(i);
-            final int sortOrder = i;
-            items.stream()
-                    .filter(it -> it.id().equals(id))
-                    .findFirst()
-                    .ifPresent(it -> {
-                        SongSetItem updated = new SongSetItem(
-                                it.id(),
-                                it.songSet(),
-                                it.arrangement(),
-                                sortOrder,
-                                it.transpose(),
-                                it.capo());
-                        itemRepository.save(updated);
-                    });
+            itemMapper.updateOrder(order.get(i), i);
         }
     }
 }
