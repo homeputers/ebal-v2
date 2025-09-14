@@ -4,7 +4,6 @@ import com.homeputers.ebal2.api.domain.member.Member;
 import com.homeputers.ebal2.api.domain.member.MemberMapper;
 import com.homeputers.ebal2.api.domain.song.Song;
 import com.homeputers.ebal2.api.domain.song.SongMapper;
-import com.homeputers.ebal2.api.domain.service.Service;
 import com.homeputers.ebal2.api.domain.service.ServiceMapper;
 import org.springframework.stereotype.Service;
 
@@ -45,8 +44,9 @@ public class SearchService {
         }
 
         OffsetDateTime now = OffsetDateTime.now();
-        List<Service> services = serviceMapper.search(query, now.minusMonths(6), now.plusMonths(6), SERVICE_LIMIT);
-        for (Service svc : services) {
+        List<com.homeputers.ebal2.api.domain.service.Service> services =
+            serviceMapper.search(query, now.minusMonths(6), now.plusMonths(6), SERVICE_LIMIT);
+        for (com.homeputers.ebal2.api.domain.service.Service svc : services) {
             String title = svc.startsAt().toString();
             results.add(new SearchResultDto("service", svc.id(), title, svc.location()));
         }
