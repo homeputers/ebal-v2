@@ -25,6 +25,18 @@
         limit #{limit} offset #{offset}
     </select>
 
+    <select id="search" resultMap="memberResult">
+        select id, display_name, instruments
+        from members
+        <where>
+            <if test="query != null and query != ''">
+                display_name ILIKE '%' || #{query} || '%'
+            </if>
+        </where>
+        order by display_name
+        limit #{limit}
+    </select>
+
     <select id="count" resultType="int">
         select count(*) from members
         <where>

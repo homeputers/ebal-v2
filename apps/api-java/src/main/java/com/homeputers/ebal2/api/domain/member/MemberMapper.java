@@ -14,6 +14,9 @@ public interface MemberMapper {
                           @Param("offset") int offset,
                           @Param("limit") int limit);
 
+    List<Member> search(@Param("query") String query,
+                        @Param("limit") int limit);
+
     int count(@Param("query") String query);
 
     void insert(Member member);

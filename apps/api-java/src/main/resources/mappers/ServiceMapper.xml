@@ -18,6 +18,20 @@
         limit #{limit} offset #{offset}
     </select>
 
+    <select id="search" resultMap="serviceResult">
+        select id, starts_at, location from services
+        <where>
+            <if test="query != null and query != ''">
+                location ILIKE '%' || #{query} || '%'
+            </if>
+            <if test="start != null">
+                starts_at between #{start} and #{end}
+            </if>
+        </where>
+        order by starts_at
+        limit #{limit}
+    </select>
+
     <select id="count" resultType="int">
         select count(*) from services
     </select>
