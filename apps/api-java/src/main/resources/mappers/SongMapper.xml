@@ -18,7 +18,7 @@
     <select id="search" resultMap="songResult">
         select id, title, ccli, author, default_key, tags from songs
         where (#{title} is null or lower(title) like lower(concat('%', #{title}, '%')))
-          and (#{tag} is null or tags && array[#{tag}]::text[])
+          and (#{tag} is null or tags &amp;&amp; array[#{tag}]::text[])
         order by title
         limit #{limit} offset #{offset}
     </select>
@@ -26,7 +26,7 @@
     <select id="countSearch" resultType="int">
         select count(*) from songs
         where (#{title} is null or lower(title) like lower(concat('%', #{title}, '%')))
-          and (#{tag} is null or tags && array[#{tag}]::text[])
+          and (#{tag} is null or tags &amp;&amp; array[#{tag}]::text[])
     </select>
 
     <insert id="insert">
