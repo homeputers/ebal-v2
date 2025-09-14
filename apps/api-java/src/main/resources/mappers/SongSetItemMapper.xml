@@ -3,11 +3,11 @@
 <mapper namespace="com.homeputers.ebal2.api.domain.songsetitem.SongSetItemMapper">
     <resultMap id="songSetItemResult" type="com.homeputers.ebal2.api.domain.songsetitem.SongSetItem">
         <id property="id" column="id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
-        <association property="songSet" column="song_set_id" javaType="com.homeputers.ebal2.api.domain.songset.SongSet" select="com.homeputers.ebal2.api.domain.songset.SongSetMapper.findById"/>
-        <association property="arrangement" column="arrangement_id" javaType="com.homeputers.ebal2.api.domain.arrangement.Arrangement" select="com.homeputers.ebal2.api.domain.arrangement.ArrangementMapper.findById"/>
         <result property="sortOrder" column="order"/>
         <result property="transpose" column="transpose"/>
         <result property="capo" column="capo"/>
+        <association property="songSet" column="song_set_id" javaType="com.homeputers.ebal2.api.domain.songset.SongSet" select="com.homeputers.ebal2.api.domain.songset.SongSetMapper.findById"/>
+        <association property="arrangement" column="arrangement_id" javaType="com.homeputers.ebal2.api.domain.arrangement.Arrangement" select="com.homeputers.ebal2.api.domain.arrangement.ArrangementMapper.findById"/>
     </resultMap>
 
     <select id="findById" resultMap="songSetItemResult">

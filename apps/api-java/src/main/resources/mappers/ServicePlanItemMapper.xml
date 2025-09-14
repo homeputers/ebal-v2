@@ -3,11 +3,11 @@
 <mapper namespace="com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItemMapper">
     <resultMap id="planItemResult" type="com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItem">
         <id property="id" column="id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
-        <association property="service" column="service_id" javaType="com.homeputers.ebal2.api.domain.service.Service" select="com.homeputers.ebal2.api.domain.service.ServiceMapper.findById"/>
         <result property="type" column="type"/>
         <result property="refId" column="ref_id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
         <result property="sortOrder" column="order"/>
         <result property="notes" column="notes"/>
+        <association property="service" column="service_id" javaType="com.homeputers.ebal2.api.domain.service.Service" select="com.homeputers.ebal2.api.domain.service.ServiceMapper.findById"/>
     </resultMap>
 
     <select id="findById" resultMap="planItemResult">

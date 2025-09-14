@@ -3,11 +3,11 @@
 <mapper namespace="com.homeputers.ebal2.api.domain.arrangement.ArrangementMapper">
     <resultMap id="arrangementResult" type="com.homeputers.ebal2.api.domain.arrangement.Arrangement">
         <id property="id" column="id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
-        <association property="song" column="song_id" javaType="com.homeputers.ebal2.api.domain.song.Song" select="com.homeputers.ebal2.api.domain.song.SongMapper.findById"/>
         <result property="key" column="key"/>
         <result property="bpm" column="bpm"/>
         <result property="meter" column="meter"/>
         <result property="lyricsChordpro" column="lyrics_chordpro"/>
+        <association property="song" column="song_id" javaType="com.homeputers.ebal2.api.domain.song.Song" select="com.homeputers.ebal2.api.domain.song.SongMapper.findById"/>
     </resultMap>
 
     <select id="findById" resultMap="arrangementResult">
