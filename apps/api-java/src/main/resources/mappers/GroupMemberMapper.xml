@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homeputers.ebal2.api.domain.groupmember.GroupMemberMapper">
+    <select id="findMemberIds" resultType="java.util.UUID">
+        select member_id from group_members
+        where group_id = #{groupId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </select>
+
+    <select id="exists" resultType="boolean">
+        select exists(
+            select 1 from group_members
+            where group_id = #{groupId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+              and member_id = #{memberId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+        )
+    </select>
+
+    <insert id="insert">
+        insert into group_members (group_id, member_id)
+        values (
+            #{groupId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{memberId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+        )
+    </insert>
+
+    <delete id="delete">
+        delete from group_members
+        where group_id = #{groupId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+          and member_id = #{memberId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </delete>
+</mapper>
