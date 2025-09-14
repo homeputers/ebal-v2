@@ -1,5 +1,5 @@
 import apiClient from './client';
-import type { paths } from './types';
+import type { components, paths } from './types';
 import {
   QueryOf,
   ResponseOf,
@@ -10,6 +10,8 @@ import {
 // Path literals for clarity (must match your OpenAPI spec)
 type GroupsPath = keyof paths & '/groups';
 type GroupPath = keyof paths & '/groups/{id}';
+
+type MemberResponse = components['schemas']['MemberResponse'];
 
 // Types
 export type ListGroupsParams = QueryOf<GroupsPath, 'get'>;
@@ -26,6 +28,8 @@ export type UpdateGroupBody = RequestBodyOf<GroupPath, 'put'>;
 export type UpdateGroupResponse = ResponseOf<GroupPath, 'put', 200>;
 
 export type DeleteGroupParams = PathParamsOf<GroupPath, 'delete'>;
+
+export type GetGroupMembersResponse = MemberResponse[];
 
 export async function listGroups(params?: ListGroupsParams) {
   const { data } = await apiClient.get<ListGroupsResponse>('/groups', { params });
@@ -49,4 +53,17 @@ export async function updateGroup(id: string, body: UpdateGroupBody) {
 
 export async function deleteGroup(id: string) {
   await apiClient.delete<void>(`/groups/${id}`);
+}
+
+export async function getGroupMembers(id: string) {
+  const { data } = await apiClient.get<GetGroupMembersResponse>(`/groups/${id}/members`);
+  return data;
+}
+
+export async function addMemberToGroup(groupId: string, memberId: string) {
+  await apiClient.post<void>(`/groups/${groupId}/members`, { memberId });
+}
+
+export async function removeMemberFromGroup(groupId: string, memberId: string) {
+  await apiClient.delete<void>(`/groups/${groupId}/members/${memberId}`);
 }
