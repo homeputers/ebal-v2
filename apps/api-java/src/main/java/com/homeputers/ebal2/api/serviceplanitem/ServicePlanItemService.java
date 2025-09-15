@@ -1,9 +1,9 @@
 package com.homeputers.ebal2.api.serviceplanitem;
 
 import com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItem;
-import com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItemRepository;
+import com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItemMapper;
 import com.homeputers.ebal2.api.generated.model.ServicePlanItemRequest;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -11,14 +11,18 @@ import java.util.UUID;
 
 @Service
 public class ServicePlanItemService {
-    private final ServicePlanItemRepository repository;
+    private final ServicePlanItemMapper mapper;
 
-    public ServicePlanItemService(ServicePlanItemRepository repository) {
-        this.repository = repository;
+    public ServicePlanItemService(ServicePlanItemMapper mapper) {
+        this.mapper = mapper;
     }
 
     public ServicePlanItem get(UUID id) {
-        return repository.findById(id).orElseThrow(() -> new NoSuchElementException("Plan item not found"));
+        ServicePlanItem item = mapper.findById(id);
+        if (item == null) {
+            throw new NoSuchElementException("Plan item not found");
+        }
+        return item;
     }
 
     @Transactional
@@ -32,11 +36,12 @@ public class ServicePlanItemService {
                 request.getSortOrder(),
                 request.getNotes()
         );
-        return repository.save(updated);
+        mapper.update(updated);
+        return updated;
     }
 
     @Transactional
     public void delete(UUID id) {
-        repository.deleteById(id);
+        mapper.delete(id);
     }
 }

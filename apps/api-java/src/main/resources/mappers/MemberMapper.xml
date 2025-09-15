@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homeputers.ebal2.api.domain.member.MemberMapper">
+    <resultMap id="memberResult" type="com.homeputers.ebal2.api.domain.member.Member">
+        <constructor>
+            <idArg column="id" javaType="java.util.UUID"
+                   typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+            <arg column="display_name" javaType="java.lang.String"/>
+            <arg column="instruments" javaType="java.util.List"
+                 typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.StringArrayTypeHandler"/>
+        </constructor>
+    </resultMap>
+
+    <select id="findById" resultMap="memberResult">
+        select id, display_name, instruments
+        from members
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </select>
+
+    <select id="findPage" resultMap="memberResult">
+        select id, display_name, instruments
+        from members
+        <where>
+            <if test="query != null and query != ''">
+                display_name ILIKE '%' || #{query} || '%'
+            </if>
+        </where>
+        order by display_name
+        limit #{limit} offset #{offset}
+    </select>
+
+    <select id="search" resultMap="memberResult">
+        select id, display_name, instruments
+        from members
+        <where>
+            <if test="query != null and query != ''">
+                display_name ILIKE '%' || #{query} || '%'
+            </if>
+        </where>
+        order by display_name
+        limit #{limit}
+    </select>
+
+    <select id="count" resultType="int">
+        select count(*) from members
+        <where>
+            <if test="query != null and query != ''">
+                display_name ILIKE '%' || #{query} || '%'
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert">
+        insert into members (id, display_name, instruments)
+        values (
+            #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{displayName},
+            #{instruments, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.StringArrayTypeHandler}
+        )
+    </insert>
+
+    <update id="update">
+        update members
+        set display_name = #{displayName},
+            instruments = #{instruments, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.StringArrayTypeHandler}
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
+    <delete id="delete">
+        delete from members where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </delete>
+</mapper>

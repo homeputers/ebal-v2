@@ -1,14 +1,15 @@
 package com.homeputers.ebal2.api.song;
 
-import com.homeputers.ebal2.api.arrangement.ArrangementMapper;
+import com.homeputers.ebal2.api.arrangement.ArrangementDtoMapper;
 import com.homeputers.ebal2.api.domain.arrangement.Arrangement;
-import com.homeputers.ebal2.api.domain.arrangement.ArrangementRepository;
+import com.homeputers.ebal2.api.domain.arrangement.ArrangementMapper;
 import com.homeputers.ebal2.api.domain.song.Song;
-import com.homeputers.ebal2.api.domain.song.SongRepository;
+import com.homeputers.ebal2.api.domain.song.SongMapper;
 import com.homeputers.ebal2.api.generated.model.ArrangementRequest;
 import com.homeputers.ebal2.api.generated.model.SongRequest;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -18,25 +19,35 @@ import java.util.UUID;
 
 @Service
 public class SongService {
-    private final SongRepository songRepository;
-    private final ArrangementRepository arrangementRepository;
+    private final SongMapper songMapper;
+    private final ArrangementMapper arrangementMapper;
 
-    public SongService(SongRepository songRepository, ArrangementRepository arrangementRepository) {
-        this.songRepository = songRepository;
-        this.arrangementRepository = arrangementRepository;
+    public SongService(SongMapper songMapper, ArrangementMapper arrangementMapper) {
+        this.songMapper = songMapper;
+        this.arrangementMapper = arrangementMapper;
     }
 
     public Song get(UUID id) {
-        return songRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Song not found"));
+        Song song = songMapper.findById(id);
+        if (song == null) {
+            throw new NoSuchElementException("Song not found");
+        }
+        return song;
     }
 
     public Page<Song> search(String title, String tag, Pageable pageable) {
-        return songRepository.search(title, tag, pageable);
+        int offset = (int) pageable.getOffset();
+        int limit = pageable.getPageSize();
+        var results = songMapper.search(title, tag, offset, limit);
+        int total = songMapper.countSearch(title, tag);
+        return new PageImpl<>(results, pageable, total);
     }
 
     @Transactional
     public Song create(SongRequest request) {
-        return songRepository.save(SongMapper.toEntity(request));
+        Song song = SongDtoMapper.toEntity(request);
+        songMapper.insert(song);
+        return song;
     }
 
     @Transactional
@@ -48,31 +59,35 @@ public class SongService {
                 request.getCcli(),
                 request.getAuthor(),
                 request.getDefaultKey(),
-                request.getTags(),
-                existing.persisted()
+                request.getTags()
         );
-        return songRepository.save(updated);
+        songMapper.update(updated);
+        return updated;
     }
 
     @Transactional
     public void delete(UUID id) {
-        songRepository.deleteById(id);
+        songMapper.delete(id);
     }
 
     public List<Arrangement> listArrangements(UUID songId) {
-        return arrangementRepository.findBySongId(songId);
+        return arrangementMapper.findBySongId(songId);
     }
 
     @Transactional
     public Arrangement addArrangement(UUID songId, ArrangementRequest request) {
         Song song = get(songId);
-        Arrangement arrangement = ArrangementMapper.toEntity(song, request);
-        return arrangementRepository.save(arrangement);
+        Arrangement arrangement = ArrangementDtoMapper.toEntity(song, request);
+        arrangementMapper.insert(arrangement);
+        return arrangement;
     }
 
     @Transactional
     public Arrangement updateArrangement(UUID id, ArrangementRequest request) {
-        Arrangement existing = arrangementRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Arrangement not found"));
+        Arrangement existing = arrangementMapper.findById(id);
+        if (existing == null) {
+            throw new NoSuchElementException("Arrangement not found");
+        }
         Arrangement updated = new Arrangement(
                 existing.id(),
                 existing.song(),
@@ -81,11 +96,12 @@ public class SongService {
                 request.getMeter(),
                 request.getLyricsChordpro()
         );
-        return arrangementRepository.save(updated);
+        arrangementMapper.update(updated);
+        return updated;
     }
 
     @Transactional
     public void deleteArrangement(UUID id) {
-        arrangementRepository.deleteById(id);
+        arrangementMapper.delete(id);
     }
 }

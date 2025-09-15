@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItemMapper">
+    <resultMap id="planItemResult" type="com.homeputers.ebal2.api.domain.serviceplanitem.ServicePlanItem">
+        <id property="id" column="id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+        <result property="type" column="type"/>
+        <result property="refId" column="ref_id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+        <result property="sortOrder" column="order"/>
+        <result property="notes" column="notes"/>
+        <association property="service" column="service_id" javaType="com.homeputers.ebal2.api.domain.service.Service" select="com.homeputers.ebal2.api.domain.service.ServiceMapper.findById"/>
+    </resultMap>
+
+    <select id="findById" resultMap="planItemResult">
+        select id, service_id, type, ref_id, "order", notes from service_plan_items
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </select>
+
+    <select id="findByServiceId" resultMap="planItemResult">
+        select id, service_id, type, ref_id, "order", notes from service_plan_items
+        where service_id = #{serviceId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+        order by "order"
+    </select>
+
+    <insert id="insert">
+        insert into service_plan_items (id, service_id, type, ref_id, "order", notes)
+        values (
+            #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{service.id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{type},
+            #{refId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{sortOrder},
+            #{notes}
+        )
+    </insert>
+
+    <update id="update">
+        update service_plan_items set
+            service_id = #{service.id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            type = #{type},
+            ref_id = #{refId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            "order" = #{sortOrder},
+            notes = #{notes}
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
+    <update id="updateOrder">
+        update service_plan_items set "order" = #{sortOrder}
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
+    <delete id="delete">
+        delete from service_plan_items where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </delete>
+</mapper>

@@ -17,6 +17,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
+  /search:
+    get:
+      tags: [Search]
+      operationId: search
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchResult'
   /groups:
     get:
       tags: [Groups]
@@ -730,6 +749,20 @@ components:
           type: integer
         size:
           type: integer
+    SearchResult:
+      type: object
+      required: [kind, id, title]
+      properties:
+        kind:
+          type: string
+          enum: [member, song, service]
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        subtitle:
+          type: string
     MemberRequest:
       type: object
       required: [displayName]

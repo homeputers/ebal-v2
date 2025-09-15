@@ -21,7 +21,7 @@ public class ServicePlanItemController implements ServicePlanItemsApi {
 
     @Override
     public ResponseEntity<ServicePlanItemResponse> updateServicePlanItem(UUID id, ServicePlanItemRequest servicePlanItemRequest) {
-        return ResponseEntity.ok(ServicePlanItemMapper.toResponse(service.update(id, servicePlanItemRequest)));
+        return ResponseEntity.ok(ServicePlanItemDtoMapper.toResponse(service.update(id, servicePlanItemRequest)));
     }
 
     @Override

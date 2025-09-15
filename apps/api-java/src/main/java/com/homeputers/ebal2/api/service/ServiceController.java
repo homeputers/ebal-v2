@@ -29,24 +29,24 @@ public class ServiceController implements ServicesApi {
     @Override
     public ResponseEntity<PageServiceResponse> listServices(Integer page, Integer size) {
         Page<com.homeputers.ebal2.api.domain.service.Service> services = service.list(PageRequest.of(page, size));
-        return ResponseEntity.ok(ServiceMapper.toPageResponse(services));
+        return ResponseEntity.ok(ServiceDtoMapper.toPageResponse(services));
     }
 
     @Override
     public ResponseEntity<ServiceResponse> getService(UUID id) {
-        return ResponseEntity.ok(ServiceMapper.toResponse(service.get(id)));
+        return ResponseEntity.ok(ServiceDtoMapper.toResponse(service.get(id)));
     }
 
     @Override
     public ResponseEntity<ServiceResponse> createService(ServiceRequest serviceRequest) {
         com.homeputers.ebal2.api.domain.service.Service created = service.create(serviceRequest);
-        return new ResponseEntity<>(ServiceMapper.toResponse(created), HttpStatus.CREATED);
+        return new ResponseEntity<>(ServiceDtoMapper.toResponse(created), HttpStatus.CREATED);
     }
 
     @Override
     public ResponseEntity<ServiceResponse> updateService(UUID id, ServiceRequest serviceRequest) {
         com.homeputers.ebal2.api.domain.service.Service updated = service.update(id, serviceRequest);
-        return ResponseEntity.ok(ServiceMapper.toResponse(updated));
+        return ResponseEntity.ok(ServiceDtoMapper.toResponse(updated));
     }
 
     @Override
@@ -58,12 +58,12 @@ public class ServiceController implements ServicesApi {
     @Override
     public ResponseEntity<List<ServicePlanItemResponse>> listServicePlanItems(UUID id) {
         List<ServicePlanItem> items = service.listPlanItems(id);
-        return ResponseEntity.ok(items.stream().map(com.homeputers.ebal2.api.serviceplanitem.ServicePlanItemMapper::toResponse).toList());
+        return ResponseEntity.ok(items.stream().map(com.homeputers.ebal2.api.serviceplanitem.ServicePlanItemDtoMapper::toResponse).toList());
     }
 
     @Override
     public ResponseEntity<ServicePlanItemResponse> addServicePlanItem(UUID id, ServicePlanItemRequest servicePlanItemRequest) {
         ServicePlanItem item = service.addPlanItem(id, servicePlanItemRequest);
-        return new ResponseEntity<>(com.homeputers.ebal2.api.serviceplanitem.ServicePlanItemMapper.toResponse(item), HttpStatus.CREATED);
+        return new ResponseEntity<>(com.homeputers.ebal2.api.serviceplanitem.ServicePlanItemDtoMapper.toResponse(item), HttpStatus.CREATED);
     }
 }

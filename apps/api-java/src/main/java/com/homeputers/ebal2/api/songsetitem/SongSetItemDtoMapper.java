@@ -6,7 +6,7 @@ import com.homeputers.ebal2.api.domain.songsetitem.SongSetItem;
 import com.homeputers.ebal2.api.generated.model.SongSetItemRequest;
 import com.homeputers.ebal2.api.generated.model.SongSetItemResponse;
 
-public class SongSetItemMapper {
+public class SongSetItemDtoMapper {
     public static SongSetItem toEntity(SongSet songSet, Arrangement arrangement, SongSetItemRequest request) {
         return new SongSetItem(null, songSet, arrangement, request.getSortOrder(), request.getTranspose(), request.getCapo());
     }
