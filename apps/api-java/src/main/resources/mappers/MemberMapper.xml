@@ -2,9 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.homeputers.ebal2.api.domain.member.MemberMapper">
     <resultMap id="memberResult" type="com.homeputers.ebal2.api.domain.member.Member">
-        <id property="id" column="id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
-        <result property="displayName" column="display_name"/>
-        <result property="instruments" column="instruments" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.StringArrayTypeHandler"/>
+        <constructor>
+            <idArg column="id" javaType="java.util.UUID"
+                   typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+            <arg column="display_name" javaType="java.lang.String"/>
+            <arg column="instruments" javaType="java.util.List"
+                 typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.StringArrayTypeHandler"/>
+        </constructor>
     </resultMap>
 
     <select id="findById" resultMap="memberResult">

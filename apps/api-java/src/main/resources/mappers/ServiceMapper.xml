@@ -2,9 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.homeputers.ebal2.api.domain.service.ServiceMapper">
     <resultMap id="serviceResult" type="com.homeputers.ebal2.api.domain.service.Service">
-        <id property="id" column="id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
-        <result property="startsAt" column="starts_at"/>
-        <result property="location" column="location"/>
+        <constructor>
+            <idArg column="id" javaType="java.util.UUID"
+                   typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+            <arg column="starts_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="location" javaType="java.lang.String"/>
+        </constructor>
     </resultMap>
 
     <select id="findById" resultMap="serviceResult">
