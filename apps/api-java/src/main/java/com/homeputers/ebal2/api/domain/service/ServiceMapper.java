@@ -3,6 +3,7 @@ package com.homeputers.ebal2.api.domain.service;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,6 +13,11 @@ public interface ServiceMapper {
 
     List<Service> findPage(@Param("offset") int offset,
                            @Param("limit") int limit);
+
+    List<Service> search(@Param("query") String query,
+                         @Param("start") OffsetDateTime start,
+                         @Param("end") OffsetDateTime end,
+                         @Param("limit") int limit);
 
     int count();
 
