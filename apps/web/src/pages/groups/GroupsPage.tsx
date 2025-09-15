@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   useGroupsList,
   useCreateGroup,
@@ -8,13 +8,53 @@ import {
 } from '../../features/groups/hooks';
 import GroupForm, { GroupFormValues } from '../../features/groups/GroupForm';
 
-export default function GroupsPage() {
-  const [query, setQuery] = useState('');
-  const [page, setPage] = useState(0);
-  const params = useMemo(
-    () => ({ query: query || undefined, page, size: 20 }),
-    [query, page],
+function Modal({
+  open,
+  onClose,
+  children,
+}: {
+  open: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  if (!open) return null;
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white p-4 rounded shadow max-w-md w-full"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>
   );
+}
+
+export default function GroupsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const queryParam = searchParams.get('query') ?? '';
+  const pageParam = Number(searchParams.get('page') ?? '0');
+  const [search, setSearch] = useState(queryParam);
+
+  useEffect(() => {
+    setSearch(queryParam);
+  }, [queryParam]);
+
+  useEffect(() => {
+    const h = setTimeout(() => {
+      const params = new URLSearchParams(searchParams);
+      if (search) params.set('query', search);
+      else params.delete('query');
+      params.set('page', '0');
+      setSearchParams(params);
+    }, 300);
+    return () => clearTimeout(h);
+  }, [search]);
+
+  const params = useMemo(() => ({ page: pageParam, size: 20 }), [pageParam]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, isLoading, isError } = useGroupsList(params as any);
 
@@ -39,50 +79,50 @@ export default function GroupsPage() {
     );
   };
 
+  const goToPage = (p: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', String(p));
+    setSearchParams(params);
+  };
+
+  const filtered = (data?.content || []).filter((g) =>
+    g.name?.toLowerCase().includes(queryParam.toLowerCase()),
+  ); // TODO: server-side search when API adds query parameter
+
   return (
     <div className="p-4">
       <h1 className="text-xl font-semibold mb-4">Groups</h1>
       <div className="flex items-center gap-2 mb-4">
         <input
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setPage(0);
-          }}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name..."
           className="border p-2 rounded w-full max-w-sm"
         />
-        {creating ? null : (
-          <button
-            onClick={() => setCreating(true)}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            New Group
-          </button>
-        )}
+        <button
+          onClick={() => setCreating(true)}
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          New Group
+        </button>
       </div>
-
-      {creating && (
-        <div className="mb-4">
-          <GroupForm onSubmit={handleCreate} onCancel={() => setCreating(false)} />
-        </div>
-      )}
 
       {isLoading && <div>Loading…</div>}
       {isError && <div>Failed to load</div>}
 
       {!isLoading && data ? (
         <div className="mt-4">
-          {data.content && data.content.length > 0 ? (
+          {filtered.length > 0 ? (
             <table className="w-full border">
               <thead>
                 <tr className="bg-gray-50">
                   <th className="text-left p-2">Name</th>
+                  <th className="text-left p-2">Members</th>
                   <th className="p-2 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {data.content.map((g) => (
+                {filtered.map((g) => (
                   <tr key={g.id} className="border-t">
                     <td className="p-2 align-top">
                       {editingId === g.id ? (
@@ -100,6 +140,7 @@ export default function GroupsPage() {
                         </Link>
                       )}
                     </td>
+                    <td className="p-2 align-top">{g.memberIds?.length ?? 0}</td>
                     <td className="p-2 text-right align-top">
                       {editingId === g.id ? null : (
                         <div className="flex gap-2 justify-end">
@@ -129,8 +170,8 @@ export default function GroupsPage() {
           <div className="flex items-center gap-2 mt-4">
             <button
               className="px-3 py-1 border rounded disabled:opacity-50"
-              disabled={page === 0}
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              disabled={pageParam === 0}
+              onClick={() => goToPage(Math.max(0, pageParam - 1))}
             >
               Previous
             </button>
@@ -144,13 +185,18 @@ export default function GroupsPage() {
                 data.totalPages !== undefined &&
                 data.number + 1 >= data.totalPages
               }
-              onClick={() => setPage((p) => p + 1)}
+              onClick={() => goToPage(pageParam + 1)}
             >
               Next
             </button>
           </div>
         </div>
       ) : null}
+
+      <Modal open={creating} onClose={() => setCreating(false)}>
+        <h2 className="text-lg font-semibold mb-2">New Group</h2>
+        <GroupForm onSubmit={handleCreate} onCancel={() => setCreating(false)} />
+      </Modal>
     </div>
   );
 }

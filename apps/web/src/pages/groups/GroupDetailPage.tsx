@@ -18,8 +18,8 @@ export default function GroupDetailPage() {
   const groupQuery = useGroup(id);
   const updateGroup = useUpdateGroup();
   const membersQuery = useGroupMembers(id);
-  const addMember = useAddMemberToGroup();
-  const removeMember = useRemoveMemberFromGroup();
+  const addMember = useAddMemberToGroup(id);
+  const removeMember = useRemoveMemberFromGroup(id);
 
   const [memberSearch, setMemberSearch] = useState('');
   const memberParams = useMemo(
@@ -34,14 +34,12 @@ export default function GroupDetailPage() {
   );
 
   const [selectedMemberId, setSelectedMemberId] = useState('');
-  const selectedMember = availableMembers.find((m) => m.id === selectedMemberId);
 
   const handleAdd = () => {
-    if (!selectedMember) return;
-    addMember.mutate(
-      { groupId: id, member: selectedMember },
-      { onSuccess: () => setSelectedMemberId('') },
-    );
+    if (!selectedMemberId) return;
+    addMember.mutate(selectedMemberId, {
+      onSuccess: () => setSelectedMemberId(''),
+    });
   };
 
   const handleUpdateGroup = (values: { name: string }) => {
@@ -107,7 +105,11 @@ export default function GroupDetailPage() {
                   <td className="p-2 text-right">
                     <button
                       className="px-2 py-1 text-sm bg-red-500 text-white rounded"
-                      onClick={() => removeMember.mutate({ groupId: id, memberId: m.id as string })}
+                      onClick={() => {
+                        if (confirm('Remove member?')) {
+                          removeMember.mutate(m.id as string);
+                        }
+                      }}
                     >
                       Remove
                     </button>

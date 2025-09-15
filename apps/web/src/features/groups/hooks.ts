@@ -5,14 +5,11 @@ import {
   updateGroup,
   deleteGroup,
   getGroup,
-  getGroupMembers,
+  listGroupMembers,
   addMemberToGroup,
   removeMemberFromGroup,
   type ListGroupsParams,
 } from '../../api/groups';
-import type { components } from '../../api/types';
-
-type Member = components['schemas']['MemberResponse'];
 
 export function useGroupsList(params: ListGroupsParams | undefined) {
   return useQuery({
@@ -26,7 +23,9 @@ export function useCreateGroup() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: createGroup,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['groups'] }),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['groups'] });
+    },
   });
 }
 
@@ -35,7 +34,10 @@ export function useUpdateGroup() {
   return useMutation({
     mutationFn: ({ id, body }: { id: string; body: Parameters<typeof updateGroup>[1] }) =>
       updateGroup(id, body),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['groups'] }),
+    onSuccess: async (_data, vars) => {
+      await qc.invalidateQueries({ queryKey: ['groups'] });
+      await qc.invalidateQueries({ queryKey: ['group', vars.id] });
+    },
   });
 }
 
@@ -43,7 +45,10 @@ export function useDeleteGroup() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: deleteGroup,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['groups'] }),
+    onSuccess: async (_data, id) => {
+      await qc.invalidateQueries({ queryKey: ['groups'] });
+      await qc.invalidateQueries({ queryKey: ['group', id] });
+    },
   });
 }
 
@@ -57,51 +62,30 @@ export function useGroup(id: string) {
 
 export function useGroupMembers(id: string) {
   return useQuery({
-    queryKey: ['group-members', id],
-    queryFn: () => getGroupMembers(id),
+    queryKey: ['groupMembers', id],
+    queryFn: () => listGroupMembers(id),
     enabled: !!id,
   });
 }
 
-export function useAddMemberToGroup() {
+export function useAddMemberToGroup(groupId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ groupId, member }: { groupId: string; member: Member }) =>
-      addMemberToGroup(groupId, member.id as string),
-    onMutate: async ({ groupId, member }) => {
-      await qc.cancelQueries({ queryKey: ['group-members', groupId] });
-      const prev = qc.getQueryData<Member[]>(['group-members', groupId]) || [];
-      qc.setQueryData<Member[]>(['group-members', groupId], [...prev, member]);
-      return { prev };
-    },
-    onError: (_err, vars, ctx) => {
-      qc.setQueryData(['group-members', vars.groupId], ctx?.prev);
-    },
-    onSettled: (_data, _err, vars) => {
-      qc.invalidateQueries({ queryKey: ['group-members', vars.groupId] });
+    mutationFn: (memberId: string) => addMemberToGroup(groupId, memberId),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['groupMembers', groupId] });
+      await qc.invalidateQueries({ queryKey: ['group', groupId] });
     },
   });
 }
 
-export function useRemoveMemberFromGroup() {
+export function useRemoveMemberFromGroup(groupId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ groupId, memberId }: { groupId: string; memberId: string }) =>
-      removeMemberFromGroup(groupId, memberId),
-    onMutate: async ({ groupId, memberId }) => {
-      await qc.cancelQueries({ queryKey: ['group-members', groupId] });
-      const prev = qc.getQueryData<Member[]>(['group-members', groupId]) || [];
-      qc.setQueryData<Member[]>(
-        ['group-members', groupId],
-        prev.filter((m) => m.id !== memberId),
-      );
-      return { prev };
-    },
-    onError: (_err, vars, ctx) => {
-      qc.setQueryData(['group-members', vars.groupId], ctx?.prev);
-    },
-    onSettled: (_data, _err, vars) => {
-      qc.invalidateQueries({ queryKey: ['group-members', vars.groupId] });
+    mutationFn: (memberId: string) => removeMemberFromGroup(groupId, memberId),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['groupMembers', groupId] });
+      await qc.invalidateQueries({ queryKey: ['group', groupId] });
     },
   });
 }
