@@ -8,6 +8,7 @@ import { Toaster } from 'sonner';
 
 const Members = lazy(() => import('@/routes/Members'));
 const Groups = lazy(() => import('@/routes/Groups'));
+const GroupDetail = lazy(() => import('@/routes/GroupDetail'));
 const Songs = lazy(() => import('@/routes/Songs'));
 const SongSets = lazy(() => import('@/routes/SongSets'));
 const Services = lazy(() => import('@/routes/Services'));
@@ -24,6 +25,7 @@ export default function App() {
                 <Route path="/" element={<Navigate to="/members" replace />} />
                 <Route path="/members" element={<Members />} />
                 <Route path="/groups" element={<Groups />} />
+                <Route path="/groups/:id" element={<GroupDetail />} />
                 <Route path="/songs" element={<Songs />} />
                 <Route path="/song-sets" element={<SongSets />} />
                 <Route path="/services" element={<Services />} />
