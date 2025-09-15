@@ -15,9 +15,9 @@ public interface GroupMapper {
 
     int count();
 
-    void insert(Group group);
+    void insert(@Param("id") UUID id, @Param("name") String name);
 
-    void update(Group group);
+    void update(@Param("id") UUID id, @Param("name") String name);
 
     void delete(@Param("id") UUID id);
 }

@@ -46,7 +46,14 @@ public class SongService {
     @Transactional
     public Song create(SongRequest request) {
         Song song = SongDtoMapper.toEntity(request);
-        songMapper.insert(song);
+        songMapper.insert(
+            song.id(),
+            song.title(),
+            song.ccli(),
+            song.author(),
+            song.defaultKey(),
+            song.tags()
+        );
         return song;
     }
 
@@ -61,7 +68,14 @@ public class SongService {
                 request.getDefaultKey(),
                 request.getTags()
         );
-        songMapper.update(updated);
+        songMapper.update(
+            id,
+            request.getTitle(),
+            request.getCcli(),
+            request.getAuthor(),
+            request.getDefaultKey(),
+            request.getTags()
+        );
         return updated;
     }
 
@@ -78,7 +92,14 @@ public class SongService {
     public Arrangement addArrangement(UUID songId, ArrangementRequest request) {
         Song song = get(songId);
         Arrangement arrangement = ArrangementDtoMapper.toEntity(song, request);
-        arrangementMapper.insert(arrangement);
+        arrangementMapper.insert(
+            arrangement.id(),
+            songId,
+            arrangement.key(),
+            arrangement.bpm(),
+            arrangement.meter(),
+            arrangement.lyricsChordpro()
+        );
         return arrangement;
     }
 
@@ -96,7 +117,13 @@ public class SongService {
                 request.getMeter(),
                 request.getLyricsChordpro()
         );
-        arrangementMapper.update(updated);
+        arrangementMapper.update(
+            id,
+            request.getKey(),
+            request.getBpm(),
+            request.getMeter(),
+            request.getLyricsChordpro()
+        );
         return updated;
     }
 

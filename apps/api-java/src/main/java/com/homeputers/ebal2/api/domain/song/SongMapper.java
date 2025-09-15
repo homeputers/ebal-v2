@@ -18,9 +18,19 @@ public interface SongMapper {
     int countSearch(@Param("title") String title,
                     @Param("tag") String tag);
 
-    void insert(Song song);
+    void insert(@Param("id") UUID id, 
+              @Param("title") String title, 
+              @Param("ccli") String ccli, 
+              @Param("author") String author, 
+              @Param("defaultKey") String defaultKey, 
+              @Param("tags") List<String> tags);
 
-    void update(Song song);
+    void update(@Param("id") UUID id, 
+              @Param("title") String title, 
+              @Param("ccli") String ccli, 
+              @Param("author") String author, 
+              @Param("defaultKey") String defaultKey, 
+              @Param("tags") List<String> tags);
 
     void delete(@Param("id") UUID id);
 }

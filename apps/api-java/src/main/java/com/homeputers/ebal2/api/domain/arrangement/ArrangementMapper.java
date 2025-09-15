@@ -12,9 +12,18 @@ public interface ArrangementMapper {
 
     List<Arrangement> findBySongId(@Param("songId") UUID songId);
 
-    void insert(Arrangement arrangement);
+    void insert(@Param("id") UUID id,
+              @Param("songId") UUID songId,
+              @Param("key") String key,
+              @Param("bpm") Integer bpm,
+              @Param("meter") String meter,
+              @Param("lyricsChordpro") String lyricsChordpro);
 
-    void update(Arrangement arrangement);
+    void update(@Param("id") UUID id,
+              @Param("key") String key,
+              @Param("bpm") Integer bpm,
+              @Param("meter") String meter,
+              @Param("lyricsChordpro") String lyricsChordpro);
 
     void delete(@Param("id") UUID id);
 }

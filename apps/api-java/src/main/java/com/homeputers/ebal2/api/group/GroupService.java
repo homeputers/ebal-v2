@@ -47,15 +47,15 @@ public class GroupService {
     @Transactional
     public Group create(GroupRequest request) {
         Group group = GroupMapper.toEntity(request);
-        mapper.insert(group);
+        mapper.insert(group.id(), group.name());
         return group;
     }
 
     @Transactional
     public Group update(UUID id, GroupRequest request) {
         get(id);
+        mapper.update(id, request.getName());
         Group updated = new Group(id, request.getName(), null);
-        mapper.update(updated);
         return attachMembers(updated);
     }
 
