@@ -1,5 +1,5 @@
 import apiClient from './client';
-import type { paths } from './types';
+import type { paths, components } from './types';
 import {
   QueryOf,
   ResponseOf,
@@ -99,4 +99,11 @@ export async function updateArrangement(
 
 export async function deleteArrangement(arrangementId: string) {
   await apiClient.delete<void>(`/songs/arrangements/${arrangementId}`);
+}
+
+export async function getArrangement(arrangementId: string) {
+  const { data } = await apiClient.get<components['schemas']['ArrangementResponse']>(
+    `/songs/arrangements/${arrangementId}`,
+  );
+  return data;
 }

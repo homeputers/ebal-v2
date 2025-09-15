@@ -1,5 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
 import type { components } from '../../api/types';
 import {
   useService,
@@ -9,6 +14,9 @@ import {
   useUpdatePlanItem,
   useRemovePlanItem,
 } from '../../features/services/hooks';
+import { getSong, listArrangements, getArrangement } from '@/api/songs';
+import SongPicker from '@/components/pickers/SongPicker';
+import ArrangementPicker from '@/components/pickers/ArrangementPicker';
 import ServiceForm from '../../features/services/ServiceForm';
 
 function Modal({
@@ -34,7 +42,19 @@ function Modal({
 }
 
 type ServiceRequest = components['schemas']['ServiceRequest'];
-type PlanItemRequest = components['schemas']['ServicePlanItemRequest'];
+
+const addSchema = z
+  .object({
+    type: z.enum(['song', 'reading', 'note']),
+    arrangementId: z.string().uuid().optional(),
+    notes: z.string().max(1000).optional(),
+  })
+  .refine((d) => d.type !== 'song' || !!d.arrangementId, {
+    message: 'Arrangement required',
+    path: ['arrangementId'],
+  });
+
+type AddItemForm = z.infer<typeof addSchema>;
 
 export default function ServiceDetailPage() {
   const { id } = useParams();
@@ -47,7 +67,65 @@ export default function ServiceDetailPage() {
   const removeItemMut = useRemovePlanItem(id!);
 
   const [editingService, setEditingService] = useState(false);
-  const [newItem, setNewItem] = useState<PlanItemRequest>({ type: 'note' });
+  const [songId, setSongId] = useState<string | undefined>();
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<AddItemForm>({
+    resolver: zodResolver(addSchema),
+    defaultValues: { type: 'note' },
+  });
+
+  const type = watch('type');
+  const arrangementId = watch('arrangementId');
+
+  const { data: song } = useQuery({
+    queryKey: ['song', songId],
+    queryFn: () => getSong(songId!),
+    enabled: !!songId,
+  });
+  const { data: arrangements } = useQuery({
+    queryKey: ['arrangements', songId],
+    queryFn: () => listArrangements(songId!),
+    enabled: !!songId,
+  });
+  const selectedArrangement = arrangements?.find((a) => a.id === arrangementId);
+
+  const [arrangementCache, setArrangementCache] = useState<
+    Record<string, { songTitle: string; key?: string; bpm?: number; meter?: string }>
+  >({});
+
+  useEffect(() => {
+    const unknown = (planItems ?? [])
+      .filter((p) => p.type === 'song' && p.refId && !arrangementCache[p.refId])
+      .map((p) => p.refId!);
+    if (unknown.length === 0) return;
+    (async () => {
+      for (const aid of unknown) {
+        try {
+          const arr = await getArrangement(aid);
+          const s = arr.songId ? await getSong(arr.songId) : undefined;
+          setArrangementCache((prev) => ({
+            ...prev,
+            [aid]: {
+              songTitle: s?.title ?? 'Song',
+              key: arr.key,
+              bpm: arr.bpm,
+              meter: arr.meter,
+            },
+          }));
+        } catch {
+          /* ignore */
+        }
+      }
+    })();
+    // TODO: expose endpoint returning resolved labels server-side
+  }, [planItems]);
 
   if (isLoading) return <div className="p-4">Loading…</div>;
   if (isError || !service) return <div className="p-4">Failed to load</div>;
@@ -56,13 +134,24 @@ export default function ServiceDetailPage() {
     updateServiceMut.mutate({ id: id!, body: vals }, { onSuccess: () => setEditingService(false) });
   };
 
-  const handleAddItem = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddItem = handleSubmit((vals) => {
     addItemMut.mutate(
-      { ...newItem, sortOrder: planItems ? planItems.length : 0 },
-      { onSuccess: () => setNewItem({ type: 'note' }) },
+      {
+        type: vals.type,
+        refId: vals.arrangementId,
+        notes: vals.notes,
+        sortOrder: planItems ? planItems.length : 0,
+      },
+      {
+        onSuccess: () => {
+          toast('Item added');
+          reset({ type: 'note' });
+          setSongId(undefined);
+        },
+        onError: () => toast('Failed to add item'),
+      },
     );
-  };
+  });
 
   return (
     <div className="p-4 space-y-4">
@@ -92,32 +181,50 @@ export default function ServiceDetailPage() {
         <div className="md:w-1/3">
           <h2 className="font-semibold mb-2">Add Item</h2>
           <form onSubmit={handleAddItem} className="space-y-2">
-            <select
-              value={newItem.type}
-              onChange={(e) => setNewItem({ ...newItem, type: e.target.value })}
-              className="border p-2 rounded w-full"
-            >
+            <select {...register('type')} className="border p-2 rounded w-full">
               <option value="song">Song</option>
               <option value="reading">Reading</option>
               <option value="note">Note</option>
             </select>
-            {newItem.type === 'song' && (
-              <input
-                placeholder="Arrangement ID"
-                value={newItem.refId || ''}
-                onChange={(e) => setNewItem({ ...newItem, refId: e.target.value })}
-                className="border p-2 rounded w-full"
-              />
+            {type === 'song' && (
+              <div className="space-y-2">
+                <SongPicker
+                  value={songId}
+                  onChange={(id) => {
+                    setSongId(id);
+                    setValue('arrangementId', undefined);
+                  }}
+                  placeholder="Search songs..."
+                />
+                <ArrangementPicker
+                  songId={songId}
+                  value={arrangementId}
+                  onChange={(id) => setValue('arrangementId', id)}
+                />
+                {arrangementId && selectedArrangement && song && (
+                  <div className="text-xs text-gray-600">
+                    {song.title} – Key {selectedArrangement.key}
+                    {selectedArrangement.bpm && ` • ${selectedArrangement.bpm} BPM`}
+                    {selectedArrangement.meter && ` • ${selectedArrangement.meter}`}
+                  </div>
+                )}
+                {errors.arrangementId && (
+                  <p className="text-red-500 text-sm">{errors.arrangementId.message}</p>
+                )}
+              </div>
             )}
             <textarea
               placeholder="Notes"
-              value={newItem.notes || ''}
-              onChange={(e) => setNewItem({ ...newItem, notes: e.target.value })}
               className="border p-2 rounded w-full"
+              {...register('notes')}
             />
+            {errors.notes && (
+              <p className="text-red-500 text-sm">{errors.notes.message}</p>
+            )}
             <button
               type="submit"
-              className="px-4 py-2 bg-green-500 text-white rounded"
+              disabled={addItemMut.isPending || (type === 'song' && !arrangementId)}
+              className="px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
             >
               Add
             </button>
@@ -131,7 +238,22 @@ export default function ServiceDetailPage() {
               {planItems.map((item) => (
                 <li key={item.id} className="border p-2 rounded">
                   <div className="flex justify-between mb-2">
-                    <span className="font-semibold capitalize">{item.type}</span>
+                    <div>
+                      <span className="font-semibold capitalize">{item.type}</span>
+                      {item.type === 'song' && item.refId && (
+                        <div className="text-sm text-gray-600">
+                          {arrangementCache[item.refId]
+                            ? (() => {
+                                const info = arrangementCache[item.refId];
+                                let text = `${info.songTitle} – Key ${info.key ?? ''}`;
+                                if (info.bpm) text += ` • ${info.bpm} BPM`;
+                                if (info.meter) text += ` • ${info.meter}`;
+                                return text;
+                              })()
+                            : '…'}
+                        </div>
+                      )}
+                    </div>
                     <button
                       className="px-2 py-1 text-sm bg-red-500 text-white rounded"
                       onClick={() => item.id && removeItemMut.mutate(item.id)}
