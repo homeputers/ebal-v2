@@ -10,6 +10,9 @@ import {
 // Path literals for clarity (must match your OpenAPI spec)
 type SongsPath = keyof paths & '/songs';
 type SongPath = keyof paths & '/songs/{id}';
+type ArrangementsPath = keyof paths & '/songs/{id}/arrangements';
+type ArrangementPath =
+  keyof paths & '/songs/arrangements/{arrangementId}';
 
 // Types
 export type ListSongsParams = QueryOf<SongsPath, 'get'>;
@@ -26,6 +29,20 @@ export type UpdateSongBody = RequestBodyOf<SongPath, 'put'>;
 export type UpdateSongResponse = ResponseOf<SongPath, 'put', 200>;
 
 export type DeleteSongParams = PathParamsOf<SongPath, 'delete'>;
+
+// Arrangement types
+export type ListArrangementsParams = PathParamsOf<ArrangementsPath, 'get'>;
+export type ListArrangementsResponse = ResponseOf<ArrangementsPath, 'get', 200>;
+
+export type CreateArrangementParams = PathParamsOf<ArrangementsPath, 'post'>;
+export type CreateArrangementBody = RequestBodyOf<ArrangementsPath, 'post'>;
+export type CreateArrangementResponse = ResponseOf<ArrangementsPath, 'post', 201>;
+
+export type UpdateArrangementParams = PathParamsOf<ArrangementPath, 'put'>;
+export type UpdateArrangementBody = RequestBodyOf<ArrangementPath, 'put'>;
+export type UpdateArrangementResponse = ResponseOf<ArrangementPath, 'put', 200>;
+
+export type DeleteArrangementParams = PathParamsOf<ArrangementPath, 'delete'>;
 
 export async function listSongs(params?: ListSongsParams) {
   const { data } = await apiClient.get<ListSongsResponse>('/songs', { params });
@@ -49,4 +66,37 @@ export async function updateSong(id: string, body: UpdateSongBody) {
 
 export async function deleteSong(id: string) {
   await apiClient.delete<void>(`/songs/${id}`);
+}
+
+export async function listArrangements(songId: string) {
+  const { data } = await apiClient.get<ListArrangementsResponse>(
+    `/songs/${songId}/arrangements`,
+  );
+  return data;
+}
+
+export async function createArrangement(
+  songId: string,
+  body: CreateArrangementBody,
+) {
+  const { data } = await apiClient.post<CreateArrangementResponse>(
+    `/songs/${songId}/arrangements`,
+    body,
+  );
+  return data;
+}
+
+export async function updateArrangement(
+  arrangementId: string,
+  body: UpdateArrangementBody,
+) {
+  const { data } = await apiClient.put<UpdateArrangementResponse>(
+    `/songs/arrangements/${arrangementId}`,
+    body,
+  );
+  return data;
+}
+
+export async function deleteArrangement(arrangementId: string) {
+  await apiClient.delete<void>(`/songs/arrangements/${arrangementId}`);
 }
