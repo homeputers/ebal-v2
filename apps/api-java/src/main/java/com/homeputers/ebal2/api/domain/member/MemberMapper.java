@@ -19,9 +19,9 @@ public interface MemberMapper {
 
     int count(@Param("query") String query);
 
-    void insert(Member member);
+    void insert(@Param("id") UUID id, @Param("displayName") String displayName, @Param("instruments") List<String> instruments);
 
-    void update(Member member);
+    void update(@Param("id") UUID id, @Param("displayName") String displayName, @Param("instruments") List<String> instruments);
 
     void delete(@Param("id") UUID id);
 }

@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.homeputers.ebal2.api.domain.group.GroupMapper">
-    <resultMap id="groupResult" type="com.homeputers.ebal2.api.domain.group.Group">
-        <id property="id" column="id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
-        <result property="name" column="name"/>
-    </resultMap>
-
-    <select id="findById" resultMap="groupResult">
-        select id, name from groups
+    <select id="findById" resultType="com.homeputers.ebal2.api.domain.group.Group">
+        select id, name, cast(null as varchar) as members from groups
         where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
     </select>
 
-    <select id="findPage" resultMap="groupResult">
-        select id, name from groups
+    <select id="findPage" resultType="com.homeputers.ebal2.api.domain.group.Group">
+        select id, name, cast(null as varchar) as members from groups
         order by name
         limit #{limit} offset #{offset}
     </select>
