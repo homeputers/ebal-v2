@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -14,10 +14,11 @@ import {
   useUpdatePlanItem,
   useRemovePlanItem,
 } from '../../features/services/hooks';
-import { getSong, listArrangements, getArrangement } from '@/api/songs';
+import { getSong, listArrangements } from '@/api/songs';
 import SongPicker from '@/components/pickers/SongPicker';
 import ArrangementPicker from '@/components/pickers/ArrangementPicker';
 import ServiceForm from '../../features/services/ServiceForm';
+import { usePlanArrangementInfo } from '@/features/services/usePlanArrangementInfo';
 
 function Modal({
   open,
@@ -60,6 +61,7 @@ export default function ServiceDetailPage() {
   const { id } = useParams();
   const { data: service, isLoading, isError } = useService(id);
   const { data: planItems, isLoading: planLoading } = usePlanItems(id);
+  const arrangementInfo = usePlanArrangementInfo(planItems);
 
   const updateServiceMut = useUpdateService();
   const addItemMut = useAddPlanItem(id!);
@@ -95,37 +97,6 @@ export default function ServiceDetailPage() {
     enabled: !!songId,
   });
   const selectedArrangement = arrangements?.find((a) => a.id === arrangementId);
-
-  const [arrangementCache, setArrangementCache] = useState<
-    Record<string, { songTitle: string; key?: string; bpm?: number; meter?: string }>
-  >({});
-
-  useEffect(() => {
-    const unknown = (planItems ?? [])
-      .filter((p) => p.type === 'song' && p.refId && !arrangementCache[p.refId])
-      .map((p) => p.refId!);
-    if (unknown.length === 0) return;
-    (async () => {
-      for (const aid of unknown) {
-        try {
-          const arr = await getArrangement(aid);
-          const s = arr.songId ? await getSong(arr.songId) : undefined;
-          setArrangementCache((prev) => ({
-            ...prev,
-            [aid]: {
-              songTitle: s?.title ?? 'Song',
-              key: arr.key,
-              bpm: arr.bpm,
-              meter: arr.meter,
-            },
-          }));
-        } catch {
-          /* ignore */
-        }
-      }
-    })();
-    // TODO: expose endpoint returning resolved labels server-side
-  }, [planItems]);
 
   if (isLoading) return <div className="p-4">Loading…</div>;
   if (isError || !service) return <div className="p-4">Failed to load</div>;
@@ -242,9 +213,9 @@ export default function ServiceDetailPage() {
                       <span className="font-semibold capitalize">{item.type}</span>
                       {item.type === 'song' && item.refId && (
                         <div className="text-sm text-gray-600">
-                          {arrangementCache[item.refId]
+                          {arrangementInfo[item.refId]
                             ? (() => {
-                                const info = arrangementCache[item.refId];
+                                const info = arrangementInfo[item.refId];
                                 let text = `${info.songTitle} – Key ${info.key ?? ''}`;
                                 if (info.bpm) text += ` • ${info.bpm} BPM`;
                                 if (info.meter) text += ` • ${info.meter}`;
