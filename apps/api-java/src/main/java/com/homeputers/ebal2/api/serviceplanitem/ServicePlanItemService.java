@@ -31,10 +31,10 @@ public class ServicePlanItemService {
         ServicePlanItem updated = new ServicePlanItem(
                 existing.id(),
                 existing.service(),
-                request.getType(),
-                request.getRefId(),
-                request.getSortOrder(),
-                request.getNotes()
+                request.getType() != null ? request.getType() : existing.type(),
+                request.getRefId() != null ? request.getRefId() : existing.refId(),
+                request.getSortOrder() != null ? request.getSortOrder() : existing.sortOrder(),
+                request.getNotes() != null ? request.getNotes() : existing.notes()
         );
         mapper.update(updated);
         return updated;
