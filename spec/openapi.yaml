@@ -499,6 +499,16 @@ paths:
         schema:
           type: string
           format: uuid
+    get:
+      tags: [Songs]
+      operationId: getArrangement
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrangementResponse'
     put:
       tags: [Songs]
       operationId: updateArrangement

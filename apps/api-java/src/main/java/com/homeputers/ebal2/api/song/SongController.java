@@ -72,6 +72,12 @@ public class SongController implements SongsApi {
     }
 
     @Override
+    public ResponseEntity<ArrangementResponse> getArrangement(UUID arrangementId) {
+        Arrangement arrangement = service.getArrangement(arrangementId);
+        return ResponseEntity.ok(ArrangementDtoMapper.toResponse(arrangement));
+    }
+
+    @Override
     public ResponseEntity<ArrangementResponse> updateArrangement(UUID arrangementId, ArrangementRequest arrangementRequest) {
         Arrangement updated = service.updateArrangement(arrangementId, arrangementRequest);
         return ResponseEntity.ok(ArrangementDtoMapper.toResponse(updated));
