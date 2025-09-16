@@ -1,5 +1,5 @@
 import apiClient from './client';
-import type { paths } from './types';
+import type { paths, components } from './types';
 import {
   QueryOf,
   ResponseOf,
@@ -43,6 +43,8 @@ export type UpdateArrangementBody = RequestBodyOf<ArrangementPath, 'put'>;
 export type UpdateArrangementResponse = ResponseOf<ArrangementPath, 'put', 200>;
 
 export type DeleteArrangementParams = PathParamsOf<ArrangementPath, 'delete'>;
+export type GetArrangementParams = PathParamsOf<ArrangementPath, 'get'>;
+export type GetArrangementResponse = ResponseOf<ArrangementPath, 'get', 200>;
 
 export async function listSongs(params?: ListSongsParams) {
   const { data } = await apiClient.get<ListSongsResponse>('/songs', { params });
@@ -99,4 +101,11 @@ export async function updateArrangement(
 
 export async function deleteArrangement(arrangementId: string) {
   await apiClient.delete<void>(`/songs/arrangements/${arrangementId}`);
+}
+
+export async function getArrangement(arrangementId: string) {
+  const { data } = await apiClient.get<GetArrangementResponse>(
+    `/songs/arrangements/${arrangementId}`,
+  );
+  return data;
 }

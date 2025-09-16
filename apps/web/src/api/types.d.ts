@@ -20,6 +20,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/groups": {
         parameters: {
             query?: never;
@@ -238,7 +254,7 @@ export interface paths {
             };
             cookie?: never;
         };
-        get?: never;
+        get: operations["getArrangement"];
         put: operations["updateArrangement"];
         post?: never;
         delete: operations["deleteArrangement"];
@@ -376,6 +392,14 @@ export interface components {
             totalPages?: number;
             number?: number;
             size?: number;
+        };
+        SearchResult: {
+            /** @enum {string} */
+            kind: "member" | "song" | "service";
+            /** Format: uuid */
+            id: string;
+            title: string;
+            subtitle?: string;
         };
         MemberRequest: {
             displayName: string;
@@ -528,6 +552,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    search: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResult"][];
                 };
             };
         };
@@ -1170,6 +1216,28 @@ export interface operations {
         responses: {
             /** @description Created */
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArrangementResponse"];
+                };
+            };
+        };
+    };
+    getArrangement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                arrangementId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

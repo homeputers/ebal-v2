@@ -84,6 +84,14 @@ public class SongService {
         songMapper.delete(id);
     }
 
+    public Arrangement getArrangement(UUID id) {
+        Arrangement arrangement = arrangementMapper.findById(id);
+        if (arrangement == null) {
+            throw new NoSuchElementException("Arrangement not found");
+        }
+        return arrangement;
+    }
+
     public List<Arrangement> listArrangements(UUID songId) {
         return arrangementMapper.findBySongId(songId);
     }

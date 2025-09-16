@@ -32,7 +32,7 @@ export type RequestBodyOf<
 export type QueryOf<
   TPath extends keyof paths,
   TMethod extends HttpMethod & keyof PathItem<TPath>
-> = Operation<TPath, TMethod>['parameters'] extends { query: infer T }
+> = Operation<TPath, TMethod>['parameters'] extends { query?: infer T }
   ? T
   : never;
 

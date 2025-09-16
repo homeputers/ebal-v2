@@ -2,12 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.homeputers.ebal2.api.domain.arrangement.ArrangementMapper">
     <resultMap id="arrangementResult" type="com.homeputers.ebal2.api.domain.arrangement.Arrangement">
-        <id property="id" column="id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
-        <result property="key" column="key"/>
-        <result property="bpm" column="bpm"/>
-        <result property="meter" column="meter"/>
-        <result property="lyricsChordpro" column="lyrics_chordpro"/>
-        <association property="song" column="song_id" javaType="com.homeputers.ebal2.api.domain.song.Song" select="com.homeputers.ebal2.api.domain.song.SongMapper.findById"/>
+        <constructor>
+            <idArg column="id" javaType="java.util.UUID"
+                   typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+            <arg column="song_id" javaType="com.homeputers.ebal2.api.domain.song.Song"
+                 select="com.homeputers.ebal2.api.domain.song.SongMapper.findById"/>
+            <arg column="key" javaType="java.lang.String"/>
+            <arg column="bpm" javaType="java.lang.Integer"/>
+            <arg column="meter" javaType="java.lang.String"/>
+            <arg column="lyrics_chordpro" javaType="java.lang.String"/>
+        </constructor>
     </resultMap>
 
     <select id="findById" resultMap="arrangementResult">
@@ -25,7 +29,7 @@
         insert into arrangements (id, song_id, key, bpm, meter, lyrics_chordpro)
         values (
             #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
-            #{song.id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{songId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
             #{key},
             #{bpm},
             #{meter},
