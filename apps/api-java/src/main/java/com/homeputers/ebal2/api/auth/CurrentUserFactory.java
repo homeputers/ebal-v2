@@ -1,7 +1,6 @@
 package com.homeputers.ebal2.api.auth;
 
 import com.homeputers.ebal2.api.generated.model.CurrentUser;
-import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.core.Authentication;
@@ -34,8 +33,8 @@ public class CurrentUserFactory {
         }
 
         CurrentUser user = new CurrentUser();
-        user.setSubject(JsonNullable.of(authentication.getName()));
-        user.setDisplayName(JsonNullable.of(resolveDisplayName(authentication)));
+        user.setSubject(authentication.getName());
+        user.setDisplayName(resolveDisplayName(authentication));
         user.setAnonymous(Boolean.FALSE);
         user.setRoles(resolveRoles(authentication));
         user.setProvider(resolveProvider(authentication));
@@ -50,11 +49,11 @@ public class CurrentUserFactory {
 
     private CurrentUser anonymousUser() {
         CurrentUser user = new CurrentUser();
-        user.setSubject(JsonNullable.of(ANONYMOUS_SUBJECT));
-        user.setDisplayName(JsonNullable.of(ANONYMOUS_DISPLAY_NAME));
+        user.setSubject(ANONYMOUS_SUBJECT);
+        user.setDisplayName(ANONYMOUS_DISPLAY_NAME);
         user.setAnonymous(Boolean.TRUE);
         user.setRoles(Collections.emptyList());
-        user.setProvider(JsonNullable.of(null));
+        user.setProvider(null);
         return user;
     }
 
@@ -73,8 +72,8 @@ public class CurrentUserFactory {
         return authentication.getName();
     }
 
-    private JsonNullable<String> resolveProvider(Authentication authentication) {
+    private String resolveProvider(Authentication authentication) {
         // For session logins this can remain null; for OIDC we'll expose the registration id.
-        return JsonNullable.of(null);
+        return null;
     }
 }
