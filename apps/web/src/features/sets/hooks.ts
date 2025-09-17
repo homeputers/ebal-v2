@@ -1,41 +1,132 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   listSets,
+  getSet,
   createSet,
   updateSet,
   deleteSet,
+  listSetItems,
+  addSetItem,
+  updateSetItem,
+  removeSetItem,
   type ListSetsParams,
+  type AddSetItemBody,
+  type UpdateSetItemBody,
 } from '../../api/sets';
 
-export function useSetsList(params: ListSetsParams | undefined) {
+export function useSongSetsList(params?: ListSetsParams) {
   return useQuery({
-    queryKey: ['sets', params],
+    queryKey: ['songSets', params],
     queryFn: () => listSets(params),
     placeholderData: (prev) => prev,
   });
 }
 
+export function useSongSet(id: string | undefined) {
+  return useQuery({
+    queryKey: ['songSet', id],
+    queryFn: () => getSet(id!),
+    enabled: !!id,
+  });
+}
+
 export function useCreateSet() {
   const qc = useQueryClient();
+
   return useMutation({
     mutationFn: createSet,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['sets'] }),
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['songSets'] });
+      if (data?.id) {
+        qc.invalidateQueries({ queryKey: ['songSet', data.id] });
+        qc.invalidateQueries({ queryKey: ['songSetItems', data.id] });
+      }
+    },
   });
 }
 
 export function useUpdateSet() {
   const qc = useQueryClient();
+
   return useMutation({
     mutationFn: ({ id, body }: { id: string; body: Parameters<typeof updateSet>[1] }) =>
       updateSet(id, body),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['sets'] }),
+    onSuccess: (_, { id }) => {
+      qc.invalidateQueries({ queryKey: ['songSets'] });
+      qc.invalidateQueries({ queryKey: ['songSet', id] });
+      qc.invalidateQueries({ queryKey: ['songSetItems', id] });
+    },
   });
 }
 
 export function useDeleteSet() {
   const qc = useQueryClient();
+
   return useMutation({
     mutationFn: deleteSet,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['sets'] }),
+    onSuccess: (_, id) => {
+      qc.invalidateQueries({ queryKey: ['songSets'] });
+      qc.invalidateQueries({ queryKey: ['songSet', id] });
+      qc.invalidateQueries({ queryKey: ['songSetItems', id] });
+    },
+  });
+}
+
+export function useSetItems(setId: string | undefined) {
+  return useQuery({
+    queryKey: ['songSetItems', setId],
+    queryFn: () => listSetItems(setId!),
+    enabled: !!setId,
+  });
+}
+
+export function useAddSetItem(setId: string) {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (body: AddSetItemBody) => addSetItem(setId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['songSetItems', setId] });
+      qc.invalidateQueries({ queryKey: ['songSet', setId] });
+      qc.invalidateQueries({ queryKey: ['songSets'] });
+    },
+  });
+}
+
+type UpdateSetItemVariables = {
+  setId: string;
+  itemId: string;
+  body: UpdateSetItemBody;
+};
+
+export function useUpdateSetItem() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ setId, itemId, body }: UpdateSetItemVariables) =>
+      updateSetItem(itemId, body),
+    onSuccess: (_, { setId }) => {
+      qc.invalidateQueries({ queryKey: ['songSetItems', setId] });
+      qc.invalidateQueries({ queryKey: ['songSet', setId] });
+      qc.invalidateQueries({ queryKey: ['songSets'] });
+    },
+  });
+}
+
+type RemoveSetItemVariables = {
+  setId: string;
+  itemId: string;
+};
+
+export function useRemoveSetItem() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ itemId }: RemoveSetItemVariables) => removeSetItem(itemId),
+    onSuccess: (_, { setId }) => {
+      qc.invalidateQueries({ queryKey: ['songSetItems', setId] });
+      qc.invalidateQueries({ queryKey: ['songSet', setId] });
+      qc.invalidateQueries({ queryKey: ['songSets'] });
+    },
   });
 }

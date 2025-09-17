@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
-import { useSetsList, useCreateSet, useUpdateSet, useDeleteSet } from '../../features/sets/hooks';
+import { useSongSetsList, useCreateSet, useUpdateSet, useDeleteSet } from '../../features/sets/hooks';
 
 export default function SetsPage() {
   const [query, setQuery] = useState('');
   const params = useMemo(() => (query ? { query, page: 0, size: 20 } : { page: 0, size: 20 }), [query]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, isLoading, isError } = useSetsList(params as any);
+  const { data, isLoading, isError } = useSongSetsList(params as any);
 
   const createMut = useCreateSet();
   const updateMut = useUpdateSet();
