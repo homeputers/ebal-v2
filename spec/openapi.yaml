@@ -17,6 +17,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
+  /storage/health:
+    get:
+      tags:
+        - Storage
+      summary: Check storage module readiness
+      description: Returns the current status of the storage subsystem when enabled.
+      operationId: storageHealth
+      responses:
+        '200':
+          description: Storage module is available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageHealth'
   /auth/me:
     get:
       tags:
@@ -751,6 +765,15 @@ components:
       properties:
         status:
           type: string
+    StorageHealth:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          description: High level status string for the storage module.
+      example:
+        status: enabled
     CurrentUser:
       type: object
       required: [subject, displayName, anonymous, roles]

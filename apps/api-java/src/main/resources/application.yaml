@@ -10,3 +10,12 @@ mybatis:
   type-handlers-package: com.homeputers.ebal2.api.mybatis.typehandler
   configuration:
     map-underscore-to-camel-case: true
+
+ebal:
+  storage:
+    enabled: ${EBAL_STORAGE_ENABLED:false}
+    endpoint: ${EBAL_STORAGE_ENDPOINT:}
+    access-key: ${EBAL_STORAGE_ACCESS_KEY:}
+    secret-key: ${EBAL_STORAGE_SECRET_KEY:}
+    bucket: ${EBAL_STORAGE_BUCKET:}
+    region: ${EBAL_STORAGE_REGION:}
