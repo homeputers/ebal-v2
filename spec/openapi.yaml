@@ -21,6 +21,11 @@ paths:
     get:
       tags:
         - Auth
+      summary: Retrieve the current principal
+      description: |
+        Returns information about the authenticated user making the request.
+        When the request is unauthenticated the API responds with an anonymous
+        placeholder user until session or OIDC login flows are enabled.
       operationId: getCurrentUser
       responses:
         '200':
@@ -29,6 +34,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CurrentUser'
+              examples:
+                anonymous:
+                  summary: Anonymous user placeholder
+                  value:
+                    subject: anonymous
+                    displayName: Anonymous
+                    anonymous: true
+                    roles: []
+                    provider: null
   /search:
     get:
       tags: [Search]
@@ -760,6 +774,12 @@ components:
           type: string
           nullable: true
           description: Identity provider id used once OIDC is enabled.
+      example:
+        subject: anonymous
+        displayName: Anonymous
+        anonymous: true
+        roles: []
+        provider: null
     GroupRequest:
       type: object
       required: [name]

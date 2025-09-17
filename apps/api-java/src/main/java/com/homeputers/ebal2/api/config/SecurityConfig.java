@@ -3,6 +3,8 @@ package com.homeputers.ebal2.api.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationTrustResolver;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -49,5 +51,12 @@ public class SecurityConfig {
     AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         // Expose AuthenticationManager so session logins or an OAuth2 login controller can inject it later.
         return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    AuthenticationTrustResolver authenticationTrustResolver() {
+        // Allows collaborators like CurrentUserFactory to detect anonymous tokens while keeping the bean overrideable
+        // for future OIDC-specific trust resolvers.
+        return new AuthenticationTrustResolverImpl();
     }
 }
