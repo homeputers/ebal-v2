@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { components } from '../../api/types';
-import { transposeChordPro } from '../../lib/chords';
+import { ChordProView } from '../../components/chordpro/ChordProView';
 
 const schema = z.object({
   key: z.string().min(1, 'Key is required'),
@@ -39,9 +39,10 @@ export function ArrangementForm({
 
   const [transpose, setTranspose] = useState(0);
   const [useFlats, setUseFlats] = useState(false);
+  const [layout, setLayout] = useState<'inline' | 'above'>('above');
 
   const lyrics = watch('lyricsChordpro') || '';
-  const preview = transposeChordPro(lyrics, transpose, useFlats);
+  const normalizedLyrics = lyrics.replace(/\r\n?/g, '\n');
 
   return (
     <form
@@ -118,7 +119,7 @@ export function ArrangementForm({
           </div>
         </div>
         <div className="flex-1 flex flex-col">
-          <div className="mb-2 flex gap-2">
+          <div className="mb-2 flex gap-2 items-center">
             <button
               type="button"
               className="px-2 py-1 border rounded"
@@ -140,10 +141,27 @@ export function ArrangementForm({
             >
               {useFlats ? 'Use sharps' : 'Use flats'}
             </button>
+            <label className="text-sm">
+              Layout
+              <select
+                value={layout}
+                onChange={(event) =>
+                  setLayout(event.target.value === 'above' ? 'above' : 'inline')
+                }
+                className="ml-1 border rounded px-2 py-1 text-sm"
+              >
+                <option value="above">Chords above</option>
+                <option value="inline">Inline</option>
+              </select>
+            </label>
           </div>
-          <pre className="whitespace-pre-wrap border p-2 rounded flex-1 overflow-auto">
-            {preview}
-          </pre>
+          <ChordProView
+            source={normalizedLyrics}
+            transpose={transpose}
+            useFlats={useFlats}
+            layout={layout}
+            className="flex-1 overflow-auto p-3 border rounded font-mono text-sm"
+          />
         </div>
       </div>
     </form>
