@@ -1,25 +1,26 @@
 package com.homeputers.ebal2.api.storage;
 
+import com.homeputers.ebal2.api.generated.StorageApi;
+import com.homeputers.ebal2.api.generated.model.StorageHealth;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 @RestController
-@RequestMapping("/api/v1/storage")
+@RequestMapping("/api/v1")
 @ConditionalOnProperty(prefix = "ebal.storage", name = "enabled", havingValue = "true")
-public class StorageController {
+public class StorageController implements StorageApi {
     private final StorageService storageService;
 
     public StorageController(StorageService storageService) {
         this.storageService = storageService;
     }
 
-    @GetMapping("/health")
-    public ResponseEntity<Map<String, String>> health() {
-        return ResponseEntity.ok(Map.of("status", "enabled"));
+    @Override
+    public ResponseEntity<StorageHealth> storageHealth() {
+        StorageHealth health = new StorageHealth();
+        health.setStatus(storageService != null ? "enabled" : "unavailable");
+        return ResponseEntity.ok(health);
     }
 }
