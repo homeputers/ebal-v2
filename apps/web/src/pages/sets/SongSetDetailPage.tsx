@@ -31,7 +31,8 @@ import {
   useReorderSetItems,
 } from '@/features/sets/hooks';
 import type { ListSetItemsResponse } from '@/api/sets';
-import { useArrangementInfo, type ArrangementInfo } from '@/features/arrangements/useArrangementInfo';
+import { useArrangementLabels } from '@/hooks/useArrangementLabels';
+import type { ArrangementLabel } from '@/lib/arrangements-cache';
 import { computeKeys } from '@/lib/keys';
 
 function Modal({
@@ -61,7 +62,7 @@ type SongSetItemWithId = SongSetItem & { id: string };
 
 type SortableSetItemProps = {
   item: SongSetItemWithId;
-  arrangement?: ArrangementInfo;
+  arrangement?: ArrangementLabel;
   onTransposeChange: (itemId: string, next: number) => void;
   onCapoChange: (itemId: string, next: number) => void;
   onRemove: (itemId: string) => void;
@@ -69,7 +70,7 @@ type SortableSetItemProps = {
 };
 
 function formatArrangementDetails(
-  info?: ArrangementInfo,
+  info?: ArrangementLabel,
   options?: { includeKey?: boolean; useFlats?: boolean },
 ) {
   if (!info) return '…';
@@ -147,7 +148,22 @@ function SortableSetItem({
     return parts.join(', ');
   })();
 
-  const arrangementMeta = formatArrangementDetails(arrangement, { includeKey: false, useFlats });
+  const arrangementSummary = (() => {
+    const fallback = item.arrangementId ? `Arrangement ${item.arrangementId}` : 'Arrangement';
+    if (!arrangement) {
+      return fallback;
+    }
+    const summaryParts = [
+      arrangement.songTitle ?? (arrangement.id ? `Arrangement ${arrangement.id}` : fallback),
+    ];
+    const detail = formatArrangementDetails(arrangement, { useFlats });
+    if (detail) summaryParts.push(detail);
+    return summaryParts.join(' • ');
+  })();
+
+  const arrangementMeta = !arrangement
+    ? formatArrangementDetails(arrangement, { includeKey: false, useFlats })
+    : '';
 
   return (
     <li
@@ -157,7 +173,7 @@ function SortableSetItem({
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="font-semibold">{arrangement?.songTitle ?? 'Song'}</div>
+          <div className="font-semibold">{arrangementSummary}</div>
           <div className="text-sm text-gray-600 space-y-1">
             <div>{keyLine}</div>
             {arrangementMeta ? <div>{arrangementMeta}</div> : null}
@@ -242,7 +258,8 @@ export default function SongSetDetailPage() {
   const { data: itemsData, isLoading: itemsLoading, isError: itemsError } = useSetItems(id ?? undefined);
 
   const [orderedItems, setOrderedItems] = useState<SongSetItemWithId[]>([]);
-  const arrangementInfo = useArrangementInfo(orderedItems.map((item) => item.arrangementId));
+  const arrangementLabelsQuery = useArrangementLabels(orderedItems.map((item) => item.arrangementId));
+  const arrangementLabels = arrangementLabelsQuery.data ?? {};
 
   const [editingSet, setEditingSet] = useState(false);
   const [songId, setSongId] = useState<string | undefined>();
@@ -264,8 +281,10 @@ export default function SongSetDetailPage() {
     setOrderedItems(sorted);
   }, [itemsData]);
 
-  const addArrangementInfo = useArrangementInfo(arrangementId ? [arrangementId] : []);
-  const selectedArrangementInfo = arrangementId ? addArrangementInfo[arrangementId] : undefined;
+  const addArrangementLabelsQuery = useArrangementLabels(arrangementId ? [arrangementId] : []);
+  const selectedArrangementInfo = arrangementId
+    ? addArrangementLabelsQuery.data?.[arrangementId]
+    : undefined;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -491,7 +510,7 @@ export default function SongSetDetailPage() {
                     <SortableSetItem
                       key={item.id}
                       item={item}
-                      arrangement={item.arrangementId ? arrangementInfo[item.arrangementId] : undefined}
+                      arrangement={item.arrangementId ? arrangementLabels[item.arrangementId] : undefined}
                       onTransposeChange={handleTransposeChange}
                       onCapoChange={handleCapoChange}
                       onRemove={handleRemove}

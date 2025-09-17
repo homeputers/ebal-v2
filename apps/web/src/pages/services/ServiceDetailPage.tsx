@@ -61,7 +61,7 @@ export default function ServiceDetailPage() {
   const { id } = useParams();
   const { data: service, isLoading, isError } = useService(id);
   const { data: planItems, isLoading: planLoading } = usePlanItems(id);
-  const arrangementInfo = usePlanArrangementInfo(planItems);
+  const { data: arrangementLabels } = usePlanArrangementInfo(planItems);
 
   const updateServiceMut = useUpdateService();
   const addItemMut = useAddPlanItem(id!);
@@ -97,6 +97,21 @@ export default function ServiceDetailPage() {
     enabled: !!songId,
   });
   const selectedArrangement = arrangements?.find((a) => a.id === arrangementId);
+  const arrangementLabelMap = arrangementLabels ?? {};
+
+  const formatArrangementLine = (arrId: string) => {
+    const label = arrangementLabelMap[arrId];
+    if (!label) {
+      return `Arrangement ${arrId}`;
+    }
+    const parts = [
+      label.songTitle ?? `Arrangement ${arrId}`,
+      label.key ? `Key ${label.key}` : undefined,
+      label.bpm != null ? `${label.bpm} BPM` : undefined,
+      label.meter ?? undefined,
+    ].filter(Boolean);
+    return parts.join(' • ') || `Arrangement ${arrId}`;
+  };
 
   if (isLoading) return <div className="p-4">Loading…</div>;
   if (isError || !service) return <div className="p-4">Failed to load</div>;
@@ -213,15 +228,9 @@ export default function ServiceDetailPage() {
                       <span className="font-semibold capitalize">{item.type}</span>
                       {item.type === 'song' && item.refId && (
                         <div className="text-sm text-gray-600">
-                          {arrangementInfo[item.refId]
-                            ? (() => {
-                                const info = arrangementInfo[item.refId];
-                                let text = `${info.songTitle} – Key ${info.key ?? ''}`;
-                                if (info.bpm) text += ` • ${info.bpm} BPM`;
-                                if (info.meter) text += ` • ${info.meter}`;
-                                return text;
-                              })()
-                            : '…'}
+                          {arrangementLabelMap[item.refId]
+                            ? formatArrangementLine(item.refId)
+                            : `Arrangement ${item.refId}`}
                         </div>
                       )}
                     </div>
