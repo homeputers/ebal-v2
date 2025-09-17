@@ -19,6 +19,8 @@ import SongPicker from '@/components/pickers/SongPicker';
 import ArrangementPicker from '@/components/pickers/ArrangementPicker';
 import ServiceForm from '../../features/services/ServiceForm';
 import { usePlanArrangementInfo } from '@/features/services/usePlanArrangementInfo';
+import { formatArrangementLine, formatKeyTransform } from '@/lib/arrangement-labels';
+import { computeKeys } from '@/lib/keys';
 
 function Modal({
   open,
@@ -98,20 +100,26 @@ export default function ServiceDetailPage() {
   });
   const selectedArrangement = arrangements?.find((a) => a.id === arrangementId);
   const arrangementLabelMap = arrangementLabels ?? {};
-
-  const formatArrangementLine = (arrId: string) => {
-    const label = arrangementLabelMap[arrId];
-    if (!label) {
-      return `Arrangement ${arrId}`;
-    }
-    const parts = [
-      label.songTitle ?? `Arrangement ${arrId}`,
-      label.key ? `Key ${label.key}` : undefined,
-      label.bpm != null ? `${label.bpm} BPM` : undefined,
-      label.meter ?? undefined,
-    ].filter(Boolean);
-    return parts.join(' • ') || `Arrangement ${arrId}`;
-  };
+  const selectedLabel = arrangementId ? arrangementLabelMap[arrangementId] : undefined;
+  const previewKeySource = selectedLabel?.key ?? selectedArrangement?.key ?? null;
+  const previewKeyInfo = previewKeySource ? computeKeys(previewKeySource, 0, 0, false) : undefined;
+  const previewLine = arrangementId
+    ? formatArrangementLine({
+        songTitle: selectedLabel?.songTitle ?? song?.title ?? `Arrangement ${arrangementId}`,
+        key: previewKeyInfo?.originalKey ?? previewKeySource ?? null,
+        bpm: selectedLabel?.bpm ?? selectedArrangement?.bpm ?? null,
+        meter: selectedLabel?.meter ?? selectedArrangement?.meter ?? null,
+      })
+    : null;
+  const previewKeySummary = arrangementId
+    ? formatKeyTransform({
+        originalKey: previewKeyInfo?.originalKey ?? previewKeySource ?? 'N/A',
+        soundingKey: previewKeyInfo?.soundingKey ?? previewKeySource ?? 'N/A',
+        shapeKey: previewKeyInfo?.shapeKey,
+        transpose: 0,
+        capo: 0,
+      })
+    : null;
 
   if (isLoading) return <div className="p-4">Loading…</div>;
   if (isError || !service) return <div className="p-4">Failed to load</div>;
@@ -187,11 +195,10 @@ export default function ServiceDetailPage() {
                   value={arrangementId}
                   onChange={(id) => setValue('arrangementId', id)}
                 />
-                {arrangementId && selectedArrangement && song && (
-                  <div className="text-xs text-gray-600">
-                    {song.title} – Key {selectedArrangement.key}
-                    {selectedArrangement.bpm && ` • ${selectedArrangement.bpm} BPM`}
-                    {selectedArrangement.meter && ` • ${selectedArrangement.meter}`}
+                {arrangementId && previewLine && previewKeySummary && (
+                  <div className="text-xs text-muted-foreground space-y-0.5">
+                    <div>{previewLine}</div>
+                    <div>{previewKeySummary}</div>
                   </div>
                 )}
                 {errors.arrangementId && (
@@ -221,36 +228,68 @@ export default function ServiceDetailPage() {
           {planLoading && <div>Loading…</div>}
           {!planLoading && planItems && planItems.length > 0 ? (
             <ul className="space-y-2">
-              {planItems.map((item) => (
-                <li key={item.id} className="border p-2 rounded">
-                  <div className="flex justify-between mb-2">
-                    <div>
-                      <span className="font-semibold capitalize">{item.type}</span>
-                      {item.type === 'song' && item.refId && (
-                        <div className="text-sm text-gray-600">
-                          {arrangementLabelMap[item.refId]
-                            ? formatArrangementLine(item.refId)
-                            : `Arrangement ${item.refId}`}
-                        </div>
-                      )}
+              {planItems.map((item) => {
+                let line: string | null = null;
+                let keySummary: string | null = null;
+
+                if (item.type === 'song' && item.refId) {
+                  const label = arrangementLabelMap[item.refId];
+                  const fallbackTitle = `Arrangement ${item.refId}`;
+                  const extras = item as Record<string, unknown>;
+                  const transpose =
+                    typeof extras['transpose'] === 'number' ? (extras['transpose'] as number) : 0;
+                  const capo = typeof extras['capo'] === 'number' ? (extras['capo'] as number) : 0;
+                  const keyInfo = label?.key
+                    ? computeKeys(label.key, transpose, capo, false)
+                    : undefined;
+
+                  line = formatArrangementLine({
+                    songTitle: label?.songTitle ?? fallbackTitle,
+                    key: keyInfo?.originalKey ?? label?.key ?? null,
+                    bpm: label?.bpm ?? null,
+                    meter: label?.meter ?? null,
+                  });
+                  keySummary = formatKeyTransform({
+                    originalKey: keyInfo?.originalKey ?? label?.key ?? 'N/A',
+                    soundingKey: keyInfo?.soundingKey ?? label?.key ?? 'N/A',
+                    shapeKey: keyInfo?.shapeKey,
+                    transpose,
+                    capo,
+                  });
+                }
+
+                return (
+                  <li key={item.id} className="border p-2 rounded">
+                    <div className="flex justify-between mb-2">
+                      <div className="space-y-1">
+                        <div className="font-semibold capitalize">{item.type}</div>
+                        {line ? (
+                          <div className="space-y-0.5">
+                            <div>{line}</div>
+                            {keySummary ? (
+                              <div className="text-sm text-muted-foreground">{keySummary}</div>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </div>
+                      <button
+                        className="px-2 py-1 text-sm bg-red-500 text-white rounded"
+                        onClick={() => item.id && removeItemMut.mutate(item.id)}
+                      >
+                        Remove
+                      </button>
                     </div>
-                    <button
-                      className="px-2 py-1 text-sm bg-red-500 text-white rounded"
-                      onClick={() => item.id && removeItemMut.mutate(item.id)}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                  <textarea
-                    defaultValue={item.notes || ''}
-                    className="w-full border p-1 rounded"
-                    onBlur={(e) =>
-                      item.id &&
-                      updateItemMut.mutate({ id: item.id, body: { notes: e.target.value } })
-                    }
-                  />
-                </li>
-              ))}
+                    <textarea
+                      defaultValue={item.notes || ''}
+                      className="w-full border p-1 rounded"
+                      onBlur={(e) =>
+                        item.id &&
+                        updateItemMut.mutate({ id: item.id, body: { notes: e.target.value } })
+                      }
+                    />
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             !planLoading && <div>No plan items</div>

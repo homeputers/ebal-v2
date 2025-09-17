@@ -1,7 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useService, usePlanItems } from '../../features/services/hooks';
 import { usePlanArrangementInfo } from '@/features/services/usePlanArrangementInfo';
-import type { ArrangementLabel } from '@/lib/arrangements-cache';
+import { formatArrangementLine, formatKeyTransform } from '@/lib/arrangement-labels';
+import { computeKeys } from '@/lib/keys';
 
 export default function ServicePrintPage() {
   const { id } = useParams();
@@ -13,15 +14,6 @@ export default function ServicePrintPage() {
   const formatType = (type?: string | null) => {
     if (!type) return 'Item';
     return type.charAt(0).toUpperCase() + type.slice(1);
-  };
-
-  const formatArrangementDetails = (info?: ArrangementLabel) => {
-    if (!info) return '';
-    const parts: string[] = [];
-    if (info.key) parts.push(`Key ${info.key}`);
-    if (info.bpm != null) parts.push(`${info.bpm} BPM`);
-    if (info.meter) parts.push(info.meter);
-    return parts.join(' • ');
   };
 
   const handlePrint = () => window.print();
@@ -42,27 +34,51 @@ export default function ServicePrintPage() {
       </div>
       {plan && plan.length > 0 ? (
         <ol className="space-y-2 list-decimal list-inside">
-          {plan.map((item) => (
-            <li key={item.id}>
-              <div className="font-semibold">
-                {item.type === 'song' && item.refId
-                  ? arrangementLabelMap[item.refId]?.songTitle ?? `Arrangement ${item.refId}`
-                  : formatType(item.type)}
-              </div>
-              {item.type === 'song' && item.refId && (
-                <div className="text-sm text-gray-600">
-                  {(() => {
-                    const info = arrangementLabelMap[item.refId];
-                    const details = formatArrangementDetails(info);
-                    return details || `Arrangement ${item.refId}`;
-                  })()}
+          {plan.map((item) => {
+            const isSong = item.type === 'song' && item.refId;
+            let line: string | null = null;
+            let keySummary: string | null = null;
+
+            if (isSong && item.refId) {
+              const label = arrangementLabelMap[item.refId];
+              const fallbackTitle = `Arrangement ${item.refId}`;
+              const extras = item as Record<string, unknown>;
+              const transpose =
+                typeof extras['transpose'] === 'number' ? (extras['transpose'] as number) : 0;
+              const capo = typeof extras['capo'] === 'number' ? (extras['capo'] as number) : 0;
+              const keyInfo = label?.key
+                ? computeKeys(label.key, transpose, capo, false)
+                : undefined;
+
+              line = formatArrangementLine({
+                songTitle: label?.songTitle ?? fallbackTitle,
+                key: keyInfo?.originalKey ?? label?.key ?? null,
+                bpm: label?.bpm ?? null,
+                meter: label?.meter ?? null,
+              });
+              keySummary = formatKeyTransform({
+                originalKey: keyInfo?.originalKey ?? label?.key ?? 'N/A',
+                soundingKey: keyInfo?.soundingKey ?? label?.key ?? 'N/A',
+                shapeKey: keyInfo?.shapeKey,
+                transpose,
+                capo,
+              });
+            }
+
+            return (
+              <li key={item.id}>
+                <div className="font-semibold">
+                  {isSong && line ? line : formatType(item.type)}
                 </div>
-              )}
-              {item.notes && (
-                <div className="text-sm whitespace-pre-line mt-1">{item.notes}</div>
-              )}
-            </li>
-          ))}
+                {isSong && keySummary ? (
+                  <div className="text-sm text-muted-foreground">{keySummary}</div>
+                ) : null}
+                {item.notes && (
+                  <div className="text-sm whitespace-pre-line mt-1">{item.notes}</div>
+                )}
+              </li>
+            );
+          })}
         </ol>
       ) : (
         <div>No items</div>
