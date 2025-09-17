@@ -19,7 +19,7 @@ class MeControllerTest extends AbstractIntegrationTest {
 
     @Test
     void returnsAnonymousUser() {
-        ResponseEntity<CurrentUser> response = restTemplate.getForEntity("/api/v1/me", CurrentUser.class);
+        ResponseEntity<CurrentUser> response = restTemplate.getForEntity("/api/v1/auth/me", CurrentUser.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         CurrentUser currentUser = response.getBody();

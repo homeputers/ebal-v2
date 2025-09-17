@@ -20,7 +20,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/me": {
+    "/auth/me": {
         parameters: {
             query?: never;
             header?: never;
