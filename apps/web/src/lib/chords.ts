@@ -4,7 +4,7 @@ const NOTES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 
 function transposeNote(note: string, steps: number, useFlats: boolean): string {
   const indexSharp = NOTES_SHARP.indexOf(note);
   const indexFlat = NOTES_FLAT.indexOf(note);
-  let index = indexSharp !== -1 ? indexSharp : indexFlat;
+  const index = indexSharp !== -1 ? indexSharp : indexFlat;
   if (index === -1) return note;
   const newIndex = (index + steps + 12) % 12;
   return useFlats ? NOTES_FLAT[newIndex] : NOTES_SHARP[newIndex];

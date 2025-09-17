@@ -9,9 +9,11 @@ import {
   addSetItem,
   updateSetItem,
   removeSetItem,
+  reorderSetItems,
   type ListSetsParams,
   type AddSetItemBody,
   type UpdateSetItemBody,
+  type ReorderSetItemsBody,
 } from '../../api/sets';
 
 export function useSongSetsList(params?: ListSetsParams) {
@@ -103,8 +105,7 @@ export function useUpdateSetItem() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ setId, itemId, body }: UpdateSetItemVariables) =>
-      updateSetItem(itemId, body),
+    mutationFn: ({ itemId, body }: UpdateSetItemVariables) => updateSetItem(itemId, body),
     onSuccess: (_, { setId }) => {
       qc.invalidateQueries({ queryKey: ['songSetItems', setId] });
       qc.invalidateQueries({ queryKey: ['songSet', setId] });
@@ -124,6 +125,19 @@ export function useRemoveSetItem() {
   return useMutation({
     mutationFn: ({ itemId }: RemoveSetItemVariables) => removeSetItem(itemId),
     onSuccess: (_, { setId }) => {
+      qc.invalidateQueries({ queryKey: ['songSetItems', setId] });
+      qc.invalidateQueries({ queryKey: ['songSet', setId] });
+      qc.invalidateQueries({ queryKey: ['songSets'] });
+    },
+  });
+}
+
+export function useReorderSetItems(setId: string) {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (body: ReorderSetItemsBody) => reorderSetItems(setId, body),
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['songSetItems', setId] });
       qc.invalidateQueries({ queryKey: ['songSet', setId] });
       qc.invalidateQueries({ queryKey: ['songSets'] });

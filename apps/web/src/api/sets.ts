@@ -11,6 +11,7 @@ import {
 type SongSetsPath = keyof paths & '/song-sets';
 type SongSetPath = keyof paths & '/song-sets/{id}';
 type SongSetItemsPath = keyof paths & '/song-sets/{id}/items';
+type SongSetItemsReorderPath = keyof paths & '/song-sets/{id}/items/reorder';
 type SongSetItemPath = keyof paths & '/song-set-items/{id}';
 
 // Song set types
@@ -42,6 +43,8 @@ export type UpdateSetItemBody = RequestBodyOf<SongSetItemPath, 'put'>;
 export type UpdateSetItemResponse = ResponseOf<SongSetItemPath, 'put', 200>;
 
 export type RemoveSetItemParams = PathParamsOf<SongSetItemPath, 'delete'>;
+
+export type ReorderSetItemsBody = RequestBodyOf<SongSetItemsReorderPath, 'post'>;
 
 type SetId = GetSetParams['id'];
 type SetItemId = UpdateSetItemParams['id'];
@@ -95,4 +98,8 @@ export async function updateSetItem(itemId: SetItemId, body: UpdateSetItemBody) 
 
 export async function removeSetItem(itemId: SetItemId) {
   await apiClient.delete<void>(`/song-set-items/${itemId}`);
+}
+
+export async function reorderSetItems(setId: SetId, body: ReorderSetItemsBody) {
+  await apiClient.post<void>(`/song-sets/${setId}/items/reorder`, body);
 }
