@@ -1,3 +1,46 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.chordpro-view {
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+.chordpro-view .chordpro-line {
+  white-space: pre-wrap;
+}
+
+.chordpro-view .chordpro-line--empty {
+  min-height: 1.25rem;
+}
+
+.chordpro-view .chord {
+  font-weight: 600;
+}
+
+.chordpro-view .chordpro-title {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.chordpro-view .chordpro-comment {
+  font-style: italic;
+  margin-bottom: 0.25rem;
+}
+
+.chordpro-view .chordpro-line--stacked {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.25rem;
+}
+
+.chordpro-view .chord-line,
+.chordpro-view .lyric-line {
+  white-space: pre;
+}
+
+.chordpro-view .chord-line {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
