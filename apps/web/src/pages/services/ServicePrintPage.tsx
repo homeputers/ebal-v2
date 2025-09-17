@@ -1,19 +1,21 @@
 import { useParams } from 'react-router-dom';
 import { useService, usePlanItems } from '../../features/services/hooks';
-import { usePlanArrangementInfo, type ArrangementInfo } from '@/features/services/usePlanArrangementInfo';
+import { usePlanArrangementInfo } from '@/features/services/usePlanArrangementInfo';
+import type { ArrangementLabel } from '@/lib/arrangements-cache';
 
 export default function ServicePrintPage() {
   const { id } = useParams();
   const { data: service } = useService(id);
   const { data: plan } = usePlanItems(id);
-  const arrangementInfo = usePlanArrangementInfo(plan);
+  const { data: arrangementLabels } = usePlanArrangementInfo(plan);
+  const arrangementLabelMap = arrangementLabels ?? {};
 
   const formatType = (type?: string | null) => {
     if (!type) return 'Item';
     return type.charAt(0).toUpperCase() + type.slice(1);
   };
 
-  const formatArrangementDetails = (info?: ArrangementInfo) => {
+  const formatArrangementDetails = (info?: ArrangementLabel) => {
     if (!info) return '';
     const parts: string[] = [];
     if (info.key) parts.push(`Key ${info.key}`);
@@ -44,14 +46,16 @@ export default function ServicePrintPage() {
             <li key={item.id}>
               <div className="font-semibold">
                 {item.type === 'song' && item.refId
-                  ? arrangementInfo[item.refId]?.songTitle ?? 'Song'
+                  ? arrangementLabelMap[item.refId]?.songTitle ?? `Arrangement ${item.refId}`
                   : formatType(item.type)}
               </div>
               {item.type === 'song' && item.refId && (
                 <div className="text-sm text-gray-600">
-                  {arrangementInfo[item.refId]
-                    ? formatArrangementDetails(arrangementInfo[item.refId]) || null
-                    : '…'}
+                  {(() => {
+                    const info = arrangementLabelMap[item.refId];
+                    const details = formatArrangementDetails(info);
+                    return details || `Arrangement ${item.refId}`;
+                  })()}
                 </div>
               )}
               {item.notes && (

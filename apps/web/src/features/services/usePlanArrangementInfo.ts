@@ -1,19 +1,16 @@
 import { useMemo } from 'react';
 import type { components } from '@/api/types';
-import { useArrangementInfo } from '@/features/arrangements/useArrangementInfo';
+import { useArrangementLabels } from '@/hooks/useArrangementLabels';
 
 type PlanItem = components['schemas']['ServicePlanItemResponse'];
 
-export type { ArrangementInfo } from '@/features/arrangements/useArrangementInfo';
+export type { ArrangementLabel } from '@/lib/arrangements-cache';
 
 export function usePlanArrangementInfo(planItems?: PlanItem[] | null) {
   const arrangementIds = useMemo(() => {
-    if (!planItems) return [] as string[];
-    return planItems
-      .filter((item) => item.type === 'song' && item.refId)
-      .map((item) => item.refId!)
-      .filter((id): id is string => typeof id === 'string' && id.length > 0);
+    if (!planItems) return [] as Array<string | null | undefined>;
+    return planItems.map((item) => (item.type === 'song' ? item.refId ?? null : null));
   }, [planItems]);
 
-  return useArrangementInfo(arrangementIds);
+  return useArrangementLabels(arrangementIds);
 }
