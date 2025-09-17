@@ -4,6 +4,7 @@ import com.homeputers.ebal2.api.AbstractIntegrationTest;
 import com.homeputers.ebal2.api.generated.model.MemberRequest;
 import com.homeputers.ebal2.api.generated.model.MemberResponse;
 import com.homeputers.ebal2.api.generated.model.PageMemberResponse;
+import com.homeputers.ebal2.api.member.MemberService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +22,9 @@ class MemberControllerTest extends AbstractIntegrationTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @Autowired
+    private MemberService memberService;
 
     @Test
     void createAndGetMember() {
@@ -47,7 +51,7 @@ class MemberControllerTest extends AbstractIntegrationTest {
     void listMembers() {
         MemberRequest request = new MemberRequest();
         request.setDisplayName("Jane");
-        restTemplate.postForEntity("/api/v1/members", request, MemberResponse.class);
+        memberService.create(request);
 
         ResponseEntity<PageMemberResponse> response =
                 restTemplate.getForEntity("/api/v1/members?q=ja&page=0&size=10", PageMemberResponse.class);
