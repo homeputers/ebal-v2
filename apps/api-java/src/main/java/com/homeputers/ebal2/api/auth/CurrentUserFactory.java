@@ -35,7 +35,7 @@ public class CurrentUserFactory {
 
         CurrentUser user = new CurrentUser();
         user.setSubject(JsonNullable.of(authentication.getName()));
-        user.setDisplayName(JsonNullable.of(resolveDisplayName(authentication)));
+        user.setDisplayName(resolveDisplayName(authentication));
         user.setAnonymous(Boolean.FALSE);
         user.setRoles(resolveRoles(authentication));
         user.setProvider(resolveProvider(authentication));
@@ -51,7 +51,7 @@ public class CurrentUserFactory {
     private CurrentUser anonymousUser() {
         CurrentUser user = new CurrentUser();
         user.setSubject(JsonNullable.of(ANONYMOUS_SUBJECT));
-        user.setDisplayName(JsonNullable.of(ANONYMOUS_DISPLAY_NAME));
+        user.setDisplayName(ANONYMOUS_DISPLAY_NAME);
         user.setAnonymous(Boolean.TRUE);
         user.setRoles(Collections.emptyList());
         user.setProvider(JsonNullable.undefined());
