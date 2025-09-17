@@ -2,21 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.homeputers.ebal2.api.domain.songsetitem.SongSetItemMapper">
     <resultMap id="songSetItemResult" type="com.homeputers.ebal2.api.domain.songsetitem.SongSetItem">
-        <id property="id" column="id" typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
-        <result property="sortOrder" column="order"/>
-        <result property="transpose" column="transpose"/>
-        <result property="capo" column="capo"/>
-        <association property="songSet" column="song_set_id" javaType="com.homeputers.ebal2.api.domain.songset.SongSet" select="com.homeputers.ebal2.api.domain.songset.SongSetMapper.findById"/>
-        <association property="arrangement" column="arrangement_id" javaType="com.homeputers.ebal2.api.domain.arrangement.Arrangement" select="com.homeputers.ebal2.api.domain.arrangement.ArrangementMapper.findById"/>
+        <constructor>
+            <idArg column="id" javaType="java.util.UUID"
+                   typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+            <arg column="song_set_id" javaType="com.homeputers.ebal2.api.domain.songset.SongSet"
+                 select="com.homeputers.ebal2.api.domain.songset.SongSetMapper.findById"/>
+            <arg column="arrangement_id" javaType="com.homeputers.ebal2.api.domain.arrangement.Arrangement"
+                 select="com.homeputers.ebal2.api.domain.arrangement.ArrangementMapper.findById"/>
+            <arg column="sort_order" javaType="java.lang.Integer"/>
+            <arg column="transpose" javaType="java.lang.Integer"/>
+            <arg column="capo" javaType="java.lang.Integer"/>
+        </constructor>
     </resultMap>
 
     <select id="findById" resultMap="songSetItemResult">
-        select id, song_set_id, arrangement_id, "order", transpose, capo from song_set_items
+        select id, song_set_id, arrangement_id, "order" as sort_order, transpose, capo from song_set_items
         where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
     </select>
 
     <select id="findBySongSetId" resultMap="songSetItemResult">
-        select id, song_set_id, arrangement_id, "order", transpose, capo from song_set_items
+        select id, song_set_id, arrangement_id, "order" as sort_order, transpose, capo from song_set_items
         where song_set_id = #{songSetId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
         order by "order"
     </select>
