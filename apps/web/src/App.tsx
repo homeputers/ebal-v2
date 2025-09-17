@@ -12,6 +12,7 @@ const GroupDetail = lazy(() => import('@/routes/GroupDetail'));
 const Songs = lazy(() => import('@/routes/Songs'));
 const SongDetail = lazy(() => import('@/routes/SongDetail'));
 const SongSets = lazy(() => import('@/routes/SongSets'));
+const SongSetDetail = lazy(() => import('@/routes/SongSetDetail'));
 const Services = lazy(() => import('@/routes/Services'));
 const ServiceDetail = lazy(() => import('@/routes/ServiceDetail'));
 const ServicePrint = lazy(() => import('@/routes/ServicePrint'));
@@ -32,6 +33,7 @@ export default function App() {
                 <Route path="/songs" element={<Songs />} />
                 <Route path="/songs/:id" element={<SongDetail />} />
                 <Route path="/song-sets" element={<SongSets />} />
+                <Route path="/song-sets/:id" element={<SongSetDetail />} />
                 <Route path="/services" element={<Services />} />
                 <Route path="/services/:id" element={<ServiceDetail />} />
                 <Route path="/services/:id/print" element={<ServicePrint />} />

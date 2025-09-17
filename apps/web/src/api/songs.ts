@@ -1,5 +1,5 @@
 import apiClient from './client';
-import type { paths, components } from './types';
+import type { paths } from './types';
 import {
   QueryOf,
   ResponseOf,
