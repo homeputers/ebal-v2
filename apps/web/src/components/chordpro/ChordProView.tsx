@@ -70,7 +70,7 @@ export function ChordProView({
   source,
   transpose = 0,
   useFlats = false,
-  layout = 'inline',
+  layout = 'above',
   className,
 }: Props) {
   const parsed = useMemo(() => parseChordPro(source ?? ''), [source]);

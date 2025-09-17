@@ -39,7 +39,7 @@ export function ArrangementForm({
 
   const [transpose, setTranspose] = useState(0);
   const [useFlats, setUseFlats] = useState(false);
-  const [layout, setLayout] = useState<'inline' | 'above'>('inline');
+  const [layout, setLayout] = useState<'inline' | 'above'>('above');
 
   const lyrics = watch('lyricsChordpro') || '';
   const normalizedLyrics = lyrics.replace(/\r\n?/g, '\n');
@@ -150,8 +150,8 @@ export function ArrangementForm({
                 }
                 className="ml-1 border rounded px-2 py-1 text-sm"
               >
-                <option value="inline">Inline</option>
                 <option value="above">Chords above</option>
+                <option value="inline">Inline</option>
               </select>
             </label>
           </div>
