@@ -33,6 +33,7 @@ import {
 import type { ListSetItemsResponse } from '@/api/sets';
 import { useArrangementLabels } from '@/hooks/useArrangementLabels';
 import type { ArrangementLabel } from '@/lib/arrangements-cache';
+import { formatArrangementLine, formatKeyTransform } from '@/lib/arrangement-labels';
 import { computeKeys } from '@/lib/keys';
 
 function Modal({
@@ -69,27 +70,6 @@ type SortableSetItemProps = {
   useFlats: boolean;
 };
 
-function formatArrangementDetails(
-  info?: ArrangementLabel,
-  options?: { includeKey?: boolean; useFlats?: boolean },
-) {
-  if (!info) return '…';
-  const { includeKey = true, useFlats = false } = options ?? {};
-  const parts: string[] = [];
-  if (includeKey) {
-    if (info.key) {
-      const { originalKey } = computeKeys(info.key, 0, 0, useFlats);
-      parts.push(`Key ${originalKey}`);
-    } else {
-      parts.push('Key —');
-    }
-  }
-  if (info.bpm != null) parts.push(`${info.bpm} BPM`);
-  if (info.meter) parts.push(info.meter);
-  if (parts.length === 0) return includeKey ? '—' : '';
-  return parts.join(' • ');
-}
-
 function SortableSetItem({
   item,
   arrangement,
@@ -121,49 +101,25 @@ function SortableSetItem({
     onCapoChange(item.id, next);
   };
 
-  const keyLine = (() => {
-    if (arrangement?.key) {
-      const { originalKey, soundingKey, shapeKey, delta, capo: computedCapo } = computeKeys(
-        arrangement.key,
-        transpose,
-        capo,
-        useFlats,
-      );
-      const parts: string[] = [];
-      const deltaLabel = delta > 0 ? `+${delta}` : `${delta}`;
-      if (delta !== 0) {
-        parts.push(`Key: ${originalKey} → ${soundingKey} (${deltaLabel})`);
-      } else {
-        parts.push(`Key: ${originalKey}`);
-      }
-      if (computedCapo > 0) {
-        parts.push(`Capo ${computedCapo} (shapes in ${shapeKey})`);
-      }
-      return parts.join(', ');
-    }
-    const parts: string[] = ['Key: …'];
-    if (capo > 0) {
-      parts.push(`Capo ${capo}`);
-    }
-    return parts.join(', ');
-  })();
+  const keyInfo = arrangement?.key
+    ? computeKeys(arrangement.key, transpose, capo, useFlats)
+    : undefined;
 
-  const arrangementSummary = (() => {
-    const fallback = item.arrangementId ? `Arrangement ${item.arrangementId}` : 'Arrangement';
-    if (!arrangement) {
-      return fallback;
-    }
-    const summaryParts = [
-      arrangement.songTitle ?? (arrangement.id ? `Arrangement ${arrangement.id}` : fallback),
-    ];
-    const detail = formatArrangementDetails(arrangement, { useFlats });
-    if (detail) summaryParts.push(detail);
-    return summaryParts.join(' • ');
-  })();
+  const line = formatArrangementLine({
+    songTitle:
+      arrangement?.songTitle ?? (item.arrangementId ? `Arrangement ${item.arrangementId}` : undefined),
+    key: keyInfo?.originalKey ?? arrangement?.key ?? null,
+    bpm: arrangement?.bpm ?? null,
+    meter: arrangement?.meter ?? null,
+  });
 
-  const arrangementMeta = !arrangement
-    ? formatArrangementDetails(arrangement, { includeKey: false, useFlats })
-    : '';
+  const keySummary = formatKeyTransform({
+    originalKey: keyInfo?.originalKey ?? arrangement?.key ?? 'N/A',
+    soundingKey: keyInfo?.soundingKey ?? arrangement?.key ?? 'N/A',
+    shapeKey: keyInfo?.shapeKey,
+    transpose,
+    capo,
+  });
 
   return (
     <li
@@ -173,11 +129,8 @@ function SortableSetItem({
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="font-semibold">{arrangementSummary}</div>
-          <div className="text-sm text-gray-600 space-y-1">
-            <div>{keyLine}</div>
-            {arrangementMeta ? <div>{arrangementMeta}</div> : null}
-          </div>
+          <div className="font-semibold">{line}</div>
+          <div className="text-sm text-muted-foreground">{keySummary}</div>
         </div>
         <button
           type="button"
@@ -285,6 +238,28 @@ export default function SongSetDetailPage() {
   const selectedArrangementInfo = arrangementId
     ? addArrangementLabelsQuery.data?.[arrangementId]
     : undefined;
+
+  const previewKeySource = selectedArrangementInfo?.key;
+  const previewKeyInfo = previewKeySource
+    ? computeKeys(previewKeySource, transpose, capo, useFlats)
+    : undefined;
+  const previewLine = arrangementId
+    ? formatArrangementLine({
+        songTitle: selectedArrangementInfo?.songTitle ?? `Arrangement ${arrangementId}`,
+        key: previewKeyInfo?.originalKey ?? previewKeySource ?? null,
+        bpm: selectedArrangementInfo?.bpm ?? null,
+        meter: selectedArrangementInfo?.meter ?? null,
+      })
+    : null;
+  const previewKeySummary = arrangementId
+    ? formatKeyTransform({
+        originalKey: previewKeyInfo?.originalKey ?? previewKeySource ?? 'N/A',
+        soundingKey: previewKeyInfo?.soundingKey ?? previewKeySource ?? 'N/A',
+        shapeKey: previewKeyInfo?.shapeKey,
+        transpose,
+        capo,
+      })
+    : null;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -445,8 +420,9 @@ export default function SongSetDetailPage() {
               onChange={(value) => setArrangementId(value)}
             />
             {arrangementId && (
-              <div className="text-xs text-gray-600">
-                {formatArrangementDetails(selectedArrangementInfo, { useFlats })}
+              <div className="text-xs text-muted-foreground space-y-0.5">
+                <div>{previewLine}</div>
+                <div>{previewKeySummary}</div>
               </div>
             )}
             <div className="flex flex-col gap-2">
