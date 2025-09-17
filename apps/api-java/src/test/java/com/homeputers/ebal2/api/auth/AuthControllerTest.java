@@ -24,10 +24,13 @@ class AuthControllerTest extends AbstractIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         CurrentUser currentUser = response.getBody();
         assertThat(currentUser).isNotNull();
-        assertThat(currentUser.getSubject()).isEqualTo("anonymous");
+        assertThat(currentUser.getSubject()).isNotNull();
+        assertThat(currentUser.getSubject().isPresent()).isTrue();
+        assertThat(currentUser.getSubject().get()).isEqualTo("anonymous");
         assertThat(currentUser.getDisplayName()).isEqualTo("Anonymous");
         assertThat(Boolean.TRUE.equals(currentUser.getAnonymous())).isTrue();
         assertThat(currentUser.getRoles()).isNotNull().isEmpty();
-        assertThat(currentUser.getProvider()).isNull();
+        assertThat(currentUser.getProvider()).isNotNull();
+        assertThat(currentUser.getProvider().isPresent()).isFalse();
     }
 }

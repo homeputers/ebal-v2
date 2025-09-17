@@ -21,10 +21,13 @@ class CurrentUserFactoryTest {
         CurrentUser currentUser = factory.create(null);
 
         assertThat(currentUser.getAnonymous()).isTrue();
-        assertThat(currentUser.getSubject()).isEqualTo("anonymous");
+        assertThat(currentUser.getSubject()).isNotNull();
+        assertThat(currentUser.getSubject().isPresent()).isTrue();
+        assertThat(currentUser.getSubject().get()).isEqualTo("anonymous");
         assertThat(currentUser.getDisplayName()).isEqualTo("Anonymous");
         assertThat(currentUser.getRoles()).isEmpty();
-        assertThat(currentUser.getProvider()).isNull();
+        assertThat(currentUser.getProvider()).isNotNull();
+        assertThat(currentUser.getProvider().isPresent()).isFalse();
     }
 
     @Test
@@ -47,9 +50,12 @@ class CurrentUserFactoryTest {
         CurrentUser currentUser = factory.create(authentication);
 
         assertThat(currentUser.getAnonymous()).isFalse();
-        assertThat(currentUser.getSubject()).isEqualTo("alice");
+        assertThat(currentUser.getSubject()).isNotNull();
+        assertThat(currentUser.getSubject().isPresent()).isTrue();
+        assertThat(currentUser.getSubject().get()).isEqualTo("alice");
         assertThat(currentUser.getDisplayName()).isEqualTo("alice");
         assertThat(currentUser.getRoles()).containsExactly("ROLE_USER");
-        assertThat(currentUser.getProvider()).isNull();
+        assertThat(currentUser.getProvider()).isNotNull();
+        assertThat(currentUser.getProvider().isPresent()).isFalse();
     }
 }
