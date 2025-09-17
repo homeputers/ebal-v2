@@ -32,6 +32,7 @@ import {
 } from '@/features/sets/hooks';
 import type { ListSetItemsResponse } from '@/api/sets';
 import { useArrangementInfo, type ArrangementInfo } from '@/features/arrangements/useArrangementInfo';
+import { computeKeys } from '@/lib/keys';
 
 function Modal({
   open,
@@ -64,13 +65,27 @@ type SortableSetItemProps = {
   onTransposeChange: (itemId: string, next: number) => void;
   onCapoChange: (itemId: string, next: number) => void;
   onRemove: (itemId: string) => void;
+  useFlats: boolean;
 };
 
-function formatArrangementDetails(info?: ArrangementInfo) {
+function formatArrangementDetails(
+  info?: ArrangementInfo,
+  options?: { includeKey?: boolean; useFlats?: boolean },
+) {
   if (!info) return '…';
-  const parts: string[] = [`Key ${info.key ?? '—'}`];
+  const { includeKey = true, useFlats = false } = options ?? {};
+  const parts: string[] = [];
+  if (includeKey) {
+    if (info.key) {
+      const { originalKey } = computeKeys(info.key, 0, 0, useFlats);
+      parts.push(`Key ${originalKey}`);
+    } else {
+      parts.push('Key —');
+    }
+  }
   if (info.bpm != null) parts.push(`${info.bpm} BPM`);
   if (info.meter) parts.push(info.meter);
+  if (parts.length === 0) return includeKey ? '—' : '';
   return parts.join(' • ');
 }
 
@@ -80,6 +95,7 @@ function SortableSetItem({
   onTransposeChange,
   onCapoChange,
   onRemove,
+  useFlats,
 }: SortableSetItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.id,
@@ -104,6 +120,35 @@ function SortableSetItem({
     onCapoChange(item.id, next);
   };
 
+  const keyLine = (() => {
+    if (arrangement?.key) {
+      const { originalKey, soundingKey, shapeKey, delta, capo: computedCapo } = computeKeys(
+        arrangement.key,
+        transpose,
+        capo,
+        useFlats,
+      );
+      const parts: string[] = [];
+      const deltaLabel = delta > 0 ? `+${delta}` : `${delta}`;
+      if (delta !== 0) {
+        parts.push(`Key: ${originalKey} → ${soundingKey} (${deltaLabel})`);
+      } else {
+        parts.push(`Key: ${originalKey}`);
+      }
+      if (computedCapo > 0) {
+        parts.push(`Capo ${computedCapo} (shapes in ${shapeKey})`);
+      }
+      return parts.join(', ');
+    }
+    const parts: string[] = ['Key: …'];
+    if (capo > 0) {
+      parts.push(`Capo ${capo}`);
+    }
+    return parts.join(', ');
+  })();
+
+  const arrangementMeta = formatArrangementDetails(arrangement, { includeKey: false, useFlats });
+
   return (
     <li
       ref={setNodeRef}
@@ -113,7 +158,10 @@ function SortableSetItem({
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="font-semibold">{arrangement?.songTitle ?? 'Song'}</div>
-          <div className="text-sm text-gray-600">{formatArrangementDetails(arrangement)}</div>
+          <div className="text-sm text-gray-600 space-y-1">
+            <div>{keyLine}</div>
+            {arrangementMeta ? <div>{arrangementMeta}</div> : null}
+          </div>
         </div>
         <button
           type="button"
@@ -201,6 +249,7 @@ export default function SongSetDetailPage() {
   const [arrangementId, setArrangementId] = useState<string | undefined>();
   const [transpose, setTranspose] = useState(0);
   const [capo, setCapo] = useState(0);
+  const [useFlats, setUseFlats] = useState(false);
 
   const addItemMut = useAddSetItem(setId);
   const updateItemMut = useUpdateSetItem();
@@ -339,6 +388,19 @@ export default function SongSetDetailPage() {
         <div className="flex gap-2">
           <button
             type="button"
+            className={`px-2 py-1 text-sm rounded border transition-colors ${
+              useFlats
+                ? 'bg-gray-800 text-white border-gray-800'
+                : 'bg-gray-200 text-gray-700 border-transparent'
+            }`}
+            onClick={() => setUseFlats((prev) => !prev)}
+            aria-pressed={useFlats}
+            title={useFlats ? 'Show sharps (♯)' : 'Show flats (♭)'}
+          >
+            ♯ / ♭
+          </button>
+          <button
+            type="button"
             className="px-2 py-1 text-sm bg-gray-200 rounded"
             onClick={() => setEditingSet(true)}
           >
@@ -365,7 +427,7 @@ export default function SongSetDetailPage() {
             />
             {arrangementId && (
               <div className="text-xs text-gray-600">
-                {formatArrangementDetails(selectedArrangementInfo)}
+                {formatArrangementDetails(selectedArrangementInfo, { useFlats })}
               </div>
             )}
             <div className="flex flex-col gap-2">
@@ -433,6 +495,7 @@ export default function SongSetDetailPage() {
                       onTransposeChange={handleTransposeChange}
                       onCapoChange={handleCapoChange}
                       onRemove={handleRemove}
+                      useFlats={useFlats}
                     />
                   ))}
                 </ul>
