@@ -1,4 +1,9 @@
-## 0.1.0 (2025-09-18)
+## [0.1.1](https://github.com/homeputers/ebal-v2/compare/v0.1.0...v0.1.1) (2025-09-18)
+
+### Bug Fixes
+
+* **ci:** build docker images from repo root ([#62](https://github.com/homeputers/ebal-v2/issues/62)) ([885d616](https://github.com/homeputers/ebal-v2/commit/885d616a6074d12a176d24b8e408d67de3dafe91))
+## [0.1.0](https://github.com/homeputers/ebal-v2/compare/865d1d4e266d7aa8061ef3e390883a4e9a0d734c...v0.1.0) (2025-09-18)
 
 ### Features
 
