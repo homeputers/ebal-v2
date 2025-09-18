@@ -1,3 +1,8 @@
+## [0.1.2](https://github.com/homeputers/ebal-v2/compare/v0.1.1...v0.1.2) (2025-09-18)
+
+### Bug Fixes
+
+* **web:** allow docker build without yarn dir ([#64](https://github.com/homeputers/ebal-v2/issues/64)) ([30c56b3](https://github.com/homeputers/ebal-v2/commit/30c56b39cee9fa120c66dc168386ab0f19fe1966))
 ## [0.1.1](https://github.com/homeputers/ebal-v2/compare/v0.1.0...v0.1.1) (2025-09-18)
 
 ### Bug Fixes
