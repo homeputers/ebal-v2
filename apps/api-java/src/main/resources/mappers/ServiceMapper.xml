@@ -25,10 +25,10 @@
         select id, starts_at, location from services
         <where>
             <if test="query != null and query != ''">
-                location ILIKE '%' || #{query} || '%'
+                AND location ILIKE '%' || #{query} || '%'
             </if>
-            <if test="start != null">
-                starts_at between #{start} and #{end}
+            <if test="start != null and end != null">
+                AND starts_at between #{start} and #{end}
             </if>
         </where>
         order by starts_at
