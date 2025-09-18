@@ -19,6 +19,6 @@ RUN ./mvnw -B -ntp -DskipTests package
 
 FROM gcr.io/distroless/java21
 WORKDIR /app
-COPY --from=build /workspace/apps/api-java/target/api-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /workspace/apps/api-java/target/api-0.1.0.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","app.jar"]
