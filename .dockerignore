@@ -1,0 +1,22 @@
+# Exclude version control and local tooling metadata
+.git
+.gitignore
+.husky
+
+# Ignore CI/config folders that are not needed at build time
+.github
+infra
+spec/openapi-generated
+
+# Node and build artifacts
+**/node_modules
+**/.turbo
+**/.next
+**/dist
+**/build
+**/.cache
+**/coverage
+
+# Miscellaneous OS/editor cruft
+.DS_Store
+Thumbs.db

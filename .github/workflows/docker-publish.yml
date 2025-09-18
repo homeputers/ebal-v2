@@ -30,7 +30,7 @@ jobs:
       - name: Build and push web image
         uses: docker/build-push-action@v5
         with:
-          context: ./apps/web
+          context: .
           file: ./apps/web/Dockerfile
           push: true
           tags: |
@@ -40,7 +40,7 @@ jobs:
       - name: Build and push API image
         uses: docker/build-push-action@v5
         with:
-          context: ./apps/api-java
+          context: .
           file: ./apps/api-java/Dockerfile
           push: true
           tags: |
