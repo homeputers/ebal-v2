@@ -1,0 +1,174 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Version to release (semver or major/minor/patch)'
+        required: true
+        default: patch
+
+jobs:
+  prepare:
+    name: Prepare release branch
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      BASE_BRANCH: ${{ github.event.repository.default_branch }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configure Git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Determine release version
+        id: version
+        env:
+          INPUT_VERSION: ${{ inputs.release_version }}
+        run: |
+          set -euo pipefail
+          CURRENT_VERSION=$(jq -r '.version' apps/web/package.json)
+          VERSION_INPUT="${INPUT_VERSION}"
+          if [[ -z "${CURRENT_VERSION}" || "${CURRENT_VERSION}" == "null" ]]; then
+            echo "Unable to determine current version from apps/web/package.json" >&2
+            exit 1
+          fi
+          if [[ "${VERSION_INPUT}" =~ ^(major|minor|patch)$ ]]; then
+            NEW_VERSION=$(npx --yes semver "${CURRENT_VERSION}" -i "${VERSION_INPUT}")
+          else
+            NEW_VERSION="${VERSION_INPUT}"
+          fi
+          NEW_VERSION="${NEW_VERSION#v}"
+          if ! [[ "${NEW_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z\.-]+)?(\+[0-9A-Za-z\.-]+)?$ ]]; then
+            echo "Computed version '${NEW_VERSION}' does not look like a valid semver value" >&2
+            exit 1
+          fi
+          RELEASE_BRANCH="release/v${NEW_VERSION}"
+          echo "release_version=${NEW_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "release_branch=${RELEASE_BRANCH}" >> "$GITHUB_OUTPUT"
+
+      - name: Create release branch
+        env:
+          RELEASE_BRANCH: ${{ steps.version.outputs.release_branch }}
+        run: |
+          set -euo pipefail
+          git checkout "$BASE_BRANCH"
+          git pull --ff-only origin "$BASE_BRANCH"
+          if git ls-remote --exit-code --heads origin "$RELEASE_BRANCH" >/dev/null 2>&1; then
+            echo "Release branch $RELEASE_BRANCH already exists on the remote" >&2
+            exit 1
+          fi
+          if git rev-parse --verify "$RELEASE_BRANCH" >/dev/null 2>&1; then
+            git branch -D "$RELEASE_BRANCH"
+          fi
+          git checkout -b "$RELEASE_BRANCH"
+
+      - name: Update web package version
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.release_version }}
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+const fs = require('fs');
+const version = process.env.RELEASE_VERSION;
+const file = 'apps/web/package.json';
+const pkg = JSON.parse(fs.readFileSync(file, 'utf8'));
+pkg.version = version;
+fs.writeFileSync(file, JSON.stringify(pkg, null, 2) + '\n');
+NODE
+
+      - name: Update API version
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.release_version }}
+        working-directory: apps/api-java
+        run: |
+          set -euo pipefail
+          ./mvnw -B -ntp versions:set -DnewVersion="${RELEASE_VERSION}" -DgenerateBackupPoms=false
+
+      - name: Update API Dockerfile artifact name
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.release_version }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+import os
+import pathlib
+import re
+release_version = os.environ['RELEASE_VERSION']
+path = pathlib.Path('apps/api-java/Dockerfile')
+text = path.read_text()
+updated, count = re.subn(r"api-[^/\s]+\.jar", f"api-{release_version}.jar", text)
+if count == 0:
+    raise SystemExit('Failed to update jar name in Dockerfile')
+path.write_text(updated)
+PY
+
+      - name: Generate changelog
+        run: |
+          set -euo pipefail
+          touch CHANGELOG.md
+          npx --yes conventional-changelog-cli -p conventionalcommits -k apps/web/package.json -i CHANGELOG.md -s -r 0
+
+      - name: Commit changes
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.release_version }}
+        run: |
+          set -euo pipefail
+          git add CHANGELOG.md apps/web/package.json apps/api-java/pom.xml apps/api-java/Dockerfile
+          if git diff --cached --quiet; then
+            echo "No changes detected to commit" >&2
+            exit 1
+          fi
+          git commit -m "chore: prepare release v${RELEASE_VERSION}"
+
+      - name: Push release branch
+        env:
+          RELEASE_BRANCH: ${{ steps.version.outputs.release_branch }}
+        run: |
+          set -euo pipefail
+          git push --set-upstream origin "$RELEASE_BRANCH"
+
+      - name: Open pull request
+        env:
+          RELEASE_BRANCH: ${{ steps.version.outputs.release_branch }}
+          RELEASE_VERSION: ${{ steps.version.outputs.release_version }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const head = `${owner}:${process.env.RELEASE_BRANCH}`;
+            const base = process.env.BASE_BRANCH;
+            const { data: prs } = await github.rest.pulls.list({
+              owner,
+              repo,
+              head,
+              state: 'open'
+            });
+            if (prs.length > 0) {
+              core.info(`Pull request already exists: ${prs[0].html_url}`);
+              return;
+            }
+            const { data: pr } = await github.rest.pulls.create({
+              owner,
+              repo,
+              head: process.env.RELEASE_BRANCH,
+              base,
+              title: `chore: release v${process.env.RELEASE_VERSION}`,
+              body: `Automated release preparation for v${process.env.RELEASE_VERSION}.`
+            });
+            core.info(`Created PR: ${pr.html_url}`);
