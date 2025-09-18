@@ -19,6 +19,9 @@ public interface ServiceMapper {
                          @Param("end") OffsetDateTime end,
                          @Param("limit") int limit);
 
+    List<Service> findUpcoming(@Param("start") OffsetDateTime start,
+                               @Param("limit") int limit);
+
     int count();
 
     void insert(Service service);

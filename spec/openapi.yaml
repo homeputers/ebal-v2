@@ -301,6 +301,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceResponse'
+  /services/ical:
+    get:
+      tags: [Services]
+      summary: Export upcoming services as iCal
+      operationId: exportServicesCalendar
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: iCalendar feed for upcoming services
+          content:
+            text/calendar:
+              schema:
+                type: string
+        '404':
+          description: Calendar token not found
   /services/{id}:
     parameters:
       - name: id

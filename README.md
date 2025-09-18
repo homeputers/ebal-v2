@@ -16,3 +16,11 @@ Lint the repository:
 yarn lint
 ```
 
+## Service calendar export
+
+The API provides a read-only iCalendar feed of upcoming services at
+`GET /api/v1/services/ical?token=...`. Tokens must exist in the
+`share_tokens` table with a `type` of `service_calendar`; this allows you
+to generate and distribute calendar links without granting write
+permissions.
+

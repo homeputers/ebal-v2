@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homeputers.ebal2.api.domain.token.ShareTokenMapper">
+    <resultMap id="shareTokenResult" type="com.homeputers.ebal2.api.domain.token.ShareToken">
+        <constructor>
+            <idArg column="token" javaType="java.lang.String" />
+            <arg column="type" javaType="java.lang.String" />
+            <arg column="label" javaType="java.lang.String" />
+            <arg column="created_at" javaType="java.time.OffsetDateTime" />
+        </constructor>
+    </resultMap>
+
+    <select id="findByTokenAndType" resultMap="shareTokenResult">
+        select token, type, label, created_at
+        from share_tokens
+        where token = #{token}
+          and type = #{type}
+    </select>
+
+    <insert id="insert">
+        insert into share_tokens (token, type, label, created_at)
+        values (
+            #{token},
+            #{type},
+            #{label},
+            #{createdAt}
+        )
+    </insert>
+</mapper>
