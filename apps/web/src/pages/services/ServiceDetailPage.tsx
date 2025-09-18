@@ -157,6 +157,12 @@ export default function ServiceDetailPage() {
           {service.location && <div>{service.location}</div>}
         </div>
         <div className="flex gap-2">
+          <Link
+            to={`/services/${id}/plan?share=preview`}
+            className="px-2 py-1 text-sm bg-indigo-500 text-white rounded"
+          >
+            Plan View
+          </Link>
           <button
             className="px-2 py-1 text-sm bg-gray-200 rounded"
             onClick={() => setEditingService(true)}

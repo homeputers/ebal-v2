@@ -16,6 +16,7 @@ const SongSetDetail = lazy(() => import('@/routes/SongSetDetail'));
 const Services = lazy(() => import('@/routes/Services'));
 const ServiceDetail = lazy(() => import('@/routes/ServiceDetail'));
 const ServicePrint = lazy(() => import('@/routes/ServicePrint'));
+const ServicePlanView = lazy(() => import('@/routes/ServicePlanView'));
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
                 <Route path="/services" element={<Services />} />
                 <Route path="/services/:id" element={<ServiceDetail />} />
                 <Route path="/services/:id/print" element={<ServicePrint />} />
+                <Route path="/services/:id/plan" element={<ServicePlanView />} />
               </Routes>
             </Suspense>
           </ErrorBoundary>

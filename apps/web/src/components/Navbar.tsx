@@ -10,7 +10,7 @@ const links = [
 
 export function Navbar() {
   return (
-    <nav className="bg-gray-800 text-white p-4">
+    <nav className="bg-gray-800 text-white p-4 print:hidden">
       <ul className="flex gap-4">
         {links.map((link) => (
           <li key={link.to}>

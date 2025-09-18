@@ -44,3 +44,28 @@
   font-weight: 600;
   font-size: 0.875rem;
 }
+
+@page {
+  margin: 12mm;
+}
+
+@media print {
+  body {
+    margin: 0;
+    background: #ffffff;
+    color: #111827;
+  }
+
+  #root {
+    background: #ffffff;
+  }
+
+  .plan-view {
+    padding: 0 !important;
+  }
+
+  .plan-view__item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
