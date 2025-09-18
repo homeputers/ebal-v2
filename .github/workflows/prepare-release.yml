@@ -89,7 +89,7 @@ jobs:
             const pkg = JSON.parse(fs.readFileSync(file, 'utf8'));
             pkg.version = version;
             fs.writeFileSync(file, JSON.stringify(pkg, null, 2) + '\n');
-            NODE
+NODE
 
       - name: Update API version
         env:
@@ -115,7 +115,7 @@ jobs:
             if count == 0:
                 raise SystemExit('Failed to update jar name in Dockerfile')
             path.write_text(updated)
-            PY
+PY
 
       - name: Generate changelog
         run: |
