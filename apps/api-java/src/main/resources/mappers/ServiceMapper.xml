@@ -35,6 +35,13 @@
         limit #{limit}
     </select>
 
+    <select id="findUpcoming" resultMap="serviceResult">
+        select id, starts_at, location from services
+        where starts_at >= #{start}
+        order by starts_at
+        limit #{limit}
+    </select>
+
     <select id="count" resultType="int">
         select count(*) from services
     </select>

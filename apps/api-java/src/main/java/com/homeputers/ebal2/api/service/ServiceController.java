@@ -10,9 +10,10 @@ import com.homeputers.ebal2.api.generated.model.ServiceResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,9 +22,11 @@ import java.util.UUID;
 @RequestMapping("/api/v1")
 public class ServiceController implements ServicesApi {
     private final ServiceService service;
+    private final ServiceCalendarService serviceCalendarService;
 
-    public ServiceController(ServiceService service) {
+    public ServiceController(ServiceService service, ServiceCalendarService serviceCalendarService) {
         this.service = service;
+        this.serviceCalendarService = serviceCalendarService;
     }
 
     @Override
@@ -65,5 +68,13 @@ public class ServiceController implements ServicesApi {
     public ResponseEntity<ServicePlanItemResponse> addServicePlanItem(UUID id, ServicePlanItemRequest servicePlanItemRequest) {
         ServicePlanItem item = service.addPlanItem(id, servicePlanItemRequest);
         return new ResponseEntity<>(com.homeputers.ebal2.api.serviceplanitem.ServicePlanItemDtoMapper.toResponse(item), HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<String> exportServicesCalendar(String token) {
+        String calendar = serviceCalendarService.exportCalendar(token);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("text/calendar; charset=UTF-8"))
+                .body(calendar);
     }
 }

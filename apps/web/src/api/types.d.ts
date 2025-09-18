@@ -20,6 +20,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/storage/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check storage module readiness
+         * @description Returns the current status of the storage subsystem when enabled.
+         */
+        get: operations["storageHealth"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/me": {
         parameters: {
             query?: never;
@@ -27,6 +47,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * Retrieve the current principal
+         * @description Returns information about the authenticated user making the request.
+         *     When the request is unauthenticated the API responds with an anonymous
+         *     placeholder user until session or OIDC login flows are enabled.
+         *
+         */
         get: operations["getCurrentUser"];
         put?: never;
         post?: never;
@@ -149,6 +176,23 @@ export interface paths {
         get: operations["listServices"];
         put?: never;
         post: operations["createService"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/services/ical": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Export upcoming services as iCal */
+        get: operations["exportServicesCalendar"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -393,11 +437,30 @@ export interface components {
         Health: {
             status?: string;
         };
+        /** @example {
+         *       "status": "enabled"
+         *     } */
+        StorageHealth: {
+            /** @description High level status string for the storage module. */
+            status: string;
+        };
+        /** @example {
+         *       "subject": "anonymous",
+         *       "displayName": "Anonymous",
+         *       "anonymous": true,
+         *       "roles": [],
+         *       "provider": null
+         *     } */
         CurrentUser: {
+            /** @description Unique identifier of the authenticated principal when available. */
             subject: string | null;
+            /** @description Human readable name for the current user. */
             displayName: string;
+            /** @description True when the request is unauthenticated or security is disabled. */
             anonymous: boolean;
+            /** @description Granted roles or authorities, empty when anonymous. */
             roles: string[];
+            /** @description Identity provider id used once OIDC is enabled. */
             provider?: string | null;
         };
         GroupRequest: {
@@ -575,6 +638,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    storageHealth: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Storage module is available */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StorageHealth"];
                 };
             };
         };
@@ -938,6 +1021,35 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ServiceResponse"];
                 };
+            };
+        };
+    };
+    exportServicesCalendar: {
+        parameters: {
+            query: {
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description iCalendar feed for upcoming services */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/calendar": string;
+                };
+            };
+            /** @description Calendar token not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
