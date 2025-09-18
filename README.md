@@ -1,5 +1,10 @@
 # ebal-v2
 
+[![API CI](https://img.shields.io/github/actions/workflow/status/homeputers/ebal-v2/ci-api.yml?label=API%20CI&logo=github)](https://github.com/homeputers/ebal-v2/actions/workflows/ci-api.yml)
+[![Web CI](https://img.shields.io/github/actions/workflow/status/homeputers/ebal-v2/ci-web.yml?label=Web%20CI&logo=github)](https://github.com/homeputers/ebal-v2/actions/workflows/ci-web.yml)
+[![API image](https://img.shields.io/badge/API%20image-ghcr.io%2Fhomeputers%2Febal2--api-0db7ed?logo=docker&logoColor=white)](https://ghcr.io/homeputers/ebal2-api)
+[![Web image](https://img.shields.io/badge/Web%20image-ghcr.io%2Fhomeputers%2Febal2--web-0db7ed?logo=docker&logoColor=white)](https://ghcr.io/homeputers/ebal2-web)
+
 The ebal-v2 monorepo houses the next generation of the Every Breath and Life platform, bringing together a React web app, a Spring Boot API, and shared infrastructure with reusable TypeScript configs and types to streamline cross-service development.
 
 ## Development
