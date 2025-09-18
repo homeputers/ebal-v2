@@ -1,3 +1,8 @@
+## [0.1.3](https://github.com/homeputers/ebal-v2/compare/v0.1.2...v0.1.3) (2025-09-18)
+
+### Bug Fixes
+
+* **api:** clear maven config in docker build ([#66](https://github.com/homeputers/ebal-v2/issues/66)) ([0343265](https://github.com/homeputers/ebal-v2/commit/03432650cdbd4de85343dda70d256c90912cf95f))
 ## [0.1.2](https://github.com/homeputers/ebal-v2/compare/v0.1.1...v0.1.2) (2025-09-18)
 
 ### Bug Fixes
