@@ -24,8 +24,8 @@ jobs:
 
       - name: Run unit tests
         working-directory: apps/api-java
-        run: mvn -B -DskipTests=false test
+        run: ./mvnw -B test
 
       - name: Run Maven verify
         working-directory: apps/api-java
-        run: mvn -B -DskipTests=false verify
+        run: ./mvnw -B -DskipTests=false verify

@@ -2,12 +2,12 @@ package com.homeputers.ebal2.api.search;
 
 import com.homeputers.ebal2.api.AbstractIntegrationTest;
 import com.homeputers.ebal2.api.generated.model.MemberRequest;
+import com.homeputers.ebal2.api.generated.model.MemberResponse;
 import com.homeputers.ebal2.api.generated.model.SearchResult;
 import com.homeputers.ebal2.api.generated.model.ServiceRequest;
+import com.homeputers.ebal2.api.generated.model.ServiceResponse;
 import com.homeputers.ebal2.api.generated.model.SongRequest;
-import com.homeputers.ebal2.api.member.MemberService;
-import com.homeputers.ebal2.api.service.ServiceService;
-import com.homeputers.ebal2.api.song.SongService;
+import com.homeputers.ebal2.api.generated.model.SongResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,29 +26,20 @@ class SearchControllerTest extends AbstractIntegrationTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Autowired
-    private MemberService memberService;
-
-    @Autowired
-    private SongService songService;
-
-    @Autowired
-    private ServiceService serviceService;
-
     @Test
     void searchAcrossEntities() {
         MemberRequest mr = new MemberRequest();
         mr.setDisplayName("Searchy Person");
-        memberService.create(mr);
+        restTemplate.postForEntity("/api/v1/members", mr, MemberResponse.class);
 
         SongRequest sr = new SongRequest();
         sr.setTitle("Searchy Song");
-        songService.create(sr);
+        restTemplate.postForEntity("/api/v1/songs", sr, SongResponse.class);
 
         ServiceRequest svcReq = new ServiceRequest();
         svcReq.setStartsAt(OffsetDateTime.now().plusDays(1));
         svcReq.setLocation("Search Hall");
-        serviceService.create(svcReq);
+        restTemplate.postForEntity("/api/v1/services", svcReq, ServiceResponse.class);
 
         ResponseEntity<SearchResult[]> response =
                 restTemplate.getForEntity("/api/v1/search?q=Search", SearchResult[].class);
