@@ -3,6 +3,11 @@
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /workspace/apps/api-java
 
+# The Maven base image exports MAVEN_CONFIG=/root/.m2 which the Maven Wrapper
+# treats as CLI arguments. Clearing it avoids passing an invalid lifecycle phase
+# to Maven when the wrapper runs.
+ENV MAVEN_CONFIG=""
+
 # Copy Maven wrapper, pom, and configuration first for better caching
 COPY apps/api-java/mvnw ./mvnw
 COPY apps/api-java/.mvn ./.mvn
