@@ -6,9 +6,8 @@ WORKDIR /app
 # Enable Corepack to use the repo-managed Yarn version
 RUN corepack enable
 
-# Copy workspace manifests first for better caching
+# Copy workspace manifests first for better caching; Yarn metadata is generated during install
 COPY package.json yarn.lock ./
-COPY .yarn .yarn
 COPY apps/web ./apps/web
 COPY packages ./packages
 
