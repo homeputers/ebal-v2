@@ -82,14 +82,7 @@ jobs:
           RELEASE_VERSION: ${{ steps.version.outputs.release_version }}
         run: |
           set -euo pipefail
-          node - <<'NODE'
-            const fs = require('fs');
-            const version = process.env.RELEASE_VERSION;
-            const file = 'apps/web/package.json';
-            const pkg = JSON.parse(fs.readFileSync(file, 'utf8'));
-            pkg.version = version;
-            fs.writeFileSync(file, JSON.stringify(pkg, null, 2) + '\n');
-            NODE
+          node -e "const fs = require('fs'); const version = process.env.RELEASE_VERSION; const file = 'apps/web/package.json'; const pkg = JSON.parse(fs.readFileSync(file, 'utf8')); pkg.version = version; fs.writeFileSync(file, JSON.stringify(pkg, null, 2) + '\n');"
 
       - name: Update API version
         env:
@@ -104,18 +97,7 @@ jobs:
           RELEASE_VERSION: ${{ steps.version.outputs.release_version }}
         run: |
           set -euo pipefail
-          python - <<'PY'
-            import os
-            import pathlib
-            import re
-            release_version = os.environ['RELEASE_VERSION']
-            path = pathlib.Path('apps/api-java/Dockerfile')
-            text = path.read_text()
-            updated, count = re.subn(r"api-[^/\s]+\.jar", f"api-{release_version}.jar", text)
-            if count == 0:
-                raise SystemExit('Failed to update jar name in Dockerfile')
-            path.write_text(updated)
-            PY
+          python -c "import os, pathlib, re, sys; release_version = os.environ['RELEASE_VERSION']; path = pathlib.Path('apps/api-java/Dockerfile'); text = path.read_text(); updated, count = re.subn(r\"api-[^/\\s]+\\.jar\", f\"api-{release_version}.jar\", text); sys.exit('Failed to update jar name in Dockerfile') if count == 0 else path.write_text(updated)"
 
       - name: Generate changelog
         run: |
