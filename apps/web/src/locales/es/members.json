@@ -1,0 +1,10 @@
+{
+  "page": {
+    "title": "Miembros",
+    "empty": "Aún no se han agregado miembros."
+  },
+  "fields": {
+    "displayName": "Nombre",
+    "instruments": "Instrumentos"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "app": {
+    "title": "Cada Aliento y Vida"
+  },
+  "nav": {
+    "songs": "Canciones",
+    "services": "Servicios",
+    "members": "Miembros"
+  },
+  "actions": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "back": "Volver"
+  }
+}

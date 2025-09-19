@@ -1,0 +1,10 @@
+{
+  "page": {
+    "title": "Canciones",
+    "empty": "No se encontraron canciones. Comienza agregando una."
+  },
+  "fields": {
+    "title": "Título",
+    "defaultKey": "Tonalidad predeterminada"
+  }
+}

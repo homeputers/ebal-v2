@@ -1,0 +1,10 @@
+{
+  "page": {
+    "title": "Conjuntos de canciones",
+    "empty": "Todavía no se han preparado conjuntos de canciones."
+  },
+  "fields": {
+    "name": "Nombre del conjunto",
+    "serviceDate": "Fecha del servicio"
+  }
+}

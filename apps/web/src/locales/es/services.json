@@ -1,0 +1,10 @@
+{
+  "page": {
+    "title": "Servicios",
+    "empty": "No hay servicios programados."
+  },
+  "fields": {
+    "startsAt": "Hora de inicio",
+    "location": "Ubicación"
+  }
+}
