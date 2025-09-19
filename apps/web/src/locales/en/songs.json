@@ -9,11 +9,38 @@
     "tags": "Tags"
   },
   "form": {
-    "titleLabel": "Title",
-    "ccliLabel": "CCLI",
-    "authorLabel": "Author",
-    "defaultKeyLabel": "Default Key",
-    "tagsLabel": "Tags (comma separated)"
+    "fields": {
+      "title": {
+        "label": "Title",
+        "placeholder": "How Great Is Our God",
+        "helpText": "This title appears on service plans and song lists.",
+        "ariaLabel": "Title"
+      },
+      "ccli": {
+        "label": "CCLI",
+        "placeholder": "Enter the CCLI number",
+        "helpText": "Use the CCLI number for reporting if available.",
+        "ariaLabel": "CCLI"
+      },
+      "author": {
+        "label": "Author",
+        "placeholder": "Chris Tomlin",
+        "helpText": "List the primary songwriter or composer.",
+        "ariaLabel": "Author"
+      },
+      "defaultKey": {
+        "label": "Default Key",
+        "placeholder": "E",
+        "helpText": "Set the key most often used for this song.",
+        "ariaLabel": "Default Key"
+      },
+      "tags": {
+        "label": "Tags",
+        "placeholder": "worship, upbeat",
+        "helpText": "Separate tags with commas to make searching easier.",
+        "ariaLabel": "Tags"
+      }
+    }
   },
   "actions": {
     "new": "New Song"

@@ -9,11 +9,38 @@
     "tags": "Etiquetas"
   },
   "form": {
-    "titleLabel": "Título",
-    "ccliLabel": "CCLI",
-    "authorLabel": "Autor",
-    "defaultKeyLabel": "Tonalidad predeterminada",
-    "tagsLabel": "Etiquetas (separadas por comas)"
+    "fields": {
+      "title": {
+        "label": "Título",
+        "placeholder": "Cuán grande es Dios",
+        "helpText": "Este título aparece en los planes de servicio y listas de canciones.",
+        "ariaLabel": "Título"
+      },
+      "ccli": {
+        "label": "CCLI",
+        "placeholder": "Ingresa el número de CCLI",
+        "helpText": "Usa el número CCLI para los reportes si está disponible.",
+        "ariaLabel": "CCLI"
+      },
+      "author": {
+        "label": "Autor",
+        "placeholder": "Chris Tomlin",
+        "helpText": "Indica al compositor o autor principal.",
+        "ariaLabel": "Autor"
+      },
+      "defaultKey": {
+        "label": "Tonalidad predeterminada",
+        "placeholder": "Mi",
+        "helpText": "Establece la tonalidad que se usa con más frecuencia para esta canción.",
+        "ariaLabel": "Tonalidad predeterminada"
+      },
+      "tags": {
+        "label": "Etiquetas",
+        "placeholder": "adoración, animada",
+        "helpText": "Separa las etiquetas con comas para facilitar la búsqueda.",
+        "ariaLabel": "Etiquetas"
+      }
+    }
   },
   "actions": {
     "new": "Nueva canción"
