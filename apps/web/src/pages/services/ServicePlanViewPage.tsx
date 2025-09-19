@@ -119,13 +119,13 @@ export default function ServicePlanViewPage() {
                 const capo = typeof extras['capo'] === 'number' ? (extras['capo'] as number) : 0;
                 const keyInfo = label?.key ? computeKeys(label.key, transpose, capo, false) : undefined;
 
-                line = formatArrangementLine({
+                line = formatArrangementLine(tArrangements, {
                   songTitle: label?.songTitle ?? fallbackTitle,
                   key: keyInfo?.originalKey ?? label?.key ?? null,
                   bpm: label?.bpm ?? null,
                   meter: label?.meter ?? null,
                 });
-                keySummary = formatKeyTransform({
+                keySummary = formatKeyTransform(tArrangements, {
                   originalKey:
                     keyInfo?.originalKey ?? label?.key ?? tCommon('labels.notAvailable'),
                   soundingKey:

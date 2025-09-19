@@ -38,7 +38,25 @@
     "empty": "No arrangements"
   },
   "labels": {
-    "fallback": "Arrangement {{id}}"
+    "fallback": "Arrangement {{id}}",
+    "generic": "Arrangement",
+    "meta": {
+      "key": "Key {{key}}",
+      "bpm": "{{bpm}} BPM",
+      "meter": "{{meter}}",
+      "separator": " • "
+    },
+    "line": {
+      "titleWithMeta": "{{title}} — {{meta}}",
+      "titleOnly": "{{title}}",
+      "metaOnly": "{{meta}}"
+    },
+    "keyTransform": {
+      "base": "Key {{key}}",
+      "transpose": "Key {{original}} → {{sounding}} ({{change}})",
+      "capo": "Capo {{capo}} (shapes in {{shape}})",
+      "separator": ", "
+    }
   },
   "validation": {
     "keyRequired": "Key is required",

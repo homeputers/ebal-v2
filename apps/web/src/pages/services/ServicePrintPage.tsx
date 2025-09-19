@@ -58,13 +58,13 @@ export default function ServicePrintPage() {
                 ? computeKeys(label.key, transpose, capo, false)
                 : undefined;
 
-              line = formatArrangementLine({
+              line = formatArrangementLine(tArrangements, {
                 songTitle: label?.songTitle ?? fallbackTitle,
                 key: keyInfo?.originalKey ?? label?.key ?? null,
                 bpm: label?.bpm ?? null,
                 meter: label?.meter ?? null,
               });
-              keySummary = formatKeyTransform({
+              keySummary = formatKeyTransform(tArrangements, {
                 originalKey:
                   keyInfo?.originalKey ?? label?.key ?? tCommon('labels.notAvailable'),
                 soundingKey:

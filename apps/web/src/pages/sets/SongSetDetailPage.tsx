@@ -109,7 +109,7 @@ function SortableSetItem({
     ? computeKeys(arrangement.key, transpose, capo, useFlats)
     : undefined;
 
-  const line = formatArrangementLine({
+  const line = formatArrangementLine(tArrangements, {
     songTitle:
       arrangement?.songTitle ??
       (item.arrangementId
@@ -120,7 +120,7 @@ function SortableSetItem({
     meter: arrangement?.meter ?? null,
   });
 
-  const keySummary = formatKeyTransform({
+  const keySummary = formatKeyTransform(tArrangements, {
     originalKey: keyInfo?.originalKey ?? arrangement?.key ?? tCommon('labels.notAvailable'),
     soundingKey: keyInfo?.soundingKey ?? arrangement?.key ?? tCommon('labels.notAvailable'),
     shapeKey: keyInfo?.shapeKey,
@@ -255,7 +255,7 @@ export default function SongSetDetailPage() {
     ? computeKeys(previewKeySource, transpose, capo, useFlats)
     : undefined;
   const previewLine = arrangementId
-    ? formatArrangementLine({
+    ? formatArrangementLine(tArrangements, {
         songTitle:
           selectedArrangementInfo?.songTitle ??
           tArrangements('labels.fallback', { id: arrangementId }),
@@ -265,7 +265,7 @@ export default function SongSetDetailPage() {
       })
     : null;
   const previewKeySummary = arrangementId
-    ? formatKeyTransform({
+    ? formatKeyTransform(tArrangements, {
         originalKey:
           previewKeyInfo?.originalKey ?? previewKeySource ?? tCommon('labels.notAvailable'),
         soundingKey:
