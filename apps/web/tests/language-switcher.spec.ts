@@ -11,43 +11,37 @@ const ES_NAV_LABELS = [
 
 const LANGUAGE_BUTTON_NAME = /Change language|Cambiar idioma/;
 
-test.describe('language switcher smoke', () => {
-  test('switches navigation language and persists after reload', async ({ page }) => {
-    await page.goto('/en/services');
+test('language switcher smoke: switches navigation language and persists after reload', async ({
+  page,
+}) => {
+  await page.goto('/en/services');
 
-    for (const label of EN_NAV_LABELS) {
-      await expect(
-        page.getByRole('link', { name: label, exact: true }),
-      ).toBeVisible();
-    }
+  for (const label of EN_NAV_LABELS) {
+    await expect(page.getByRole('link', { name: label, exact: true })).toBeVisible();
+  }
 
-    await page.getByRole('button', { name: LANGUAGE_BUTTON_NAME }).click();
-    await page.getByRole('option', { name: 'Español' }).click();
+  await page.getByRole('button', { name: LANGUAGE_BUTTON_NAME }).click();
+  await page.getByRole('option', { name: 'Español' }).click();
 
-    await expect(page).toHaveURL(/\/es\/services$/);
+  await expect(page).toHaveURL(/\/es\/services$/);
 
-    for (const label of ES_NAV_LABELS) {
-      await expect(
-        page.getByRole('link', { name: label, exact: true }),
-      ).toBeVisible();
-    }
+  for (const label of ES_NAV_LABELS) {
+    await expect(page.getByRole('link', { name: label, exact: true })).toBeVisible();
+  }
 
-    await expect(
-      page.getByRole('button', { name: LANGUAGE_BUTTON_NAME }),
-    ).toContainText('Español');
+  await expect(page.getByRole('button', { name: LANGUAGE_BUTTON_NAME })).toContainText(
+    'Español',
+  );
 
-    await page.reload();
+  await page.reload();
 
-    await expect(page).toHaveURL(/\/es\/services$/);
+  await expect(page).toHaveURL(/\/es\/services$/);
 
-    for (const label of ES_NAV_LABELS) {
-      await expect(
-        page.getByRole('link', { name: label, exact: true }),
-      ).toBeVisible();
-    }
+  for (const label of ES_NAV_LABELS) {
+    await expect(page.getByRole('link', { name: label, exact: true })).toBeVisible();
+  }
 
-    await expect(
-      page.getByRole('button', { name: LANGUAGE_BUTTON_NAME }),
-    ).toContainText('Español');
-  });
+  await expect(page.getByRole('button', { name: LANGUAGE_BUTTON_NAME })).toContainText(
+    'Español',
+  );
 });
