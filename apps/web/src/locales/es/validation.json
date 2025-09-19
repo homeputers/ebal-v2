@@ -1,5 +1,33 @@
 {
+  "default": "Valor no válido.",
   "required": "Este campo es obligatorio.",
+  "invalidType": "Ingresa un valor válido.",
+  "invalidEnumValue": "Elige una de las opciones permitidas.",
   "email": "Ingresa una dirección de correo válida.",
-  "minLength": "Debe tener al menos {{count}} caracteres."
+  "minLength": "Debe tener al menos {{count}} caracteres.",
+  "tooSmall": {
+    "string": "Debe tener al menos {{minimum}} caracteres.",
+    "number": "Debe ser mayor o igual a {{minimum}}.",
+    "array": "Selecciona al menos {{minimum}} opción(es).",
+    "set": "Selecciona al menos {{minimum}} opción(es).",
+    "date": "La fecha debe ser en o después de {{minimum}}."
+  },
+  "tooBig": {
+    "string": "Debe tener como máximo {{maximum}} caracteres.",
+    "number": "Debe ser menor o igual a {{maximum}}.",
+    "array": "Selecciona como máximo {{maximum}} opción(es).",
+    "set": "Selecciona como máximo {{maximum}} opción(es).",
+    "date": "La fecha debe ser en o antes de {{maximum}}."
+  },
+  "members": {
+    "displayName": {
+      "min": "El nombre para mostrar debe tener al menos {{minimum}} caracteres."
+    }
+  },
+  "arrangementRequired": "Selecciona un arreglo.",
+  "nameMin": "El nombre debe tener al menos {{minimum}} caracteres.",
+  "titleMin": "El título debe tener al menos {{minimum}} caracteres.",
+  "keyRequired": "La tonalidad es obligatoria.",
+  "bpmNumber": "Ingresa un número de BPM válido.",
+  "lyricsRequired": "Las letras son obligatorias."
 }

@@ -5,7 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { components } from '../../api/types';
 
 const schema = z.object({
-  displayName: z.string().min(2, 'validation.displayNameMin'),
+  displayName: z
+    .string({
+      required_error: 'required',
+      invalid_type_error: 'invalidType',
+    })
+    .min(2, { message: 'members.displayName.min' }),
   instruments: z.string().optional(),
 });
 
@@ -54,11 +59,7 @@ export function MemberForm({
           className="border p-2 rounded w-full"
         />
         {errors.displayName && (
-          <p className="text-red-500 text-sm">
-            {t(errors.displayName.message ?? '', {
-              defaultValue: errors.displayName.message ?? '',
-            })}
-          </p>
+          <p className="text-red-500 text-sm">{errors.displayName.message}</p>
         )}
       </div>
       <div>
