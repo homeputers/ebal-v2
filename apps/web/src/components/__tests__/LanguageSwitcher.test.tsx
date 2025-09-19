@@ -15,11 +15,16 @@ vi.mock('react-router-dom', async (importOriginal) => {
   };
 });
 
-vi.mock('@/i18n', () => ({
-  SUPPORTED_LANGUAGES: ['en', 'es'],
-  LANGUAGE_STORAGE_KEY: 'i18nextLng',
-  setAppLanguage: mockSetAppLanguage,
-}));
+vi.mock('@/i18n', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/i18n')>();
+
+  return {
+    ...actual,
+    SUPPORTED_LANGUAGES: ['en', 'es'],
+    LANGUAGE_STORAGE_KEY: 'i18nextLng',
+    setAppLanguage: mockSetAppLanguage,
+  };
+});
 
 import { MemoryRouter } from 'react-router-dom';
 import { LanguageSwitcher } from '../LanguageSwitcher';
