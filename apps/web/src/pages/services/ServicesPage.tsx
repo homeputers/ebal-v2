@@ -141,7 +141,7 @@ export default function ServicesPage() {
                   <td className="p-2 text-right">
                     <div className="flex gap-2 justify-end">
                       <Link
-                        to={`/services/${s.id}`}
+                        to={s.id ?? ''}
                         className="px-2 py-1 text-sm bg-green-500 text-white rounded"
                       >
                         Open plan

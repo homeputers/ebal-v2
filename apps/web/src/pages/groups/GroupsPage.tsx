@@ -133,7 +133,7 @@ export default function GroupsPage() {
                         />
                       ) : (
                         <Link
-                          to={`/groups/${g.id}`}
+                          to={g.id ?? ''}
                           className="text-blue-600 hover:underline"
                         >
                           {g.name}

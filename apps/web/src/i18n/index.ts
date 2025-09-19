@@ -53,6 +53,8 @@ const supportedLngs = Array.from(
   new Set([...Object.keys(resources), DEFAULT_LANGUAGE]),
 );
 
+export const SUPPORTED_LANGUAGES = supportedLngs as readonly string[];
+
 void i18n
   .use(LanguageDetector)
   .use(initReactI18next)

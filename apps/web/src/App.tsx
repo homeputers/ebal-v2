@@ -1,8 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import { Suspense, lazy } from 'react';
+import { lazy } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { Navbar } from '@/components/Navbar';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LanguageGuard } from '@/components/LanguageGuard';
 import { queryClient } from '@/lib/queryClient';
 import { Toaster } from 'sonner';
 
@@ -22,27 +21,25 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <div className="min-h-screen flex flex-col">
-          <Navbar />
-          <ErrorBoundary>
-            <Suspense fallback={<div>Loading...</div>}>
-              <Routes>
-                <Route path="/" element={<Navigate to="/members" replace />} />
-                <Route path="/members" element={<Members />} />
-                <Route path="/groups" element={<Groups />} />
-                <Route path="/groups/:id" element={<GroupDetail />} />
-                <Route path="/songs" element={<Songs />} />
-                <Route path="/songs/:id" element={<SongDetail />} />
-                <Route path="/song-sets" element={<SongSets />} />
-                <Route path="/song-sets/:id" element={<SongSetDetail />} />
-                <Route path="/services" element={<Services />} />
-                <Route path="/services/:id" element={<ServiceDetail />} />
-                <Route path="/services/:id/print" element={<ServicePrint />} />
-                <Route path="/services/:id/plan" element={<ServicePlanView />} />
-              </Routes>
-            </Suspense>
-          </ErrorBoundary>
-        </div>
+        <Routes>
+          <Route element={<LanguageGuard />}>
+            <Route path=":lang">
+              <Route index element={<Navigate to="members" replace />} />
+              <Route path="members" element={<Members />} />
+              <Route path="groups" element={<Groups />} />
+              <Route path="groups/:id" element={<GroupDetail />} />
+              <Route path="songs" element={<Songs />} />
+              <Route path="songs/:id" element={<SongDetail />} />
+              <Route path="song-sets" element={<SongSets />} />
+              <Route path="song-sets/:id" element={<SongSetDetail />} />
+              <Route path="services" element={<Services />} />
+              <Route path="services/:id" element={<ServiceDetail />} />
+              <Route path="services/:id/print" element={<ServicePrint />} />
+              <Route path="services/:id/plan" element={<ServicePlanView />} />
+              <Route path="*" element={<Navigate to="members" replace />} />
+            </Route>
+          </Route>
+        </Routes>
       </BrowserRouter>
       <Toaster />
     </QueryClientProvider>

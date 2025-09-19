@@ -163,7 +163,7 @@ export default function SongSetsPage() {
                         <td className="p-2 text-right align-top">
                           <div className="flex gap-2 justify-end">
                             <Link
-                              to={`/song-sets/${setId}`}
+                              to={setId}
                               className="px-2 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200"
                             >
                               Open
