@@ -1,9 +1,9 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { I18nextProvider } from 'react-i18next';
 
-const { mockNavigate, mockSetAppLanguage } = vi.hoisted(() => ({
+const { mockNavigate } = vi.hoisted(() => ({
   mockNavigate: vi.fn(),
-  mockSetAppLanguage: vi.fn(),
 }));
 
 vi.mock('react-router-dom', async (importOriginal) => {
@@ -15,59 +15,82 @@ vi.mock('react-router-dom', async (importOriginal) => {
   };
 });
 
-vi.mock('@/i18n', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/i18n')>();
-
-  return {
-    ...actual,
-    SUPPORTED_LANGUAGES: ['en', 'es'],
-    LANGUAGE_STORAGE_KEY: 'i18nextLng',
-    setAppLanguage: mockSetAppLanguage,
-  };
-});
-
 import { MemoryRouter } from 'react-router-dom';
+import i18n, { LANGUAGE_STORAGE_KEY } from '@/i18n';
 import { LanguageSwitcher } from '../LanguageSwitcher';
 
+const renderLanguageSwitcher = (
+  currentLanguage: string,
+  initialPath = '/en/services',
+) =>
+  render(
+    <I18nextProvider i18n={i18n}>
+      <MemoryRouter initialEntries={[initialPath]}>
+        <LanguageSwitcher currentLanguage={currentLanguage} />
+      </MemoryRouter>
+    </I18nextProvider>,
+  );
+
+const changeLanguage = async (language: string) => {
+  await act(async () => {
+    await i18n.changeLanguage(language);
+  });
+};
+
 describe('LanguageSwitcher', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     mockNavigate.mockReset();
-    mockSetAppLanguage.mockReset();
     window.localStorage.clear();
+    await changeLanguage('en');
   });
 
-  it('updates i18next and persists the chosen language', async () => {
+  afterEach(async () => {
+    await changeLanguage('en');
+  });
+
+  it('changes the active i18n language and persists the choice', async () => {
     const user = userEvent.setup();
 
-    render(
-      <MemoryRouter initialEntries={['/en/services']}>
-        <LanguageSwitcher currentLanguage="en" />
-      </MemoryRouter>,
-    );
+    renderLanguageSwitcher('en');
 
-    await user.click(screen.getByRole('button', { name: /change language/i }));
+    await user.click(screen.getByRole('button', { name: 'Change language' }));
     await user.click(screen.getByRole('option', { name: 'Español' }));
 
-    expect(mockSetAppLanguage).toHaveBeenCalledWith('es');
-    expect(window.localStorage.getItem('i18nextLng')).toBe('es');
+    await waitFor(() => expect(i18n.language).toBe('es'));
+    expect(window.localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBe('es');
   });
 
   it('rewrites the current route with the selected language', async () => {
     const user = userEvent.setup();
 
-    render(
-      <MemoryRouter initialEntries={['/en/song-sets/42?foo=bar#details']}>
-        <LanguageSwitcher currentLanguage="en" />
-      </MemoryRouter>,
-    );
+    renderLanguageSwitcher('en', '/en/song-sets/42?foo=bar#details');
 
-    await user.click(screen.getByRole('button', { name: /change language/i }));
+    await user.click(screen.getByRole('button', { name: 'Change language' }));
     await user.click(screen.getByRole('option', { name: 'Español' }));
+
+    await waitFor(() => expect(i18n.language).toBe('es'));
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith(
       '/es/song-sets/42?foo=bar#details',
       { replace: true },
     );
+  });
+
+  it.each([
+    { language: 'en', label: 'English', ariaLabel: 'Change language' },
+    { language: 'es', label: 'Español', ariaLabel: 'Cambiar idioma' },
+  ])('shows translated labels for $language', async ({
+    language,
+    label,
+    ariaLabel,
+  }) => {
+    await changeLanguage(language);
+
+    renderLanguageSwitcher(language, `/${language}/members`);
+
+    const button = screen.getByRole('button', { name: ariaLabel });
+
+    expect(button).toHaveTextContent(label);
   });
 });
