@@ -111,17 +111,22 @@ export default function ServiceDetailPage() {
   const previewKeySource = selectedLabel?.key ?? selectedArrangement?.key ?? null;
   const previewKeyInfo = previewKeySource ? computeKeys(previewKeySource, 0, 0, false) : undefined;
   const previewLine = arrangementId
-    ? formatArrangementLine({
-        songTitle: selectedLabel?.songTitle ?? song?.title ?? `Arrangement ${arrangementId}`,
+    ? formatArrangementLine(tArrangements, {
+        songTitle:
+          selectedLabel?.songTitle ??
+          song?.title ??
+          tArrangements('labels.fallback', { id: arrangementId }),
         key: previewKeyInfo?.originalKey ?? previewKeySource ?? null,
         bpm: selectedLabel?.bpm ?? selectedArrangement?.bpm ?? null,
         meter: selectedLabel?.meter ?? selectedArrangement?.meter ?? null,
       })
     : null;
   const previewKeySummary = arrangementId
-    ? formatKeyTransform({
-        originalKey: previewKeyInfo?.originalKey ?? previewKeySource ?? 'N/A',
-        soundingKey: previewKeyInfo?.soundingKey ?? previewKeySource ?? 'N/A',
+    ? formatKeyTransform(tArrangements, {
+        originalKey:
+          previewKeyInfo?.originalKey ?? previewKeySource ?? tCommon('labels.notAvailable'),
+        soundingKey:
+          previewKeyInfo?.soundingKey ?? previewKeySource ?? tCommon('labels.notAvailable'),
         shapeKey: previewKeyInfo?.shapeKey,
         transpose: 0,
         capo: 0,
@@ -266,13 +271,13 @@ export default function ServiceDetailPage() {
                     ? computeKeys(label.key, transpose, capo, false)
                     : undefined;
 
-                  line = formatArrangementLine({
+                  line = formatArrangementLine(tArrangements, {
                     songTitle: label?.songTitle ?? fallbackTitle,
                     key: keyInfo?.originalKey ?? label?.key ?? null,
                     bpm: label?.bpm ?? null,
                     meter: label?.meter ?? null,
                   });
-                  keySummary = formatKeyTransform({
+                  keySummary = formatKeyTransform(tArrangements, {
                     originalKey:
                       keyInfo?.originalKey ?? label?.key ?? tCommon('labels.notAvailable'),
                     soundingKey:

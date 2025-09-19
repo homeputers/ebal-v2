@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { useQuery } from '@tanstack/react-query';
 import { listArrangements } from '@/api/songs';
 import type { components } from '@/api/types';
@@ -10,16 +12,44 @@ interface Props {
   onChange: (id: string | undefined) => void;
 }
 
-function formatLabel(a: components['schemas']['ArrangementResponse']) {
-  const parts = [`Key: ${a.key}`];
-  if (a.bpm) parts.push(`${a.bpm} BPM`);
-  if (a.meter) parts.push(a.meter);
-  return parts.join(' \u2022 ');
+function formatLabel(
+  tArrangements: TFunction<'arrangements'>,
+  a: components['schemas']['ArrangementResponse'],
+) {
+  const separator = tArrangements('labels.meta.separator', { defaultValue: ' • ' });
+  const parts = [
+    a.key
+      ? tArrangements('labels.meta.key', {
+          key: a.key,
+          defaultValue: `Key ${a.key}`,
+        })
+      : undefined,
+    typeof a.bpm === 'number'
+      ? tArrangements('labels.meta.bpm', {
+          bpm: a.bpm,
+          defaultValue: `${a.bpm} BPM`,
+        })
+      : undefined,
+    a.meter
+      ? tArrangements('labels.meta.meter', {
+          meter: a.meter,
+          defaultValue: a.meter,
+        })
+      : undefined,
+  ].filter(Boolean) as string[];
+
+  if (parts.length === 0) {
+    return tArrangements('labels.generic', { defaultValue: 'Arrangement' });
+  }
+
+  return parts.join(separator);
 }
 
 export function ArrangementPicker({ songId, value, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
+  const { t: tArrangements } = useTranslation('arrangements');
+  const { t: tCommon } = useTranslation('common');
   const { data, isLoading, isError } = useQuery({
     queryKey: withLangKey(['arrangements', songId]),
     queryFn: () => listArrangements(songId!),
@@ -69,7 +99,7 @@ export function ArrangementPicker({ songId, value, onChange }: Props) {
   return (
     <div className="relative">
       <input
-        value={selected ? formatLabel(selected) : ''}
+        value={selected ? formatLabel(tArrangements, selected) : ''}
         readOnly
         placeholder="Select arrangement"
         onFocus={() => setOpen(true)}
@@ -82,10 +112,12 @@ export function ArrangementPicker({ songId, value, onChange }: Props) {
           className="absolute z-10 mt-1 bg-white border rounded max-h-60 overflow-auto w-full"
           role="listbox"
         >
-          {isLoading && <li className="p-2 text-sm">Loading…</li>}
-          {isError && <li className="p-2 text-sm text-red-500">Failed to load</li>}
+          {isLoading && <li className="p-2 text-sm">{tCommon('status.loading')}</li>}
+          {isError && (
+            <li className="p-2 text-sm text-red-500">{tCommon('status.loadFailed')}</li>
+          )}
           {!isLoading && !isError && options.length === 0 && (
-            <li className="p-2 text-sm">No arrangements</li>
+            <li className="p-2 text-sm">{tArrangements('list.empty')}</li>
           )}
           {options.map((a, idx) => (
             <li
@@ -97,7 +129,7 @@ export function ArrangementPicker({ songId, value, onChange }: Props) {
               }`}
               onMouseDown={() => handleSelect(a)}
             >
-              {formatLabel(a)}
+              {formatLabel(tArrangements, a)}
             </li>
           ))}
         </ul>

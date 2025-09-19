@@ -38,7 +38,25 @@
     "empty": "No hay arreglos"
   },
   "labels": {
-    "fallback": "Arreglo {{id}}"
+    "fallback": "Arreglo {{id}}",
+    "generic": "Arreglo",
+    "meta": {
+      "key": "Tonalidad {{key}}",
+      "bpm": "{{bpm}} PPM",
+      "meter": "{{meter}}",
+      "separator": " • "
+    },
+    "line": {
+      "titleWithMeta": "{{title}} — {{meta}}",
+      "titleOnly": "{{title}}",
+      "metaOnly": "{{meta}}"
+    },
+    "keyTransform": {
+      "base": "Tonalidad {{key}}",
+      "transpose": "Tonalidad {{original}} → {{sounding}} ({{change}})",
+      "capo": "Capo {{capo}} (figuras en {{shape}})",
+      "separator": ", "
+    }
   },
   "validation": {
     "keyRequired": "La tonalidad es obligatoria",
