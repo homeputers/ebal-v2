@@ -72,7 +72,7 @@ void i18n
       order: ['localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
       caches: ['localStorage'],
     },
-    keySeparator: false,
+    keySeparator: '.',
     returnNull: false,
   });
 
