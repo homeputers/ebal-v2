@@ -4,7 +4,7 @@ module.exports = {
   ...base,
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: ['./tsconfig.json'],
+    project: ['./tsconfig.json', './tsconfig.playwright.json'],
     tsconfigRootDir: __dirname,
   },
   plugins: [...(base.plugins || []), '@typescript-eslint', 'i18next'],
