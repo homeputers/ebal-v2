@@ -5,7 +5,9 @@
   "nav": {
     "songs": "Songs",
     "services": "Services",
-    "members": "Members"
+    "members": "Members",
+    "groups": "Groups",
+    "songSets": "Song Sets"
   },
   "actions": {
     "save": "Save",
@@ -33,5 +35,13 @@
   },
   "labels": {
     "notAvailable": "N/A"
+  },
+  "language": {
+    "change": "Change language",
+    "select": "Select language",
+    "labels": {
+      "en": "English",
+      "es": "Spanish"
+    }
   }
 }

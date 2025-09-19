@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 const links = [
-  { path: 'members', label: 'Members' },
-  { path: 'groups', label: 'Groups' },
-  { path: 'songs', label: 'Songs' },
-  { path: 'song-sets', label: 'Song Sets' },
-  { path: 'services', label: 'Services' },
+  { path: 'members', labelKey: 'nav.members' },
+  { path: 'groups', labelKey: 'nav.groups' },
+  { path: 'songs', labelKey: 'nav.songs' },
+  { path: 'song-sets', labelKey: 'nav.songSets' },
+  { path: 'services', labelKey: 'nav.services' },
 ];
 
 type NavbarProps = {
@@ -18,6 +19,8 @@ const makeHref = (language: string, path: string) =>
   `/${language}${path.startsWith('/') ? path : `/${path}`}`;
 
 export function Navbar({ currentLanguage }: NavbarProps) {
+  const { t } = useTranslation('common');
+
   return (
     <nav className="bg-gray-800 text-white p-4 print:hidden">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
@@ -28,7 +31,7 @@ export function Navbar({ currentLanguage }: NavbarProps) {
                 to={makeHref(currentLanguage, link.path)}
                 className="hover:underline"
               >
-                {link.label}
+                {t(link.labelKey)}
               </Link>
             </li>
           ))}

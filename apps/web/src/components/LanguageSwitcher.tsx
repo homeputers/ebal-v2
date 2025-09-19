@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import {
   LANGUAGE_STORAGE_KEY,
@@ -12,13 +13,10 @@ type LanguageSwitcherProps = {
   className?: string;
 };
 
-const LANGUAGE_LABELS: Record<string, string> = {
+const FALLBACK_LANGUAGE_LABELS: Record<string, string> = {
   en: 'English',
   es: 'Español',
 };
-
-const getLanguageLabel = (language: string) =>
-  LANGUAGE_LABELS[language] ?? language.toUpperCase();
 
 const isBrowser = typeof window !== 'undefined';
 
@@ -26,6 +24,7 @@ export function LanguageSwitcher({
   className,
   currentLanguage,
 }: LanguageSwitcherProps) {
+  const { t } = useTranslation('common');
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -35,6 +34,15 @@ export function LanguageSwitcher({
   const languages = useMemo(
     () => Array.from(new Set(SUPPORTED_LANGUAGES)),
     [],
+  );
+
+  const getLanguageLabel = useCallback(
+    (language: string) =>
+      t(`language.labels.${language}`, {
+        defaultValue:
+          FALLBACK_LANGUAGE_LABELS[language] ?? language.toUpperCase(),
+      }),
+    [t],
   );
 
   useEffect(() => {
@@ -132,7 +140,7 @@ export function LanguageSwitcher({
         type="button"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        aria-label="Change language"
+        aria-label={t('language.change')}
         className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-1 text-sm font-medium text-white hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
         onClick={() => setIsOpen((value) => !value)}
       >
@@ -146,7 +154,7 @@ export function LanguageSwitcher({
       {isOpen ? (
         <ul
           role="listbox"
-          aria-label="Select language"
+          aria-label={t('language.select')}
           className="absolute right-0 z-50 mt-2 w-40 overflow-hidden rounded-md border border-gray-200 bg-white py-1 shadow-lg focus:outline-none"
         >
           {languages.map((language) => (

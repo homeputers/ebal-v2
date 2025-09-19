@@ -1,0 +1,35 @@
+{
+  "page": {
+    "title": "Groups"
+  },
+  "actions": {
+    "new": "New Group"
+  },
+  "list": {
+    "searchPlaceholder": "Search by name...",
+    "empty": "No groups found"
+  },
+  "table": {
+    "name": "Name",
+    "members": "Members"
+  },
+  "modals": {
+    "createTitle": "New Group",
+    "editTitle": "Edit Group"
+  },
+  "form": {
+    "nameLabel": "Name"
+  },
+  "validation": {
+    "nameMin": "Name must be at least 2 characters"
+  },
+  "detail": {
+    "infoTitle": "Group Info",
+    "membersTitle": "Members",
+    "searchPlaceholder": "Search members...",
+    "selectMember": "Select member",
+    "emptyMembers": "No members",
+    "loadFailedMembers": "Failed to load members",
+    "removeMemberConfirm": "Remove member?"
+  }
+}

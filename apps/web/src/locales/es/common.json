@@ -5,7 +5,9 @@
   "nav": {
     "songs": "Canciones",
     "services": "Servicios",
-    "members": "Miembros"
+    "members": "Miembros",
+    "groups": "Grupos",
+    "songSets": "Listas de canciones"
   },
   "actions": {
     "save": "Guardar",
@@ -33,5 +35,13 @@
   },
   "labels": {
     "notAvailable": "N/D"
+  },
+  "language": {
+    "change": "Cambiar idioma",
+    "select": "Seleccionar idioma",
+    "labels": {
+      "en": "Inglés",
+      "es": "Español"
+    }
   }
 }

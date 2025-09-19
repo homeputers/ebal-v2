@@ -16,6 +16,13 @@
     "searchPlaceholder": "Buscar...",
     "empty": "No se encontraron servicios"
   },
+  "table": {
+    "startsAt": "Hora de inicio",
+    "location": "Ubicación"
+  },
+  "status": {
+    "loadFailed": "No se pudieron cargar los servicios."
+  },
   "modals": {
     "createTitle": "Nuevo servicio",
     "editTitle": "Editar servicio"

@@ -11,6 +11,7 @@ export const NAMESPACES = [
   'arrangements',
   'services',
   'songSets',
+  'groups',
   'validation',
 ] as const;
 

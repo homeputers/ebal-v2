@@ -16,6 +16,13 @@
     "searchPlaceholder": "Search...",
     "empty": "No services found"
   },
+  "table": {
+    "startsAt": "Starts At",
+    "location": "Location"
+  },
+  "status": {
+    "loadFailed": "Failed to load services."
+  },
   "modals": {
     "createTitle": "New Service",
     "editTitle": "Edit Service"
