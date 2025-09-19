@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { listSongs } from '@/api/songs';
 import type { components } from '@/api/types';
+import { withLangKey } from '@/lib/queryClient';
 
 function useDebounce<T>(value: T, delay: number) {
   const [debounced, setDebounced] = useState(value);
@@ -25,7 +26,7 @@ export function SongPicker({ value, onChange, placeholder }: Props) {
   const debounced = useDebounce(search, 300);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['songs', debounced],
+    queryKey: withLangKey(['songs', debounced]),
     queryFn: () => listSongs({ title: debounced, page: 0, size: 10 }),
     enabled: open,
     staleTime: 5 * 60 * 1000,

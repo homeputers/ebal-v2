@@ -3,10 +3,11 @@ import {
   listMembers, createMember, updateMember, deleteMember,
   type ListMembersParams
 } from '../../api/members';
+import { withLangKey } from '../../lib/queryClient';
 
 export function useMembersList(params: ListMembersParams | undefined) {
   return useQuery({
-    queryKey: ['members', params],
+    queryKey: withLangKey(['members', params]),
     queryFn: () => listMembers(params),
     placeholderData: (prev) => prev,
   });

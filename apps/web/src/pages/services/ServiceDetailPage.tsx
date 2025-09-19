@@ -22,6 +22,7 @@ import ServiceForm from '../../features/services/ServiceForm';
 import { usePlanArrangementInfo } from '@/features/services/usePlanArrangementInfo';
 import { formatArrangementLine, formatKeyTransform } from '@/lib/arrangement-labels';
 import { computeKeys } from '@/lib/keys';
+import { withLangKey } from '@/lib/queryClient';
 
 function Modal({
   open,
@@ -94,12 +95,12 @@ export default function ServiceDetailPage() {
   const arrangementId = watch('arrangementId');
 
   const { data: song } = useQuery({
-    queryKey: ['song', songId],
+    queryKey: withLangKey(['song', songId]),
     queryFn: () => getSong(songId!),
     enabled: !!songId,
   });
   const { data: arrangements } = useQuery({
-    queryKey: ['arrangements', songId],
+    queryKey: withLangKey(['arrangements', songId]),
     queryFn: () => listArrangements(songId!),
     enabled: !!songId,
   });

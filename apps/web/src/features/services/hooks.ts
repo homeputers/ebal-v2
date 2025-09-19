@@ -11,10 +11,11 @@ import {
   removePlanItem,
   type ListServicesParams,
 } from '../../api/services';
+import { withLangKey } from '../../lib/queryClient';
 
 export function useServicesList(params: ListServicesParams | undefined) {
   return useQuery({
-    queryKey: ['services', params],
+    queryKey: withLangKey(['services', params]),
     queryFn: () => listServices(params),
     placeholderData: (prev) => prev,
   });
@@ -47,7 +48,7 @@ export function useDeleteService() {
 
 export function useService(id: string | undefined) {
   return useQuery({
-    queryKey: ['service', id],
+    queryKey: withLangKey(['service', id]),
     queryFn: () => getService(id!),
     enabled: !!id,
   });
@@ -55,7 +56,7 @@ export function useService(id: string | undefined) {
 
 export function usePlanItems(serviceId: string | undefined) {
   return useQuery({
-    queryKey: ['servicePlan', serviceId],
+    queryKey: withLangKey(['servicePlan', serviceId]),
     queryFn: () => listPlanItems(serviceId!),
     enabled: !!serviceId,
   });
