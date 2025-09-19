@@ -23,6 +23,7 @@ import { usePlanArrangementInfo } from '@/features/services/usePlanArrangementIn
 import { formatArrangementLine, formatKeyTransform } from '@/lib/arrangement-labels';
 import { computeKeys } from '@/lib/keys';
 import { withLangKey } from '@/lib/queryClient';
+import { formatDate } from '@/i18n/intl';
 
 function Modal({
   open,
@@ -63,7 +64,7 @@ type AddItemForm = z.infer<typeof addSchema>;
 
 export default function ServiceDetailPage() {
   const { id } = useParams();
-  const { t } = useTranslation('services');
+  const { t, i18n } = useTranslation('services');
   const { t: tCommon } = useTranslation('common');
   const { t: tSongs } = useTranslation('songs');
   const { t: tArrangements } = useTranslation('arrangements');
@@ -159,7 +160,7 @@ export default function ServiceDetailPage() {
         <div>
           <h1 className="text-xl font-semibold">
             {service.startsAt
-              ? new Date(service.startsAt).toLocaleString()
+              ? formatDate(service.startsAt, i18n.language)
               : t('fallback.title')}
           </h1>
           {service.location && <div>{service.location}</div>}
