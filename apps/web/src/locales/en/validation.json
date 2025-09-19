@@ -24,6 +24,11 @@
       "min": "Display name must be at least {{minimum}} characters long."
     }
   },
+  "services": {
+    "startsAt": {
+      "min": "Start time is required."
+    }
+  },
   "arrangementRequired": "Select an arrangement.",
   "nameMin": "Name must be at least {{minimum}} characters long.",
   "titleMin": "Title must be at least {{minimum}} characters long.",

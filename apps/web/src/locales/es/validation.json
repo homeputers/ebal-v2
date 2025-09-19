@@ -24,6 +24,11 @@
       "min": "El nombre para mostrar debe tener al menos {{minimum}} caracteres."
     }
   },
+  "services": {
+    "startsAt": {
+      "min": "Se requiere la hora de inicio."
+    }
+  },
   "arrangementRequired": "Selecciona un arreglo.",
   "nameMin": "El nombre debe tener al menos {{minimum}} caracteres.",
   "titleMin": "El título debe tener al menos {{minimum}} caracteres.",
