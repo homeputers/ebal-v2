@@ -156,7 +156,7 @@ export default function SongsPage() {
                     <tr key={s.id} className="border-t">
                       <td className="p-2">
                         <Link
-                          to={`/songs/${s.id}`}
+                          to={s.id ?? ''}
                           className="text-blue-600 hover:underline"
                         >
                           {s.title}

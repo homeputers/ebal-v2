@@ -158,7 +158,7 @@ export default function ServiceDetailPage() {
         </div>
         <div className="flex gap-2">
           <Link
-            to={`/services/${id}/plan?share=preview`}
+            to={`plan?share=preview`}
             className="px-2 py-1 text-sm bg-indigo-500 text-white rounded"
           >
             Plan View
@@ -170,7 +170,7 @@ export default function ServiceDetailPage() {
             Edit
           </button>
           <Link
-            to={`/services/${id}/print`}
+            to="print"
             className="px-2 py-1 text-sm bg-blue-500 text-white rounded"
           >
             Print
