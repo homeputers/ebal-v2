@@ -35,6 +35,7 @@
     "defaultKey": "Tonalidad predeterminada",
     "tags": "Etiquetas"
   },
+  "lastUpdated": "Última actualización {{date}}",
   "pickers": {
     "searchPlaceholder": "Buscar canciones..."
   }

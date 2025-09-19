@@ -1,4 +1,6 @@
 {
+  "count_one": "{{count}} miembro",
+  "count_other": "{{count}} miembros",
   "page": {
     "title": "Miembros",
     "empty": "Aún no se han agregado miembros."

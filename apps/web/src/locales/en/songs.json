@@ -35,6 +35,7 @@
     "defaultKey": "Default Key",
     "tags": "Tags"
   },
+  "lastUpdated": "Last updated {{date}}",
   "pickers": {
     "searchPlaceholder": "Search songs..."
   }
