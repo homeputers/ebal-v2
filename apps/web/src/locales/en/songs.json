@@ -1,1 +1,10 @@
-{}
+{
+  "page": {
+    "title": "Songs",
+    "empty": "No songs found. Start by adding one."
+  },
+  "fields": {
+    "title": "Title",
+    "defaultKey": "Default Key"
+  }
+}

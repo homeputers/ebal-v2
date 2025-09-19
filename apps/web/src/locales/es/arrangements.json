@@ -1,0 +1,10 @@
+{
+  "page": {
+    "title": "Arreglos",
+    "empty": "No hay arreglos disponibles para esta canción."
+  },
+  "fields": {
+    "key": "Tonalidad",
+    "bpm": "Tempo (PPM)"
+  }
+}

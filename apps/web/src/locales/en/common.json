@@ -1,1 +1,17 @@
-{}
+{
+  "app": {
+    "title": "Every Breath and Life"
+  },
+  "nav": {
+    "songs": "Songs",
+    "services": "Services",
+    "members": "Members"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back"
+  }
+}

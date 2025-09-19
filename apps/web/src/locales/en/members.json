@@ -1,1 +1,10 @@
-{}
+{
+  "page": {
+    "title": "Members",
+    "empty": "No members have been added yet."
+  },
+  "fields": {
+    "displayName": "Name",
+    "instruments": "Instruments"
+  }
+}

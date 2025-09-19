@@ -1,1 +1,10 @@
-{}
+{
+  "page": {
+    "title": "Arrangements",
+    "empty": "No arrangements available for this song."
+  },
+  "fields": {
+    "key": "Key",
+    "bpm": "Tempo (BPM)"
+  }
+}

@@ -1,1 +1,10 @@
-{}
+{
+  "page": {
+    "title": "Song Sets",
+    "empty": "No song sets prepared yet."
+  },
+  "fields": {
+    "name": "Set Name",
+    "serviceDate": "Service Date"
+  }
+}
