@@ -16,7 +16,9 @@ test.describe('language switcher smoke', () => {
     await page.goto('/en/services');
 
     for (const label of EN_NAV_LABELS) {
-      await expect(page.getByRole('link', { name: label })).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: label, exact: true }),
+      ).toBeVisible();
     }
 
     await page.getByRole('button', { name: LANGUAGE_BUTTON_NAME }).click();
@@ -25,7 +27,9 @@ test.describe('language switcher smoke', () => {
     await expect(page).toHaveURL(/\/es\/services$/);
 
     for (const label of ES_NAV_LABELS) {
-      await expect(page.getByRole('link', { name: label })).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: label, exact: true }),
+      ).toBeVisible();
     }
 
     await expect(
@@ -37,7 +41,9 @@ test.describe('language switcher smoke', () => {
     await expect(page).toHaveURL(/\/es\/services$/);
 
     for (const label of ES_NAV_LABELS) {
-      await expect(page.getByRole('link', { name: label })).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: label, exact: true }),
+      ).toBeVisible();
     }
 
     await expect(
