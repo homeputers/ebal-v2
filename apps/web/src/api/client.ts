@@ -1,6 +1,6 @@
-import axios from 'axios';
+import { createAxiosInstance } from './axios';
 
-export const apiClient = axios.create({
+export const apiClient = createAxiosInstance({
   baseURL: '/api/v1',
   withCredentials: false,
   headers: {
@@ -8,9 +8,6 @@ export const apiClient = axios.create({
     Accept: 'application/json',
   },
 });
-
-// request interceptor (placeholder for auth headers later)
-apiClient.interceptors.request.use((config) => config);
 
 // response interceptor with minimal dev logging
 apiClient.interceptors.response.use(
