@@ -2,6 +2,29 @@ import { ZodIssueCode, type ZodErrorMap } from 'zod';
 import i18n from '../i18n';
 
 type TranslationParams = Record<string, unknown>;
+type ErrorMapIssue = Parameters<ZodErrorMap>[0];
+
+const fieldErrorPrefixStack: string[] = [];
+
+const getCurrentFieldErrorPrefix = () =>
+  fieldErrorPrefixStack[fieldErrorPrefixStack.length - 1];
+
+export const withFieldErrorPrefix = async <T>(
+  prefix: string | undefined,
+  callback: () => Promise<T> | T,
+) => {
+  if (!prefix) {
+    return await callback();
+  }
+
+  fieldErrorPrefixStack.push(prefix);
+
+  try {
+    return await callback();
+  } finally {
+    fieldErrorPrefixStack.pop();
+  }
+};
 
 const normaliseKey = (key: string) => {
   if (key.startsWith('validation:')) {
@@ -16,13 +39,30 @@ const normaliseKey = (key: string) => {
 };
 
 const translate = (key: string, params: TranslationParams, fallback: string) => {
-  const t = i18n.getFixedT(null, 'validation');
-  const result = t(normaliseKey(key), {
+  const result = i18n.t(normaliseKey(key), {
     defaultValue: fallback,
+    ns: 'validation',
     ...params,
   });
 
-  return result ?? fallback;
+  return typeof result === 'string' ? result : fallback;
+};
+
+const getFieldScopedKey = (issue: ErrorMapIssue) => {
+  const prefix = getCurrentFieldErrorPrefix();
+
+  if (!prefix || !issue.path?.length) {
+    return undefined;
+  }
+
+  switch (issue.code) {
+    case ZodIssueCode.too_small:
+      return `${prefix}.${issue.path.join('.')}.min`;
+    case ZodIssueCode.too_big:
+      return `${prefix}.${issue.path.join('.')}.max`;
+    default:
+      return undefined;
+  }
 };
 
 export const zodErrorMap: ZodErrorMap = (issue, ctx) => {
@@ -65,9 +105,19 @@ export const zodErrorMap: ZodErrorMap = (issue, ctx) => {
   })();
 
   const baseParams: TranslationParams = {
-    ...('path' in issue ? { path: issue.path?.join('.') } : {}),
+    ...(issue.path?.length ? { path: issue.path.join('.') } : {}),
     ...issueParams,
   };
+
+  const scopedKey = getFieldScopedKey(issue);
+
+  if (scopedKey) {
+    const message = translate(scopedKey, baseParams, '');
+
+    if (message) {
+      return { message };
+    }
+  }
 
   if (issue.message) {
     return {
