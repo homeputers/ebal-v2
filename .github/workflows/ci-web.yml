@@ -39,6 +39,20 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Test
+        run: yarn test
+        working-directory: apps/web
+
+      - name: Install Playwright browsers
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: yarn playwright install
+        working-directory: apps/web
+
+      - name: E2E Smoke Tests
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: yarn e2e
+        working-directory: apps/web
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
