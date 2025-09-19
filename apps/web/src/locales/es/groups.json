@@ -1,0 +1,35 @@
+{
+  "page": {
+    "title": "Grupos"
+  },
+  "actions": {
+    "new": "Nuevo grupo"
+  },
+  "list": {
+    "searchPlaceholder": "Buscar por nombre...",
+    "empty": "No se encontraron grupos"
+  },
+  "table": {
+    "name": "Nombre",
+    "members": "Miembros"
+  },
+  "modals": {
+    "createTitle": "Nuevo grupo",
+    "editTitle": "Editar grupo"
+  },
+  "form": {
+    "nameLabel": "Nombre"
+  },
+  "validation": {
+    "nameMin": "El nombre debe tener al menos 2 caracteres"
+  },
+  "detail": {
+    "infoTitle": "Información del grupo",
+    "membersTitle": "Miembros",
+    "searchPlaceholder": "Buscar miembros...",
+    "selectMember": "Seleccionar miembro",
+    "emptyMembers": "Sin miembros",
+    "loadFailedMembers": "No se pudieron cargar los miembros",
+    "removeMemberConfirm": "¿Quitar miembro?"
+  }
+}

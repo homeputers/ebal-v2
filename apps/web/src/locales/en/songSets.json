@@ -6,5 +6,52 @@
   "fields": {
     "name": "Set Name",
     "serviceDate": "Service Date"
+  },
+  "actions": {
+    "new": "New Set"
+  },
+  "modals": {
+    "createTitle": "New Set",
+    "editTitle": "Edit Set"
+  },
+  "list": {
+    "searchPlaceholder": "Search by name...",
+    "empty": "No song sets found"
+  },
+  "table": {
+    "name": "Name",
+    "items": "Items"
+  },
+  "status": {
+    "loadFailed": "Failed to load song sets.",
+    "noneSelected": "No song set selected.",
+    "savingOrder": "Saving order…"
+  },
+  "confirm": {
+    "delete": "Are you sure you want to delete this set?"
+  },
+  "items": {
+    "addTitle": "Add Item",
+    "transpose": "Transpose",
+    "capo": "Capo",
+    "addButton": "Add Item",
+    "title": "Items",
+    "loadFailed": "Failed to load items.",
+    "empty": "No items",
+    "dragHandle": "Drag to reorder"
+  },
+  "notifications": {
+    "itemAdded": "Item added",
+    "addFailed": "Failed to add item"
+  },
+  "fallback": {
+    "title": "Song Set"
+  },
+  "controls": {
+    "showSharps": "Show sharps (♯)",
+    "showFlats": "Show flats (♭)"
+  },
+  "validation": {
+    "nameMin": "Name must be at least 2 characters"
   }
 }

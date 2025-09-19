@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   useSongSetsList,
   useCreateSet,
@@ -38,6 +39,8 @@ function Modal({
 const PAGE_SIZE = 20;
 
 export default function SongSetsPage() {
+  const { t } = useTranslation('songSets');
+  const { t: tCommon } = useTranslation('common');
   const [searchParams, setSearchParams] = useSearchParams();
   const queryParam = searchParams.get('query') ?? '';
   const rawPage = Number(searchParams.get('page') ?? '0');
@@ -101,7 +104,7 @@ export default function SongSetsPage() {
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this set?')) {
+    if (window.confirm(t('confirm.delete'))) {
       deleteMut.mutate(id);
     }
   };
@@ -117,24 +120,24 @@ export default function SongSetsPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-semibold mb-4">Song Sets</h1>
+      <h1 className="text-xl font-semibold mb-4">{t('page.title')}</h1>
       <div className="flex items-center gap-2 mb-4">
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by name..."
+          placeholder={t('list.searchPlaceholder')}
           className="border p-2 rounded w-full max-w-sm"
         />
         <button
           onClick={() => setCreating(true)}
           className="px-4 py-2 bg-blue-500 text-white rounded"
         >
-          New Set
+          {t('actions.new')}
         </button>
       </div>
 
-      {isLoading && <div>Loading…</div>}
-      {isError && <div>Failed to load song sets.</div>}
+      {isLoading && <div>{tCommon('status.loading')}</div>}
+      {isError && <div>{t('status.loadFailed')}</div>}
 
       {!isLoading && data ? (
         <div className="mt-4">
@@ -143,9 +146,9 @@ export default function SongSetsPage() {
               <table className="w-full border">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="text-left p-2">Name</th>
-                    <th className="text-left p-2">Items</th>
-                    <th className="p-2 text-right">Actions</th>
+                    <th className="text-left p-2">{t('table.name')}</th>
+                    <th className="text-left p-2">{t('table.items')}</th>
+                    <th className="p-2 text-right">{tCommon('table.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -166,19 +169,19 @@ export default function SongSetsPage() {
                               to={setId}
                               className="px-2 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200"
                             >
-                              Open
+                              {tCommon('actions.open')}
                             </Link>
                             <button
                               className="px-2 py-1 text-sm bg-gray-200 rounded"
                               onClick={() => setEditing({ id: setId, name: set.name ?? '' })}
                             >
-                              Edit
+                              {tCommon('actions.edit')}
                             </button>
                             <button
                               className="px-2 py-1 text-sm bg-red-500 text-white rounded"
                               onClick={() => handleDelete(setId)}
                             >
-                              Delete
+                              {tCommon('actions.delete')}
                             </button>
                           </div>
                         </td>
@@ -193,10 +196,13 @@ export default function SongSetsPage() {
                   disabled={pageParam === 0}
                   onClick={() => goToPage(pageParam - 1)}
                 >
-                  Previous
+                  {tCommon('pagination.previous')}
                 </button>
                 <span>
-                  Page {(data.number ?? pageParam) + 1} of {data.totalPages ?? 1}
+                  {tCommon('pagination.pageOf', {
+                    page: (data.number ?? pageParam) + 1,
+                    total: data.totalPages ?? 1,
+                  })}
                 </span>
                 <button
                   className="px-3 py-1 border rounded disabled:opacity-50"
@@ -207,23 +213,23 @@ export default function SongSetsPage() {
                   }
                   onClick={() => goToPage(pageParam + 1)}
                 >
-                  Next
+                  {tCommon('pagination.next')}
                 </button>
               </div>
             </>
           ) : (
-            <div>No song sets found.</div>
+            <div>{t('list.empty')}</div>
           )}
         </div>
       ) : null}
 
       <Modal open={creating} onClose={() => setCreating(false)}>
-        <h2 className="text-lg font-semibold mb-2">New Set</h2>
+        <h2 className="text-lg font-semibold mb-2">{t('modals.createTitle')}</h2>
         <SetForm onSubmit={handleCreate} onCancel={() => setCreating(false)} />
       </Modal>
 
       <Modal open={!!editing} onClose={() => setEditing(null)}>
-        <h2 className="text-lg font-semibold mb-2">Edit Set</h2>
+        <h2 className="text-lg font-semibold mb-2">{t('modals.editTitle')}</h2>
         {editing && (
           <SetForm
             defaultValues={{ name: editing.name }}

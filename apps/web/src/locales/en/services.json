@@ -6,5 +6,59 @@
   "fields": {
     "startsAt": "Start Time",
     "location": "Location"
+  },
+  "actions": {
+    "new": "New Service",
+    "openPlan": "Open plan",
+    "planView": "Plan View"
+  },
+  "list": {
+    "searchPlaceholder": "Search...",
+    "empty": "No services found"
+  },
+  "table": {
+    "startsAt": "Starts At",
+    "location": "Location"
+  },
+  "status": {
+    "loadFailed": "Failed to load services."
+  },
+  "modals": {
+    "createTitle": "New Service",
+    "editTitle": "Edit Service"
+  },
+  "form": {
+    "startsAtLabel": "Starts At",
+    "locationLabel": "Location"
+  },
+  "fallback": {
+    "title": "Service"
+  },
+  "plan": {
+    "addItemTitle": "Add Item",
+    "itemTypes": {
+      "song": "Song",
+      "reading": "Reading",
+      "note": "Note",
+      "itemFallback": "Item"
+    },
+    "notesPlaceholder": "Notes",
+    "title": "Plan",
+    "empty": "No plan items",
+    "noItems": "No items",
+    "notifications": {
+      "itemAdded": "Item added",
+      "addFailed": "Failed to add item"
+    }
+  },
+  "planView": {
+    "title": "Service Plan",
+    "shareRequiredTitle": "Share token required",
+    "shareRequiredDescription": "A valid share link is required to view this service plan. Please check your link and try again.",
+    "loading": "Loading plan…",
+    "unavailableTitle": "Plan unavailable",
+    "unavailableDescription": "We were unable to load this service plan. Please try again later or contact the organizer.",
+    "shareTokenLabel": "Share Token:",
+    "empty": "No plan items have been scheduled yet."
   }
 }

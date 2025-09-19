@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import GroupForm from '../../features/groups/GroupForm';
 import {
   useGroup,
@@ -15,6 +16,8 @@ type Member = components['schemas']['MemberResponse'];
 
 export default function GroupDetailPage() {
   const { id = '' } = useParams<{ id: string }>();
+  const { t } = useTranslation('groups');
+  const { t: tCommon } = useTranslation('common');
   const groupQuery = useGroup(id);
   const updateGroup = useUpdateGroup();
   const membersQuery = useGroupMembers(id);
@@ -49,9 +52,9 @@ export default function GroupDetailPage() {
   return (
     <div className="p-4 flex flex-col md:flex-row gap-6">
       <div className="md:w-1/2">
-        <h1 className="text-xl font-semibold mb-4">Group Info</h1>
-        {groupQuery.isLoading && <div>Loading…</div>}
-        {groupQuery.isError && <div>Failed to load</div>}
+        <h1 className="text-xl font-semibold mb-4">{t('detail.infoTitle')}</h1>
+        {groupQuery.isLoading && <div>{tCommon('status.loading')}</div>}
+        {groupQuery.isError && <div>{tCommon('status.loadFailed')}</div>}
         {groupQuery.data && (
           <GroupForm
             defaultValues={{ name: groupQuery.data.name || '' }}
@@ -60,12 +63,12 @@ export default function GroupDetailPage() {
         )}
       </div>
       <div className="md:w-1/2">
-        <h2 className="text-xl font-semibold mb-4">Members</h2>
+        <h2 className="text-xl font-semibold mb-4">{t('detail.membersTitle')}</h2>
         <div className="flex flex-col gap-2 mb-2 md:flex-row">
           <input
             value={memberSearch}
             onChange={(e) => setMemberSearch(e.target.value)}
-            placeholder="Search members..."
+            placeholder={t('detail.searchPlaceholder')}
             className="border p-2 rounded flex-1"
           />
           <select
@@ -73,7 +76,7 @@ export default function GroupDetailPage() {
             onChange={(e) => setSelectedMemberId(e.target.value)}
             className="border p-2 rounded flex-1"
           >
-            <option value="">Select member</option>
+            <option value="">{t('detail.selectMember')}</option>
             {availableMembers.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.displayName}
@@ -85,17 +88,17 @@ export default function GroupDetailPage() {
             disabled={!selectedMemberId}
             className="px-3 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
           >
-            Add
+            {tCommon('actions.add')}
           </button>
         </div>
-        {membersQuery.isLoading && <div>Loading…</div>}
-        {membersQuery.isError && <div>Failed to load members</div>}
+        {membersQuery.isLoading && <div>{tCommon('status.loading')}</div>}
+        {membersQuery.isError && <div>{t('detail.loadFailedMembers')}</div>}
         {membersQuery.data && membersQuery.data.length > 0 ? (
           <table className="w-full border mt-2">
             <thead>
               <tr className="bg-gray-50">
-                <th className="text-left p-2">Name</th>
-                <th className="p-2 text-right">Actions</th>
+                <th className="text-left p-2">{t('table.name')}</th>
+                <th className="p-2 text-right">{tCommon('table.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -106,12 +109,12 @@ export default function GroupDetailPage() {
                     <button
                       className="px-2 py-1 text-sm bg-red-500 text-white rounded"
                       onClick={() => {
-                        if (confirm('Remove member?')) {
+                        if (confirm(t('detail.removeMemberConfirm'))) {
                           removeMember.mutate(m.id as string);
                         }
                       }}
                     >
-                      Remove
+                      {tCommon('actions.remove')}
                     </button>
                   </td>
                 </tr>
@@ -119,7 +122,7 @@ export default function GroupDetailPage() {
             </tbody>
           </table>
         ) : (
-          <div className="mt-2">No members</div>
+          <div className="mt-2">{t('detail.emptyMembers')}</div>
         )}
       </div>
     </div>

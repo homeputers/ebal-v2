@@ -5,6 +5,37 @@
   },
   "fields": {
     "title": "Título",
-    "defaultKey": "Tonalidad predeterminada"
+    "defaultKey": "Tonalidad predeterminada",
+    "tags": "Etiquetas"
+  },
+  "form": {
+    "titleLabel": "Título",
+    "ccliLabel": "CCLI",
+    "authorLabel": "Autor",
+    "defaultKeyLabel": "Tonalidad predeterminada",
+    "tagsLabel": "Etiquetas (separadas por comas)"
+  },
+  "actions": {
+    "new": "Nueva canción"
+  },
+  "modals": {
+    "createTitle": "Nueva canción",
+    "editTitle": "Editar canción"
+  },
+  "list": {
+    "searchPlaceholder": "Buscar por título...",
+    "empty": "No se encontraron canciones"
+  },
+  "validation": {
+    "titleMin": "El título debe tener al menos 2 caracteres"
+  },
+  "detail": {
+    "author": "Autor",
+    "ccli": "CCLI",
+    "defaultKey": "Tonalidad predeterminada",
+    "tags": "Etiquetas"
+  },
+  "pickers": {
+    "searchPlaceholder": "Buscar canciones..."
   }
 }

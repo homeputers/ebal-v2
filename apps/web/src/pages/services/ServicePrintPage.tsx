@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useService, usePlanItems } from '../../features/services/hooks';
 import { usePlanArrangementInfo } from '@/features/services/usePlanArrangementInfo';
 import { formatArrangementLine, formatKeyTransform } from '@/lib/arrangement-labels';
@@ -6,14 +7,19 @@ import { computeKeys } from '@/lib/keys';
 
 export default function ServicePrintPage() {
   const { id } = useParams();
+  const { t } = useTranslation('services');
+  const { t: tCommon } = useTranslation('common');
+  const { t: tArrangements } = useTranslation('arrangements');
   const { data: service } = useService(id);
   const { data: plan } = usePlanItems(id);
   const { data: arrangementLabels } = usePlanArrangementInfo(plan);
   const arrangementLabelMap = arrangementLabels ?? {};
 
   const formatType = (type?: string | null) => {
-    if (!type) return 'Item';
-    return type.charAt(0).toUpperCase() + type.slice(1);
+    if (!type) return t('plan.itemTypes.itemFallback');
+    return t(`plan.itemTypes.${type}`, {
+      defaultValue: type.charAt(0).toUpperCase() + type.slice(1),
+    });
   };
 
   const handlePrint = () => window.print();
@@ -22,14 +28,16 @@ export default function ServicePrintPage() {
     <div className="p-4 print:p-0">
       <div className="mb-4 flex justify-between print:block">
         <h1 className="text-xl font-semibold">
-          {service?.startsAt ? new Date(service.startsAt).toLocaleString() : 'Service'}
+          {service?.startsAt
+            ? new Date(service.startsAt).toLocaleString()
+            : t('fallback.title')}
           {service?.location ? ` - ${service.location}` : ''}
         </h1>
         <button
           onClick={handlePrint}
           className="px-2 py-1 text-sm bg-blue-500 text-white rounded print:hidden"
         >
-          Print
+          {tCommon('actions.print')}
         </button>
       </div>
       {plan && plan.length > 0 ? (
@@ -41,7 +49,7 @@ export default function ServicePrintPage() {
 
             if (isSong && item.refId) {
               const label = arrangementLabelMap[item.refId];
-              const fallbackTitle = `Arrangement ${item.refId}`;
+              const fallbackTitle = tArrangements('labels.fallback', { id: item.refId });
               const extras = item as Record<string, unknown>;
               const transpose =
                 typeof extras['transpose'] === 'number' ? (extras['transpose'] as number) : 0;
@@ -57,8 +65,10 @@ export default function ServicePrintPage() {
                 meter: label?.meter ?? null,
               });
               keySummary = formatKeyTransform({
-                originalKey: keyInfo?.originalKey ?? label?.key ?? 'N/A',
-                soundingKey: keyInfo?.soundingKey ?? label?.key ?? 'N/A',
+                originalKey:
+                  keyInfo?.originalKey ?? label?.key ?? tCommon('labels.notAvailable'),
+                soundingKey:
+                  keyInfo?.soundingKey ?? label?.key ?? tCommon('labels.notAvailable'),
                 shapeKey: keyInfo?.shapeKey,
                 transpose,
                 capo,
@@ -81,7 +91,7 @@ export default function ServicePrintPage() {
           })}
         </ol>
       ) : (
-        <div>No items</div>
+        <div>{t('plan.noItems')}</div>
       )}
     </div>
   );

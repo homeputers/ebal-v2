@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { components } from '../../api/types';
 import {
   useMembersList,
@@ -38,6 +39,8 @@ type Member = components['schemas']['MemberResponse'];
 type MemberRequest = components['schemas']['MemberRequest'];
 
 export default function MembersPage() {
+  const { t } = useTranslation('members');
+  const { t: tCommon } = useTranslation('common');
   const [searchParams, setSearchParams] = useSearchParams();
   const queryParam = searchParams.get('query') ?? '';
   const pageParam = Number(searchParams.get('page') ?? '0');
@@ -88,23 +91,23 @@ export default function MembersPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-semibold mb-4">Members</h1>
+      <h1 className="text-xl font-semibold mb-4">{t('page.title')}</h1>
       <div className="flex items-center gap-2 mb-4">
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by name..."
+          placeholder={t('list.searchPlaceholder')}
           className="border p-2 rounded w-full max-w-sm"
         />
         <button
           onClick={() => setCreating(true)}
           className="px-4 py-2 bg-blue-500 text-white rounded"
         >
-          New Member
+          {t('actions.new')}
         </button>
       </div>
-      {isLoading && <div>Loading…</div>}
-      {isError && <div>Failed to load</div>}
+      {isLoading && <div>{tCommon('status.loading')}</div>}
+      {isError && <div>{tCommon('status.loadFailed')}</div>}
       {!isLoading && data ? (
         <div className="mt-4">
           {data.content && data.content.length > 0 ? (
@@ -112,9 +115,9 @@ export default function MembersPage() {
               <table className="w-full border">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="text-left p-2">Name</th>
-                    <th className="text-left p-2">Instruments</th>
-                    <th className="p-2 text-right">Actions</th>
+                    <th className="text-left p-2">{t('table.name')}</th>
+                    <th className="text-left p-2">{t('table.instruments')}</th>
+                    <th className="p-2 text-right">{tCommon('table.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -128,13 +131,13 @@ export default function MembersPage() {
                             className="px-2 py-1 text-sm bg-gray-200 rounded"
                             onClick={() => setEditing(m)}
                           >
-                            Edit
+                            {tCommon('actions.edit')}
                           </button>
                           <button
                             className="px-2 py-1 text-sm bg-red-500 text-white rounded"
                             onClick={() => deleteMut.mutate(m.id!)}
                           >
-                            Delete
+                            {tCommon('actions.delete')}
                           </button>
                         </div>
                       </td>
@@ -148,10 +151,13 @@ export default function MembersPage() {
                   disabled={pageParam === 0}
                   onClick={() => goToPage(Math.max(0, pageParam - 1))}
                 >
-                  Previous
+                  {tCommon('pagination.previous')}
                 </button>
                 <span>
-                  Page {(data.number ?? 0) + 1} of {data.totalPages ?? 1}
+                  {tCommon('pagination.pageOf', {
+                    page: (data.number ?? 0) + 1,
+                    total: data.totalPages ?? 1,
+                  })}
                 </span>
                 <button
                   className="px-3 py-1 border rounded disabled:opacity-50"
@@ -162,21 +168,21 @@ export default function MembersPage() {
                   }
                   onClick={() => goToPage(pageParam + 1)}
                 >
-                  Next
+                  {tCommon('pagination.next')}
                 </button>
               </div>
             </>
           ) : (
-            <div>No members found</div>
+            <div>{t('list.empty')}</div>
           )}
         </div>
       ) : null}
       <Modal open={creating} onClose={() => setCreating(false)}>
-        <h2 className="text-lg font-semibold mb-2">New Member</h2>
+        <h2 className="text-lg font-semibold mb-2">{t('modals.createTitle')}</h2>
         <MemberForm onSubmit={handleCreate} onCancel={() => setCreating(false)} />
       </Modal>
       <Modal open={!!editing} onClose={() => setEditing(null)}>
-        <h2 className="text-lg font-semibold mb-2">Edit Member</h2>
+        <h2 className="text-lg font-semibold mb-2">{t('modals.editTitle')}</h2>
         {editing && (
           <MemberForm
             defaultValues={{

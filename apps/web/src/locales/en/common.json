@@ -5,13 +5,43 @@
   "nav": {
     "songs": "Songs",
     "services": "Services",
-    "members": "Members"
+    "members": "Members",
+    "groups": "Groups",
+    "songSets": "Song Sets"
   },
   "actions": {
     "save": "Save",
     "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete",
-    "back": "Back"
+    "back": "Back",
+    "open": "Open",
+    "add": "Add",
+    "remove": "Remove",
+    "print": "Print",
+    "exportPdf": "Export PDF"
+  },
+  "status": {
+    "loading": "Loading…",
+    "loadFailed": "Failed to load"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{page}} of {{total}}"
+  },
+  "table": {
+    "actions": "Actions"
+  },
+  "labels": {
+    "notAvailable": "N/A"
+  },
+  "language": {
+    "change": "Change language",
+    "select": "Select language",
+    "labels": {
+      "en": "English",
+      "es": "Spanish"
+    }
   }
 }
