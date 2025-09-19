@@ -15,10 +15,11 @@ import {
   type UpdateSetItemBody,
   type ReorderSetItemsBody,
 } from '../../api/sets';
+import { withLangKey } from '../../lib/queryClient';
 
 export function useSongSetsList(params?: ListSetsParams) {
   return useQuery({
-    queryKey: ['songSets', params],
+    queryKey: withLangKey(['songSets', params]),
     queryFn: () => listSets(params),
     placeholderData: (prev) => prev,
   });
@@ -26,7 +27,7 @@ export function useSongSetsList(params?: ListSetsParams) {
 
 export function useSongSet(id: string | undefined) {
   return useQuery({
-    queryKey: ['songSet', id],
+    queryKey: withLangKey(['songSet', id]),
     queryFn: () => getSet(id!),
     enabled: !!id,
   });
@@ -76,7 +77,7 @@ export function useDeleteSet() {
 
 export function useSetItems(setId: string | undefined) {
   return useQuery({
-    queryKey: ['songSetItems', setId],
+    queryKey: withLangKey(['songSetItems', setId]),
     queryFn: () => listSetItems(setId!),
     enabled: !!setId,
   });

@@ -11,10 +11,11 @@ import {
   deleteArrangement,
   type ListSongsParams,
 } from '../../api/songs';
+import { withLangKey } from '../../lib/queryClient';
 
 export function useSongsList(params: ListSongsParams | undefined) {
   return useQuery({
-    queryKey: ['songs', params],
+    queryKey: withLangKey(['songs', params]),
     queryFn: () => listSongs(params),
     placeholderData: (prev) => prev,
   });
@@ -22,7 +23,7 @@ export function useSongsList(params: ListSongsParams | undefined) {
 
 export function useSong(id: string | undefined) {
   return useQuery({
-    queryKey: ['song', id],
+    queryKey: withLangKey(['song', id]),
     queryFn: () => getSong(id!),
     enabled: !!id,
   });
@@ -61,7 +62,7 @@ export function useDeleteSong() {
 
 export function useArrangements(songId: string | undefined) {
   return useQuery({
-    queryKey: ['songs', songId, 'arrangements'],
+    queryKey: withLangKey(['songs', songId, 'arrangements']),
     queryFn: () => listArrangements(songId!),
     enabled: !!songId,
   });

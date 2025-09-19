@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ensureArrangementLabels } from '@/lib/arrangements-hydrate';
 import { getArrangementLabel, type ArrangementLabel } from '@/lib/arrangements-cache';
+import { withLangKey } from '@/lib/queryClient';
 
 type ArrangementLabelMap = Record<string, ArrangementLabel | undefined>;
 
@@ -27,7 +28,7 @@ export function useArrangementLabels(ids: ArrangementIdInput) {
   }, [normalized]);
 
   return useQuery({
-    queryKey: ['arrangementLabels', ...normalized],
+    queryKey: withLangKey(['arrangementLabels', ...normalized]),
     queryFn: async () => {
       if (normalized.length === 0) {
         return {} as ArrangementLabelMap;

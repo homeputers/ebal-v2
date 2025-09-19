@@ -10,10 +10,11 @@ import {
   removeMemberFromGroup,
   type ListGroupsParams,
 } from '../../api/groups';
+import { withLangKey } from '../../lib/queryClient';
 
 export function useGroupsList(params: ListGroupsParams | undefined) {
   return useQuery({
-    queryKey: ['groups', params],
+    queryKey: withLangKey(['groups', params]),
     queryFn: () => listGroups(params),
     placeholderData: (prev) => prev,
   });
@@ -54,7 +55,7 @@ export function useDeleteGroup() {
 
 export function useGroup(id: string) {
   return useQuery({
-    queryKey: ['group', id],
+    queryKey: withLangKey(['group', id]),
     queryFn: () => getGroup(id),
     enabled: !!id,
   });
@@ -62,7 +63,7 @@ export function useGroup(id: string) {
 
 export function useGroupMembers(id: string) {
   return useQuery({
-    queryKey: ['groupMembers', id],
+    queryKey: withLangKey(['groupMembers', id]),
     queryFn: () => listGroupMembers(id),
     enabled: !!id,
   });

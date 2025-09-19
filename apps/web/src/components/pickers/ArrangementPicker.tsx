@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { listArrangements } from '@/api/songs';
 import type { components } from '@/api/types';
+import { withLangKey } from '@/lib/queryClient';
 
 interface Props {
   songId: string | undefined;
@@ -20,7 +21,7 @@ export function ArrangementPicker({ songId, value, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['arrangements', songId],
+    queryKey: withLangKey(['arrangements', songId]),
     queryFn: () => listArrangements(songId!),
     enabled: !!songId,
   });
