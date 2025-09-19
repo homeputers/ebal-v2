@@ -5,11 +5,10 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Navbar } from '@/components/Navbar';
 import {
   DEFAULT_LANGUAGE,
+  LANGUAGE_STORAGE_KEY,
   SUPPORTED_LANGUAGES,
   setAppLanguage,
 } from '@/i18n';
-
-const LANGUAGE_STORAGE_KEY = 'i18nextLng';
 
 const isPotentialLanguageSegment = (segment: string | undefined) =>
   typeof segment === 'string' && /^[a-z]{2}(?:-[a-z]{2})?$/i.test(segment);

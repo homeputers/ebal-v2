@@ -5,9 +5,10 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "noEmit": true
+    "noEmit": true,
+    "types": ["vitest/globals", "vitest/importMeta", "node"]
   },
-  "include": ["src"],
+  "include": ["src", "vitest.config.ts", "setupTests.ts"],
   "references": [
     { "path": "../../packages/types" }
   ]
