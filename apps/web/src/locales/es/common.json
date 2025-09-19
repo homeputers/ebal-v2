@@ -12,6 +12,26 @@
     "cancel": "Cancelar",
     "edit": "Editar",
     "delete": "Eliminar",
-    "back": "Volver"
+    "back": "Volver",
+    "open": "Abrir",
+    "add": "Agregar",
+    "remove": "Quitar",
+    "print": "Imprimir",
+    "exportPdf": "Exportar PDF"
+  },
+  "status": {
+    "loading": "Cargando…",
+    "loadFailed": "No se pudo cargar"
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "pageOf": "Página {{page}} de {{total}}"
+  },
+  "table": {
+    "actions": "Acciones"
+  },
+  "labels": {
+    "notAvailable": "N/D"
   }
 }

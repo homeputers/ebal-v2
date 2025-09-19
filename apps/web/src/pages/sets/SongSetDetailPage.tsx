@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { CSSProperties, FormEvent, ReactNode } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   DndContext,
   PointerSensor,
@@ -78,6 +79,9 @@ function SortableSetItem({
   onRemove,
   useFlats,
 }: SortableSetItemProps) {
+  const { t } = useTranslation('songSets');
+  const { t: tCommon } = useTranslation('common');
+  const { t: tArrangements } = useTranslation('arrangements');
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.id,
   });
@@ -107,15 +111,18 @@ function SortableSetItem({
 
   const line = formatArrangementLine({
     songTitle:
-      arrangement?.songTitle ?? (item.arrangementId ? `Arrangement ${item.arrangementId}` : undefined),
+      arrangement?.songTitle ??
+      (item.arrangementId
+        ? tArrangements('labels.fallback', { id: item.arrangementId })
+        : undefined),
     key: keyInfo?.originalKey ?? arrangement?.key ?? null,
     bpm: arrangement?.bpm ?? null,
     meter: arrangement?.meter ?? null,
   });
 
   const keySummary = formatKeyTransform({
-    originalKey: keyInfo?.originalKey ?? arrangement?.key ?? 'N/A',
-    soundingKey: keyInfo?.soundingKey ?? arrangement?.key ?? 'N/A',
+    originalKey: keyInfo?.originalKey ?? arrangement?.key ?? tCommon('labels.notAvailable'),
+    soundingKey: keyInfo?.soundingKey ?? arrangement?.key ?? tCommon('labels.notAvailable'),
     shapeKey: keyInfo?.shapeKey,
     transpose,
     capo,
@@ -134,7 +141,7 @@ function SortableSetItem({
         </div>
         <button
           type="button"
-          aria-label="Drag to reorder"
+          aria-label={t('items.dragHandle')}
           className="cursor-grab text-gray-500 hover:text-gray-700 px-2"
           {...attributes}
           {...listeners}
@@ -144,7 +151,7 @@ function SortableSetItem({
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Transpose</span>
+          <span className="text-sm text-gray-600">{t('items.transpose')}</span>
           <div className="flex items-center border rounded">
             <button
               type="button"
@@ -168,7 +175,7 @@ function SortableSetItem({
           </div>
         </div>
         <label className="flex items-center gap-2 text-sm text-gray-600">
-          Capo
+          {t('items.capo')}
           <input
             type="number"
             min={0}
@@ -188,7 +195,7 @@ function SortableSetItem({
           onClick={() => onRemove(item.id)}
           className="ml-auto px-3 py-1 text-sm bg-red-500 text-white rounded"
         >
-          Delete
+          {tCommon('actions.delete')}
         </button>
       </div>
     </li>
@@ -206,6 +213,10 @@ function clampCapo(value: number) {
 export default function SongSetDetailPage() {
   const { id } = useParams();
   const setId = id ?? '';
+  const { t } = useTranslation('songSets');
+  const { t: tCommon } = useTranslation('common');
+  const { t: tArrangements } = useTranslation('arrangements');
+  const { t: tSongs } = useTranslation('songs');
 
   const { data: songSet, isLoading, isError } = useSongSet(id);
   const { data: itemsData, isLoading: itemsLoading, isError: itemsError } = useSetItems(id ?? undefined);
@@ -245,7 +256,9 @@ export default function SongSetDetailPage() {
     : undefined;
   const previewLine = arrangementId
     ? formatArrangementLine({
-        songTitle: selectedArrangementInfo?.songTitle ?? `Arrangement ${arrangementId}`,
+        songTitle:
+          selectedArrangementInfo?.songTitle ??
+          tArrangements('labels.fallback', { id: arrangementId }),
         key: previewKeyInfo?.originalKey ?? previewKeySource ?? null,
         bpm: selectedArrangementInfo?.bpm ?? null,
         meter: selectedArrangementInfo?.meter ?? null,
@@ -253,8 +266,10 @@ export default function SongSetDetailPage() {
     : null;
   const previewKeySummary = arrangementId
     ? formatKeyTransform({
-        originalKey: previewKeyInfo?.originalKey ?? previewKeySource ?? 'N/A',
-        soundingKey: previewKeyInfo?.soundingKey ?? previewKeySource ?? 'N/A',
+        originalKey:
+          previewKeyInfo?.originalKey ?? previewKeySource ?? tCommon('labels.notAvailable'),
+        soundingKey:
+          previewKeyInfo?.soundingKey ?? previewKeySource ?? tCommon('labels.notAvailable'),
         shapeKey: previewKeyInfo?.shapeKey,
         transpose,
         capo,
@@ -272,11 +287,11 @@ export default function SongSetDetailPage() {
   const sortableIds = useMemo(() => orderedItems.map((item) => item.id), [orderedItems]);
 
   if (!id) {
-    return <div className="p-4">No song set selected.</div>;
+    return <div className="p-4">{t('status.noneSelected')}</div>;
   }
 
-  if (isLoading) return <div className="p-4">Loading…</div>;
-  if (isError || !songSet) return <div className="p-4">Failed to load song set.</div>;
+  if (isLoading) return <div className="p-4">{tCommon('status.loading')}</div>;
+  if (isError || !songSet) return <div className="p-4">{t('status.loadFailed')}</div>;
 
   const handleAddItem = (e: FormEvent) => {
     e.preventDefault();
@@ -294,13 +309,13 @@ export default function SongSetDetailPage() {
       },
       {
         onSuccess: () => {
-          toast('Item added');
+          toast(t('notifications.itemAdded'));
           setSongId(undefined);
           setArrangementId(undefined);
           setTranspose(0);
           setCapo(0);
         },
-        onError: () => toast('Failed to add item'),
+        onError: () => toast(t('notifications.addFailed')),
       },
     );
   };
@@ -377,7 +392,7 @@ export default function SongSetDetailPage() {
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold">{songSet.name ?? 'Song Set'}</h1>
+          <h1 className="text-xl font-semibold">{songSet.name ?? t('fallback.title')}</h1>
         </div>
         <div className="flex gap-2">
           <button
@@ -389,7 +404,7 @@ export default function SongSetDetailPage() {
             }`}
             onClick={() => setUseFlats((prev) => !prev)}
             aria-pressed={useFlats}
-            title={useFlats ? 'Show sharps (♯)' : 'Show flats (♭)'}
+            title={useFlats ? t('controls.showSharps') : t('controls.showFlats')}
           >
             ♯ / ♭
           </button>
@@ -398,13 +413,13 @@ export default function SongSetDetailPage() {
             className="px-2 py-1 text-sm bg-gray-200 rounded"
             onClick={() => setEditingSet(true)}
           >
-            Edit
+            {tCommon('actions.edit')}
           </button>
         </div>
       </div>
       <div className="flex flex-col md:flex-row gap-4">
         <div className="md:w-1/3 space-y-3">
-          <h2 className="font-semibold">Add Item</h2>
+          <h2 className="font-semibold">{t('items.addTitle')}</h2>
           <form onSubmit={handleAddItem} className="space-y-3">
             <SongPicker
               value={songId}
@@ -412,7 +427,7 @@ export default function SongSetDetailPage() {
                 setSongId(value);
                 setArrangementId(undefined);
               }}
-              placeholder="Search songs..."
+              placeholder={tSongs('pickers.searchPlaceholder')}
             />
             <ArrangementPicker
               songId={songId}
@@ -427,7 +442,7 @@ export default function SongSetDetailPage() {
             )}
             <div className="flex flex-col gap-2">
               <label className="flex items-center justify-between text-sm text-gray-600">
-                Transpose
+                {t('items.transpose')}
                 <input
                   type="number"
                   min={-6}
@@ -443,7 +458,7 @@ export default function SongSetDetailPage() {
                 />
               </label>
               <label className="flex items-center justify-between text-sm text-gray-600">
-                Capo
+                {t('items.capo')}
                 <input
                   type="number"
                   min={0}
@@ -464,15 +479,17 @@ export default function SongSetDetailPage() {
               disabled={addItemMut.isPending || !arrangementId}
               className="px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50"
             >
-              Add Item
+              {t('items.addButton')}
             </button>
           </form>
         </div>
         <div className="flex-1 space-y-3">
-          <h2 className="font-semibold">Items</h2>
-          {itemsLoading && <div>Loading…</div>}
-          {itemsError && !itemsLoading && <div>Failed to load items.</div>}
-          {!itemsLoading && orderedItems.length === 0 && !itemsError && <div>No items</div>}
+          <h2 className="font-semibold">{t('items.title')}</h2>
+          {itemsLoading && <div>{tCommon('status.loading')}</div>}
+          {itemsError && !itemsLoading && <div>{t('items.loadFailed')}</div>}
+          {!itemsLoading && orderedItems.length === 0 && !itemsError && (
+            <div>{t('items.empty')}</div>
+          )}
           {!itemsLoading && orderedItems.length > 0 && (
             <DndContext
               sensors={sensors}
@@ -497,11 +514,13 @@ export default function SongSetDetailPage() {
               </SortableContext>
             </DndContext>
           )}
-          {reorderMut.isPending && <div className="text-sm text-gray-500">Saving order…</div>}
+          {reorderMut.isPending && (
+            <div className="text-sm text-gray-500">{t('status.savingOrder')}</div>
+          )}
         </div>
       </div>
       <Modal open={editingSet} onClose={() => setEditingSet(false)}>
-        <h2 className="text-lg font-semibold mb-2">Edit Set</h2>
+        <h2 className="text-lg font-semibold mb-2">{t('modals.editTitle')}</h2>
         <SetForm
           defaultValues={{ name: songSet.name ?? '' }}
           onSubmit={handleSetUpdate}

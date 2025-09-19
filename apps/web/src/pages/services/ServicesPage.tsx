@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   useServicesList,
   useCreateService,
@@ -32,6 +33,8 @@ function Modal({
 }
 
 export default function ServicesPage() {
+  const { t } = useTranslation('services');
+  const { t: tCommon } = useTranslation('common');
   const [searchParams, setSearchParams] = useSearchParams();
   const queryParam = searchParams.get('query') ?? '';
   const fromParam = searchParams.get('from') ?? '';
@@ -94,12 +97,12 @@ export default function ServicesPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-semibold mb-4">Services</h1>
+      <h1 className="text-xl font-semibold mb-4">{t('page.title')}</h1>
       <div className="flex flex-wrap items-end gap-2 mb-4">
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search..."
+          placeholder={t('list.searchPlaceholder')}
           className="border p-2 rounded w-full max-w-sm"
         />
         <input
@@ -118,19 +121,19 @@ export default function ServicesPage() {
           onClick={() => setCreating(true)}
           className="px-4 py-2 bg-blue-500 text-white rounded"
         >
-          New Service
+          {t('actions.new')}
         </button>
       </div>
-      {isLoading && <div>Loading…</div>}
-      {isError && <div>Failed to load</div>}
+      {isLoading && <div>{tCommon('status.loading')}</div>}
+      {isError && <div>{tCommon('status.loadFailed')}</div>}
       {!isLoading && services.length > 0 ? (
         <div className="mt-4">
           <table className="w-full border">
             <thead>
               <tr className="bg-gray-50">
-                <th className="text-left p-2">Starts At</th>
-                <th className="text-left p-2">Location</th>
-                <th className="p-2 text-right">Actions</th>
+                <th className="text-left p-2">{t('table.startsAt')}</th>
+                <th className="text-left p-2">{t('table.location')}</th>
+                <th className="p-2 text-right">{tCommon('table.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -144,19 +147,19 @@ export default function ServicesPage() {
                         to={s.id ?? ''}
                         className="px-2 py-1 text-sm bg-green-500 text-white rounded"
                       >
-                        Open plan
+                        {t('actions.openPlan')}
                       </Link>
                       <button
                         className="px-2 py-1 text-sm bg-gray-200 rounded"
                         onClick={() => setEditing(s)}
                       >
-                        Edit
+                        {tCommon('actions.edit')}
                       </button>
                       <button
                         className="px-2 py-1 text-sm bg-red-500 text-white rounded"
                         onClick={() => deleteMut.mutate(s.id!)}
                       >
-                        Delete
+                        {tCommon('actions.delete')}
                       </button>
                     </div>
                   </td>
@@ -170,10 +173,13 @@ export default function ServicesPage() {
               disabled={pageParam === 0}
               onClick={() => goToPage(Math.max(0, pageParam - 1))}
             >
-              Previous
+              {tCommon('pagination.previous')}
             </button>
             <span>
-              Page {(data?.number ?? 0) + 1} of {data?.totalPages ?? 1}
+              {tCommon('pagination.pageOf', {
+                page: (data?.number ?? 0) + 1,
+                total: data?.totalPages ?? 1,
+              })}
             </span>
             <button
               className="px-3 py-1 border rounded disabled:opacity-50"
@@ -184,16 +190,16 @@ export default function ServicesPage() {
               }
               onClick={() => goToPage(pageParam + 1)}
             >
-              Next
+              {tCommon('pagination.next')}
             </button>
           </div>
         </div>
       ) : (
-        !isLoading && <div>No services found</div>
+        !isLoading && <div>{t('list.empty')}</div>
       )}
 
       <Modal open={creating} onClose={() => setCreating(false)}>
-        <h2 className="text-lg font-semibold mb-2">New Service</h2>
+        <h2 className="text-lg font-semibold mb-2">{t('modals.createTitle')}</h2>
         <ServiceForm
           onSubmit={handleCreate}
           onCancel={() => setCreating(false)}
@@ -201,7 +207,7 @@ export default function ServicesPage() {
       </Modal>
 
       <Modal open={!!editing} onClose={() => setEditing(null)}>
-        <h2 className="text-lg font-semibold mb-2">Edit Service</h2>
+        <h2 className="text-lg font-semibold mb-2">{t('modals.editTitle')}</h2>
         {editing && (
           <ServiceForm
             defaultValues={{

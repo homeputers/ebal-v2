@@ -6,5 +6,27 @@
   "fields": {
     "displayName": "Nombre",
     "instruments": "Instrumentos"
+  },
+  "form": {
+    "displayName": "Nombre para mostrar",
+    "instrumentsLabel": "Instrumentos (separados por comas)"
+  },
+  "actions": {
+    "new": "Nuevo miembro"
+  },
+  "list": {
+    "searchPlaceholder": "Buscar por nombre...",
+    "empty": "No se encontraron miembros"
+  },
+  "table": {
+    "name": "Nombre",
+    "instruments": "Instrumentos"
+  },
+  "modals": {
+    "createTitle": "Nuevo miembro",
+    "editTitle": "Editar miembro"
+  },
+  "validation": {
+    "displayNameMin": "El nombre para mostrar debe tener al menos 2 caracteres"
   }
 }

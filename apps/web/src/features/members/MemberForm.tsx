@@ -1,10 +1,11 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { components } from '../../api/types';
 
 const schema = z.object({
-  displayName: z.string().min(2, 'Display name must be at least 2 characters'),
+  displayName: z.string().min(2, 'validation.displayNameMin'),
   instruments: z.string().optional(),
 });
 
@@ -19,6 +20,9 @@ export function MemberForm({
   onSubmit: (values: components['schemas']['MemberRequest']) => void;
   onCancel?: () => void;
 }) {
+  const { t } = useTranslation('members');
+  const { t: tCommon } = useTranslation('common');
+
   const {
     register,
     handleSubmit,
@@ -42,7 +46,7 @@ export function MemberForm({
     >
       <div>
         <label htmlFor="displayName" className="block text-sm font-medium mb-1">
-          Display Name
+          {t('form.displayName')}
         </label>
         <input
           id="displayName"
@@ -50,12 +54,16 @@ export function MemberForm({
           className="border p-2 rounded w-full"
         />
         {errors.displayName && (
-          <p className="text-red-500 text-sm">{errors.displayName.message}</p>
+          <p className="text-red-500 text-sm">
+            {t(errors.displayName.message ?? '', {
+              defaultValue: errors.displayName.message ?? '',
+            })}
+          </p>
         )}
       </div>
       <div>
         <label htmlFor="instruments" className="block text-sm font-medium mb-1">
-          Instruments (comma separated)
+          {t('form.instrumentsLabel')}
         </label>
         <input
           id="instruments"
@@ -68,7 +76,7 @@ export function MemberForm({
       </div>
       <div className="flex gap-2">
         <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">
-          Save
+          {tCommon('actions.save')}
         </button>
         {onCancel && (
           <button
@@ -76,7 +84,7 @@ export function MemberForm({
             onClick={onCancel}
             className="px-4 py-2 bg-gray-200 rounded"
           >
-            Cancel
+            {tCommon('actions.cancel')}
           </button>
         )}
       </div>

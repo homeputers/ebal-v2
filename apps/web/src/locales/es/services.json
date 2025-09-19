@@ -6,5 +6,52 @@
   "fields": {
     "startsAt": "Hora de inicio",
     "location": "Ubicación"
+  },
+  "actions": {
+    "new": "Nuevo servicio",
+    "openPlan": "Abrir plan",
+    "planView": "Vista del plan"
+  },
+  "list": {
+    "searchPlaceholder": "Buscar...",
+    "empty": "No se encontraron servicios"
+  },
+  "modals": {
+    "createTitle": "Nuevo servicio",
+    "editTitle": "Editar servicio"
+  },
+  "form": {
+    "startsAtLabel": "Hora de inicio",
+    "locationLabel": "Ubicación"
+  },
+  "fallback": {
+    "title": "Servicio"
+  },
+  "plan": {
+    "addItemTitle": "Agregar elemento",
+    "itemTypes": {
+      "song": "Canción",
+      "reading": "Lectura",
+      "note": "Nota",
+      "itemFallback": "Elemento"
+    },
+    "notesPlaceholder": "Notas",
+    "title": "Plan",
+    "empty": "Sin elementos del plan",
+    "noItems": "Sin elementos",
+    "notifications": {
+      "itemAdded": "Elemento agregado",
+      "addFailed": "No se pudo agregar el elemento"
+    }
+  },
+  "planView": {
+    "title": "Plan del servicio",
+    "shareRequiredTitle": "Se requiere un token para compartir",
+    "shareRequiredDescription": "Se necesita un enlace válido para ver este plan de servicio. Verifica el enlace e inténtalo de nuevo.",
+    "loading": "Cargando plan…",
+    "unavailableTitle": "Plan no disponible",
+    "unavailableDescription": "No pudimos cargar este plan de servicio. Vuelve a intentarlo más tarde o contacta al organizador.",
+    "shareTokenLabel": "Token de compartido:",
+    "empty": "Aún no se han programado elementos en el plan."
   }
 }

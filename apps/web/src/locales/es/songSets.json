@@ -6,5 +6,52 @@
   "fields": {
     "name": "Nombre del conjunto",
     "serviceDate": "Fecha del servicio"
+  },
+  "actions": {
+    "new": "Nuevo conjunto"
+  },
+  "modals": {
+    "createTitle": "Nuevo conjunto",
+    "editTitle": "Editar conjunto"
+  },
+  "list": {
+    "searchPlaceholder": "Buscar por nombre...",
+    "empty": "No se encontraron conjuntos de canciones"
+  },
+  "table": {
+    "name": "Nombre",
+    "items": "Elementos"
+  },
+  "status": {
+    "loadFailed": "No se pudieron cargar los conjuntos de canciones.",
+    "noneSelected": "No se seleccionó ningún conjunto de canciones.",
+    "savingOrder": "Guardando el orden…"
+  },
+  "confirm": {
+    "delete": "¿Seguro que deseas eliminar este conjunto?"
+  },
+  "items": {
+    "addTitle": "Agregar elemento",
+    "transpose": "Transponer",
+    "capo": "Capotraste",
+    "addButton": "Agregar elemento",
+    "title": "Elementos",
+    "loadFailed": "No se pudieron cargar los elementos.",
+    "empty": "Sin elementos",
+    "dragHandle": "Arrastrar para reordenar"
+  },
+  "notifications": {
+    "itemAdded": "Elemento agregado",
+    "addFailed": "No se pudo agregar el elemento"
+  },
+  "fallback": {
+    "title": "Conjunto de canciones"
+  },
+  "controls": {
+    "showSharps": "Mostrar sostenidos (♯)",
+    "showFlats": "Mostrar bemoles (♭)"
+  },
+  "validation": {
+    "nameMin": "El nombre debe tener al menos 2 caracteres"
   }
 }

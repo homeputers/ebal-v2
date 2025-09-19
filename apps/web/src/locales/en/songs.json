@@ -5,6 +5,37 @@
   },
   "fields": {
     "title": "Title",
-    "defaultKey": "Default Key"
+    "defaultKey": "Default Key",
+    "tags": "Tags"
+  },
+  "form": {
+    "titleLabel": "Title",
+    "ccliLabel": "CCLI",
+    "authorLabel": "Author",
+    "defaultKeyLabel": "Default Key",
+    "tagsLabel": "Tags (comma separated)"
+  },
+  "actions": {
+    "new": "New Song"
+  },
+  "modals": {
+    "createTitle": "New Song",
+    "editTitle": "Edit Song"
+  },
+  "list": {
+    "searchPlaceholder": "Search by title...",
+    "empty": "No songs found"
+  },
+  "validation": {
+    "titleMin": "Title must be at least 2 characters"
+  },
+  "detail": {
+    "author": "Author",
+    "ccli": "CCLI",
+    "defaultKey": "Default Key",
+    "tags": "Tags"
+  },
+  "pickers": {
+    "searchPlaceholder": "Search songs..."
   }
 }

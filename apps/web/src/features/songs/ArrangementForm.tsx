@@ -1,19 +1,20 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { components } from '../../api/types';
 import { ChordProView } from '../../components/chordpro/ChordProView';
 
 const schema = z.object({
-  key: z.string().min(1, 'Key is required'),
+  key: z.string().min(1, 'validation.keyRequired'),
   bpm: z
-    .number({ invalid_type_error: 'BPM must be a number' })
+    .number({ invalid_type_error: 'validation.bpmNumber' })
     .min(30)
     .max(300)
     .optional(),
   meter: z.string().optional(),
-  lyricsChordpro: z.string().min(1, 'Lyrics are required'),
+  lyricsChordpro: z.string().min(1, 'validation.lyricsRequired'),
 });
 
 export type ArrangementFormValues = z.infer<typeof schema>;
@@ -27,6 +28,9 @@ export function ArrangementForm({
   onSubmit: (values: components['schemas']['ArrangementRequest']) => void;
   onCancel?: () => void;
 }) {
+  const { t } = useTranslation('arrangements');
+  const { t: tCommon } = useTranslation('common');
+
   const {
     register,
     handleSubmit,
@@ -60,16 +64,20 @@ export function ArrangementForm({
         <div className="flex-1 space-y-2">
           <div>
             <label htmlFor="key" className="block text-sm font-medium mb-1">
-              Key
+              {t('form.keyLabel')}
             </label>
             <input id="key" {...register('key')} className="border p-2 rounded w-full" />
             {errors.key && (
-              <p className="text-red-500 text-sm">{errors.key.message}</p>
+              <p className="text-red-500 text-sm">
+                {t(errors.key.message ?? '', {
+                  defaultValue: errors.key.message ?? '',
+                })}
+              </p>
             )}
           </div>
           <div>
             <label htmlFor="bpm" className="block text-sm font-medium mb-1">
-              BPM
+              {t('form.bpmLabel')}
             </label>
             <input
               id="bpm"
@@ -78,21 +86,29 @@ export function ArrangementForm({
               className="border p-2 rounded w-full"
             />
             {errors.bpm && (
-              <p className="text-red-500 text-sm">{errors.bpm.message}</p>
+              <p className="text-red-500 text-sm">
+                {t(errors.bpm.message ?? '', {
+                  defaultValue: errors.bpm.message ?? '',
+                })}
+              </p>
             )}
           </div>
           <div>
             <label htmlFor="meter" className="block text-sm font-medium mb-1">
-              Meter
+              {t('form.meterLabel')}
             </label>
             <input id="meter" {...register('meter')} className="border p-2 rounded w-full" />
             {errors.meter && (
-              <p className="text-red-500 text-sm">{errors.meter.message}</p>
+              <p className="text-red-500 text-sm">
+                {t(errors.meter.message ?? '', {
+                  defaultValue: errors.meter.message ?? '',
+                })}
+              </p>
             )}
           </div>
           <div>
             <label htmlFor="lyricsChordpro" className="block text-sm font-medium mb-1">
-              ChordPro
+              {t('form.chordProLabel')}
             </label>
             <textarea
               id="lyricsChordpro"
@@ -100,12 +116,16 @@ export function ArrangementForm({
               className="border p-2 rounded w-full h-48 font-mono"
             />
             {errors.lyricsChordpro && (
-              <p className="text-red-500 text-sm">{errors.lyricsChordpro.message}</p>
+              <p className="text-red-500 text-sm">
+                {t(errors.lyricsChordpro.message ?? '', {
+                  defaultValue: errors.lyricsChordpro.message ?? '',
+                })}
+              </p>
             )}
           </div>
           <div className="flex gap-2">
             <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">
-              Save
+              {tCommon('actions.save')}
             </button>
             {onCancel && (
               <button
@@ -113,7 +133,7 @@ export function ArrangementForm({
                 onClick={onCancel}
                 className="px-4 py-2 bg-gray-200 rounded"
               >
-                Cancel
+                {tCommon('actions.cancel')}
               </button>
             )}
           </div>
@@ -125,24 +145,24 @@ export function ArrangementForm({
               className="px-2 py-1 border rounded"
               onClick={() => setTranspose((t) => t + 1)}
             >
-              +1
+              {t('controls.transposeUp')}
             </button>
             <button
               type="button"
               className="px-2 py-1 border rounded"
               onClick={() => setTranspose((t) => t - 1)}
             >
-              -1
+              {t('controls.transposeDown')}
             </button>
             <button
               type="button"
               className="px-2 py-1 border rounded"
               onClick={() => setUseFlats((f) => !f)}
             >
-              {useFlats ? 'Use sharps' : 'Use flats'}
+              {useFlats ? t('controls.useSharps') : t('controls.useFlats')}
             </button>
             <label className="text-sm">
-              Layout
+              {t('controls.layout')}
               <select
                 value={layout}
                 onChange={(event) =>
@@ -150,8 +170,8 @@ export function ArrangementForm({
                 }
                 className="ml-1 border rounded px-2 py-1 text-sm"
               >
-                <option value="above">Chords above</option>
-                <option value="inline">Inline</option>
+                <option value="above">{t('controls.layoutAbove')}</option>
+                <option value="inline">{t('controls.layoutInline')}</option>
               </select>
             </label>
           </div>

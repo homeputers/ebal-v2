@@ -1,10 +1,11 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { components } from '../../api/types';
 
 const schema = z.object({
-  title: z.string().min(2, 'Title must be at least 2 characters'),
+  title: z.string().min(2, 'validation.titleMin'),
   ccli: z.string().optional(),
   author: z.string().optional(),
   defaultKey: z.string().optional(),
@@ -22,6 +23,9 @@ export function SongForm({
   onSubmit: (values: components['schemas']['SongRequest']) => void;
   onCancel?: () => void;
 }) {
+  const { t } = useTranslation('songs');
+  const { t: tCommon } = useTranslation('common');
+
   const {
     register,
     handleSubmit,
@@ -48,28 +52,32 @@ export function SongForm({
     >
       <div>
         <label htmlFor="title" className="block text-sm font-medium mb-1">
-          Title
+          {t('form.titleLabel')}
         </label>
         <input id="title" {...register('title')} className="border p-2 rounded w-full" />
         {errors.title && (
-          <p className="text-red-500 text-sm">{errors.title.message}</p>
+          <p className="text-red-500 text-sm">
+            {t(errors.title.message ?? '', {
+              defaultValue: errors.title.message ?? '',
+            })}
+          </p>
         )}
       </div>
       <div>
         <label htmlFor="ccli" className="block text-sm font-medium mb-1">
-          CCLI
+          {t('form.ccliLabel')}
         </label>
         <input id="ccli" {...register('ccli')} className="border p-2 rounded w-full" />
       </div>
       <div>
         <label htmlFor="author" className="block text-sm font-medium mb-1">
-          Author
+          {t('form.authorLabel')}
         </label>
         <input id="author" {...register('author')} className="border p-2 rounded w-full" />
       </div>
       <div>
         <label htmlFor="defaultKey" className="block text-sm font-medium mb-1">
-          Default Key
+          {t('form.defaultKeyLabel')}
         </label>
         <input
           id="defaultKey"
@@ -79,13 +87,13 @@ export function SongForm({
       </div>
       <div>
         <label htmlFor="tags" className="block text-sm font-medium mb-1">
-          Tags (comma separated)
+          {t('form.tagsLabel')}
         </label>
         <input id="tags" {...register('tags')} className="border p-2 rounded w-full" />
       </div>
       <div className="flex gap-2">
         <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">
-          Save
+          {tCommon('actions.save')}
         </button>
         {onCancel && (
           <button
@@ -93,7 +101,7 @@ export function SongForm({
             onClick={onCancel}
             className="px-4 py-2 bg-gray-200 rounded"
           >
-            Cancel
+            {tCommon('actions.cancel')}
           </button>
         )}
       </div>

@@ -6,5 +6,43 @@
   "fields": {
     "key": "Tonalidad",
     "bpm": "Tempo (PPM)"
+  },
+  "form": {
+    "keyLabel": "Tonalidad",
+    "bpmLabel": "PPM",
+    "meterLabel": "Compás",
+    "chordProLabel": "ChordPro"
+  },
+  "controls": {
+    "transposeUp": "+1",
+    "transposeDown": "-1",
+    "useSharps": "Usar sostenidos",
+    "useFlats": "Usar bemoles",
+    "layout": "Diseño",
+    "layoutAbove": "Acordes arriba",
+    "layoutInline": "En línea"
+  },
+  "actions": {
+    "new": "Nuevo arreglo"
+  },
+  "modals": {
+    "createTitle": "Nuevo arreglo",
+    "editTitle": "Editar arreglo"
+  },
+  "table": {
+    "key": "Tonalidad",
+    "bpm": "PPM",
+    "meter": "Compás"
+  },
+  "list": {
+    "empty": "No hay arreglos"
+  },
+  "labels": {
+    "fallback": "Arreglo {{id}}"
+  },
+  "validation": {
+    "keyRequired": "La tonalidad es obligatoria",
+    "bpmNumber": "Los PPM deben ser un número",
+    "lyricsRequired": "Las letras son obligatorias"
   }
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { components } from '../../api/types';
 import {
   useSong,
@@ -43,6 +44,9 @@ type ArrangementRequest = components['schemas']['ArrangementRequest'];
 
 export default function SongDetailPage() {
   const { id } = useParams();
+  const { t } = useTranslation('songs');
+  const { t: tArrangements } = useTranslation('arrangements');
+  const { t: tCommon } = useTranslation('common');
   const { data: song, isLoading, isError } = useSong(id);
   const { data: arrangements } = useArrangements(id);
 
@@ -55,8 +59,8 @@ export default function SongDetailPage() {
   const [creatingArr, setCreatingArr] = useState(false);
   const [editingArr, setEditingArr] = useState<Arrangement | null>(null);
 
-  if (isLoading) return <div className="p-4">Loading…</div>;
-  if (isError || !song) return <div className="p-4">Failed to load</div>;
+  if (isLoading) return <div className="p-4">{tCommon('status.loading')}</div>;
+  if (isError || !song) return <div className="p-4">{tCommon('status.loadFailed')}</div>;
 
   const handleSongUpdate = (vals: SongRequest) => {
     updateSongMut.mutate({ id: id!, body: vals }, { onSuccess: () => setEditingSong(false) });
@@ -85,34 +89,48 @@ export default function SongDetailPage() {
           className="px-2 py-1 text-sm bg-gray-200 rounded"
           onClick={() => setEditingSong(true)}
         >
-          Edit
+          {tCommon('actions.edit')}
         </button>
       </div>
       <div className="mb-6 space-y-1">
-        {song.author && <div>Author: {song.author}</div>}
-        {song.ccli && <div>CCLI: {song.ccli}</div>}
-        {song.defaultKey && <div>Default Key: {song.defaultKey}</div>}
+        {song.author && (
+          <div>
+            {t('detail.author')}: {song.author}
+          </div>
+        )}
+        {song.ccli && (
+          <div>
+            {t('detail.ccli')}: {song.ccli}
+          </div>
+        )}
+        {song.defaultKey && (
+          <div>
+            {t('detail.defaultKey')}: {song.defaultKey}
+          </div>
+        )}
         {song.tags && song.tags.length > 0 && (
-          <div>Tags: {song.tags.join(', ')}</div>
+          <div>
+            {t('detail.tags')}: {song.tags.join(', ')}
+          </div>
         )}
       </div>
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-lg font-semibold">Arrangements</h2>
+        <h2 className="text-lg font-semibold">{tArrangements('page.title')}</h2>
         <button
           className="px-2 py-1 text-sm bg-blue-500 text-white rounded"
           onClick={() => setCreatingArr(true)}
         >
-          New Arrangement
+          {tArrangements('actions.new')}
         </button>
       </div>
       {arrangements && arrangements.length > 0 ? (
         <table className="w-full border">
           <thead>
             <tr className="bg-gray-50">
-              <th className="text-left p-2">Key</th>
-              <th className="text-left p-2">BPM</th>
-              <th className="text-left p-2">Meter</th>
-              <th className="p-2 text-right">Actions</th>
+              <th className="text-left p-2">{tArrangements('table.key')}</th>
+              <th className="text-left p-2">{tArrangements('table.bpm')}</th>
+              <th className="text-left p-2">{tArrangements('table.meter')}</th>
+              <th className="p-2 text-right">{tCommon('table.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -127,13 +145,13 @@ export default function SongDetailPage() {
                       className="px-2 py-1 text-sm bg-gray-200 rounded"
                       onClick={() => setEditingArr(a)}
                     >
-                      Edit
+                      {tCommon('actions.edit')}
                     </button>
                     <button
                       className="px-2 py-1 text-sm bg-red-500 text-white rounded"
                       onClick={() => a.id && handleDeleteArr(a.id)}
                     >
-                      Delete
+                      {tCommon('actions.delete')}
                     </button>
                   </div>
                 </td>
@@ -142,10 +160,10 @@ export default function SongDetailPage() {
           </tbody>
         </table>
       ) : (
-        <div>No arrangements</div>
+        <div>{tArrangements('list.empty')}</div>
       )}
       <Modal open={editingSong} onClose={() => setEditingSong(false)}>
-        <h2 className="text-lg font-semibold mb-2">Edit Song</h2>
+        <h2 className="text-lg font-semibold mb-2">{t('modals.editTitle')}</h2>
         <SongForm
           defaultValues={{
             title: song.title || '',
@@ -159,14 +177,14 @@ export default function SongDetailPage() {
         />
       </Modal>
       <Modal open={creatingArr} onClose={() => setCreatingArr(false)}>
-        <h2 className="text-lg font-semibold mb-2">New Arrangement</h2>
+        <h2 className="text-lg font-semibold mb-2">{tArrangements('modals.createTitle')}</h2>
         <ArrangementForm
           onSubmit={handleCreateArr}
           onCancel={() => setCreatingArr(false)}
         />
       </Modal>
       <Modal open={!!editingArr} onClose={() => setEditingArr(null)}>
-        <h2 className="text-lg font-semibold mb-2">Edit Arrangement</h2>
+        <h2 className="text-lg font-semibold mb-2">{tArrangements('modals.editTitle')}</h2>
         {editingArr && (
           <ArrangementForm
             defaultValues={{

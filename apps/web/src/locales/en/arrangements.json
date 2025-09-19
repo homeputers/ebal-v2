@@ -6,5 +6,43 @@
   "fields": {
     "key": "Key",
     "bpm": "Tempo (BPM)"
+  },
+  "form": {
+    "keyLabel": "Key",
+    "bpmLabel": "BPM",
+    "meterLabel": "Meter",
+    "chordProLabel": "ChordPro"
+  },
+  "controls": {
+    "transposeUp": "+1",
+    "transposeDown": "-1",
+    "useSharps": "Use sharps",
+    "useFlats": "Use flats",
+    "layout": "Layout",
+    "layoutAbove": "Chords above",
+    "layoutInline": "Inline"
+  },
+  "actions": {
+    "new": "New Arrangement"
+  },
+  "modals": {
+    "createTitle": "New Arrangement",
+    "editTitle": "Edit Arrangement"
+  },
+  "table": {
+    "key": "Key",
+    "bpm": "BPM",
+    "meter": "Meter"
+  },
+  "list": {
+    "empty": "No arrangements"
+  },
+  "labels": {
+    "fallback": "Arrangement {{id}}"
+  },
+  "validation": {
+    "keyRequired": "Key is required",
+    "bpmNumber": "BPM must be a number",
+    "lyricsRequired": "Lyrics are required"
   }
 }
