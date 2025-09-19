@@ -9,6 +9,7 @@ import {
 } from '../../features/services/hooks';
 import ServiceForm from '../../features/services/ServiceForm';
 import type { ListServicesResponse } from '../../api/services';
+import { formatDate } from '@/i18n/intl';
 
 function Modal({
   open,
@@ -33,7 +34,7 @@ function Modal({
 }
 
 export default function ServicesPage() {
-  const { t } = useTranslation('services');
+  const { t, i18n } = useTranslation('services');
   const { t: tCommon } = useTranslation('common');
   const [searchParams, setSearchParams] = useSearchParams();
   const queryParam = searchParams.get('query') ?? '';
@@ -139,7 +140,7 @@ export default function ServicesPage() {
             <tbody>
               {services.map((s) => (
                 <tr key={s.id} className="border-t">
-                  <td className="p-2">{s.startsAt ? new Date(s.startsAt).toLocaleString() : ''}</td>
+                  <td className="p-2">{s.startsAt ? formatDate(s.startsAt, i18n.language) : ''}</td>
                   <td className="p-2">{s.location}</td>
                   <td className="p-2 text-right">
                     <div className="flex gap-2 justify-end">

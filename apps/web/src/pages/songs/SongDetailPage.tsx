@@ -12,6 +12,7 @@ import {
 } from '../../features/songs/hooks';
 import SongForm from '../../features/songs/SongForm';
 import ArrangementForm from '../../features/songs/ArrangementForm';
+import { formatBpm, formatDate } from '@/i18n/intl';
 
 function Modal({
   open,
@@ -86,10 +87,7 @@ export default function SongDetailPage() {
 
   const updatedAtRaw = (song as SongResponseWithTimestamps).updatedAt;
   const formattedUpdatedAt = updatedAtRaw
-    ? new Intl.DateTimeFormat(i18n.language || undefined, {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      }).format(new Date(updatedAtRaw))
+    ? formatDate(updatedAtRaw, i18n.language)
     : null;
 
   return (
@@ -153,7 +151,7 @@ export default function SongDetailPage() {
             {arrangements.map((a) => (
               <tr key={a.id} className="border-t">
                 <td className="p-2">{a.key}</td>
-                <td className="p-2">{a.bpm}</td>
+                <td className="p-2">{a.bpm != null ? formatBpm(a.bpm, i18n.language) : ''}</td>
                 <td className="p-2">{a.meter}</td>
                 <td className="p-2 text-right">
                   <div className="flex gap-2 justify-end">
