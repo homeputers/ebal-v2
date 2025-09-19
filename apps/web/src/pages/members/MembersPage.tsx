@@ -89,9 +89,21 @@ export default function MembersPage() {
     setSearchParams(params);
   };
 
+  const memberCount = data?.totalElements ?? data?.content?.length ?? 0;
+  const shouldShowCount = data?.totalElements !== undefined || data?.content !== undefined;
+
   return (
     <div className="p-4">
-      <h1 className="text-xl font-semibold mb-4">{t('page.title')}</h1>
+      <div className="mb-4">
+        <div className="flex items-baseline justify-between gap-2">
+          <h1 className="text-xl font-semibold">{t('page.title')}</h1>
+          {shouldShowCount ? (
+            <span className="text-sm text-gray-600">
+              {t('count', { count: memberCount })}
+            </span>
+          ) : null}
+        </div>
+      </div>
       <div className="flex items-center gap-2 mb-4">
         <input
           value={search}

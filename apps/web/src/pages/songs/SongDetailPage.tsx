@@ -41,10 +41,13 @@ function Modal({
 type SongRequest = components['schemas']['SongRequest'];
 type Arrangement = components['schemas']['ArrangementResponse'];
 type ArrangementRequest = components['schemas']['ArrangementRequest'];
+type SongResponseWithTimestamps = components['schemas']['SongResponse'] & {
+  updatedAt?: string | null;
+};
 
 export default function SongDetailPage() {
   const { id } = useParams();
-  const { t } = useTranslation('songs');
+  const { t, i18n } = useTranslation('songs');
   const { t: tArrangements } = useTranslation('arrangements');
   const { t: tCommon } = useTranslation('common');
   const { data: song, isLoading, isError } = useSong(id);
@@ -81,6 +84,14 @@ export default function SongDetailPage() {
     deleteArrMut.mutate(arrId);
   };
 
+  const updatedAtRaw = (song as SongResponseWithTimestamps).updatedAt;
+  const formattedUpdatedAt = updatedAtRaw
+    ? new Intl.DateTimeFormat(i18n.language || undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }).format(new Date(updatedAtRaw))
+    : null;
+
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
@@ -111,6 +122,11 @@ export default function SongDetailPage() {
         {song.tags && song.tags.length > 0 && (
           <div>
             {t('detail.tags')}: {song.tags.join(', ')}
+          </div>
+        )}
+        {formattedUpdatedAt && (
+          <div className="text-sm text-gray-600">
+            {t('lastUpdated', { date: formattedUpdatedAt })}
           </div>
         )}
       </div>
