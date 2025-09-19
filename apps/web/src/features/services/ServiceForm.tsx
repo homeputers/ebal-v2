@@ -2,14 +2,20 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { withFieldErrorPrefix } from '../../lib/zodErrorMap';
 import type { components } from '../../api/types';
 
 const schema = z.object({
-  startsAt: z.string(),
+  startsAt: z.string().min(1),
   location: z.string().optional(),
 });
 
 export type ServiceFormValues = z.infer<typeof schema>;
+
+const baseResolver = zodResolver(schema);
+
+const resolver: typeof baseResolver = async (values, context, options) =>
+  withFieldErrorPrefix('services', () => baseResolver(values, context, options));
 
 export function ServiceForm({
   defaultValues,
@@ -27,7 +33,7 @@ export function ServiceForm({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ServiceFormValues>({ resolver: zodResolver(schema), defaultValues });
+  } = useForm<ServiceFormValues>({ resolver, defaultValues });
 
   return (
     <form
@@ -47,11 +53,7 @@ export function ServiceForm({
           className="border p-2 rounded w-full"
         />
         {errors.startsAt && (
-          <p className="text-red-500 text-sm">
-            {t(errors.startsAt.message ?? '', {
-              defaultValue: errors.startsAt.message ?? '',
-            })}
-          </p>
+          <p className="text-red-500 text-sm">{errors.startsAt.message}</p>
         )}
       </div>
       <div>
@@ -64,11 +66,7 @@ export function ServiceForm({
           className="border p-2 rounded w-full"
         />
         {errors.location && (
-          <p className="text-red-500 text-sm">
-            {t(errors.location.message ?? '', {
-              defaultValue: errors.location.message ?? '',
-            })}
-          </p>
+          <p className="text-red-500 text-sm">{errors.location.message}</p>
         )}
       </div>
       <div className="flex gap-2">

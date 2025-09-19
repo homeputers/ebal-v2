@@ -2,14 +2,20 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { withFieldErrorPrefix } from '../../lib/zodErrorMap';
 import type { components } from '../../api/types';
 
 const schema = z.object({
-  displayName: z.string().min(2, 'validation.displayNameMin'),
+  displayName: z.string().min(2),
   instruments: z.string().optional(),
 });
 
 export type MemberFormValues = z.infer<typeof schema>;
+
+const baseResolver = zodResolver(schema);
+
+const resolver: typeof baseResolver = async (values, context, options) =>
+  withFieldErrorPrefix('members', () => baseResolver(values, context, options));
 
 export function MemberForm({
   defaultValues,
@@ -28,7 +34,7 @@ export function MemberForm({
     handleSubmit,
     formState: { errors },
   } = useForm<MemberFormValues>({
-    resolver: zodResolver(schema),
+    resolver,
     defaultValues,
   });
 
@@ -54,11 +60,7 @@ export function MemberForm({
           className="border p-2 rounded w-full"
         />
         {errors.displayName && (
-          <p className="text-red-500 text-sm">
-            {t(errors.displayName.message ?? '', {
-              defaultValue: errors.displayName.message ?? '',
-            })}
-          </p>
+          <p className="text-red-500 text-sm">{errors.displayName.message}</p>
         )}
       </div>
       <div>

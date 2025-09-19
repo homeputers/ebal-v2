@@ -1,5 +1,38 @@
 {
+  "default": "Invalid value.",
   "required": "This field is required.",
+  "invalidType": "Enter a valid value.",
+  "invalidEnumValue": "Please choose one of the allowed options.",
   "email": "Enter a valid email address.",
-  "minLength": "Must be at least {{count}} characters long."
+  "minLength": "Must be at least {{count}} characters long.",
+  "tooSmall": {
+    "string": "Must be at least {{minimum}} characters long.",
+    "number": "Must be greater than or equal to {{minimum}}.",
+    "array": "Select at least {{minimum}} option(s).",
+    "set": "Select at least {{minimum}} option(s).",
+    "date": "Date must be on or after {{minimum}}."
+  },
+  "tooBig": {
+    "string": "Must be at most {{maximum}} characters long.",
+    "number": "Must be less than or equal to {{maximum}}.",
+    "array": "Select at most {{maximum}} option(s).",
+    "set": "Select at most {{maximum}} option(s).",
+    "date": "Date must be on or before {{maximum}}."
+  },
+  "members": {
+    "displayName": {
+      "min": "Display name must be at least {{minimum}} characters long."
+    }
+  },
+  "services": {
+    "startsAt": {
+      "min": "Start time is required."
+    }
+  },
+  "arrangementRequired": "Select an arrangement.",
+  "nameMin": "Name must be at least {{minimum}} characters long.",
+  "titleMin": "Title must be at least {{minimum}} characters long.",
+  "keyRequired": "Key is required.",
+  "bpmNumber": "Enter a valid BPM number.",
+  "lyricsRequired": "Lyrics are required."
 }
