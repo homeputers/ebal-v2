@@ -6,6 +6,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -55,6 +56,16 @@ public class CurrentUserFactory {
     }
 
     private UUID resolveId(Authentication authentication) {
+        if (authentication instanceof JwtAuthenticationToken jwtAuthenticationToken) {
+            String subject = jwtAuthenticationToken.getToken().getSubject();
+            if (subject != null) {
+                try {
+                    return UUID.fromString(subject);
+                } catch (IllegalArgumentException ignored) {
+                    // fall back to hashed identifier below
+                }
+            }
+        }
         String identifier = Objects.requireNonNullElse(authentication.getName(), ANONYMOUS_SUBJECT);
         return UUID.nameUUIDFromBytes(identifier.getBytes(StandardCharsets.UTF_8));
     }
@@ -73,11 +84,22 @@ public class CurrentUserFactory {
     }
 
     private String resolveDisplayName(Authentication authentication) {
-        // Once OIDC is wired we can pull friendly names from the user info claims.
+        if (authentication instanceof JwtAuthenticationToken jwtAuthenticationToken) {
+            String emailClaim = jwtAuthenticationToken.getToken().getClaimAsString("email");
+            if (emailClaim != null && !emailClaim.isBlank()) {
+                return emailClaim;
+            }
+        }
         return authentication.getName();
     }
 
     private String resolveEmail(Authentication authentication) {
+        if (authentication instanceof JwtAuthenticationToken jwtAuthenticationToken) {
+            String email = jwtAuthenticationToken.getToken().getClaimAsString("email");
+            if (email != null && !email.isBlank()) {
+                return email;
+            }
+        }
         String name = authentication.getName();
         if (name == null || name.isBlank()) {
             return ANONYMOUS_SUBJECT + "@example.com";

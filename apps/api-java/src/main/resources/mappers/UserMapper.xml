@@ -7,7 +7,7 @@
                    typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
             <arg column="email" javaType="java.lang.String"/>
             <arg column="password_hash" javaType="java.lang.String"/>
-            <arg column="is_active" javaType="boolean"/>
+            <arg column="is_active" javaType="_boolean"/>
             <arg column="created_at" javaType="java.time.OffsetDateTime"/>
             <arg column="updated_at" javaType="java.time.OffsetDateTime"/>
         </constructor>

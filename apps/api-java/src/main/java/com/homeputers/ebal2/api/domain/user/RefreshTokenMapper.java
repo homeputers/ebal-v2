@@ -20,5 +20,8 @@ public interface RefreshTokenMapper {
     void revoke(@Param("token") String token,
                 @Param("revokedAt") OffsetDateTime revokedAt);
 
+    void revokeByUserId(@Param("userId") UUID userId,
+                        @Param("revokedAt") OffsetDateTime revokedAt);
+
     void deleteExpired(@Param("now") OffsetDateTime now);
 }

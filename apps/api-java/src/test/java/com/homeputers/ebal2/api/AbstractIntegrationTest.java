@@ -21,5 +21,10 @@ public abstract class AbstractIntegrationTest {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("ebal.security.enabled", () -> true);
+        registry.add("ebal.security.jwt.secret",
+                () -> "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF");
+        registry.add("ebal.security.cors.dev-origin", () -> "http://localhost:5173");
+        registry.add("ebal.security.cors.prod-origin", () -> "");
     }
 }
