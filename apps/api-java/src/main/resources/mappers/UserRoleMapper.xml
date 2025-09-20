@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homeputers.ebal2.api.domain.user.UserRoleMapper">
+    <select id="findRolesByUserId" resultType="java.lang.String">
+        select role
+        from user_roles
+        where user_id = #{userId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+        order by role
+    </select>
+
+    <insert id="insert">
+        insert into user_roles (user_id, role, created_at)
+        values (
+            #{userId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{role},
+            #{createdAt}
+        )
+        on conflict (user_id, role) do nothing
+    </insert>
+
+    <delete id="delete">
+        delete from user_roles
+        where user_id = #{userId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+          and role = #{role}
+    </delete>
+</mapper>
