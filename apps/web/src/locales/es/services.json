@@ -83,5 +83,19 @@
     "unavailableDescription": "No pudimos cargar este plan de servicio. Vuelve a intentarlo más tarde o contacta al organizador.",
     "shareTokenLabel": "Token de compartido:",
     "empty": "Aún no se han programado elementos en el plan."
+  },
+  "print": {
+    "title": "Plan del servicio",
+    "header": {
+      "date": "{{date}}",
+      "dateWithLocation": "{{date}} — {{location}}"
+    },
+    "sections": {
+      "plan": "Orden del servicio"
+    },
+    "footer": {
+      "generatedBy": "Generado por {{app}}",
+      "keySummaryNote": "Los resúmenes de tonalidad reflejan la transposición y el uso de cejilla."
+    }
   }
 }
