@@ -3,6 +3,7 @@ package com.homeputers.ebal2.api.config;
 import com.homeputers.ebal2.api.email.DevEmailSender;
 import com.homeputers.ebal2.api.email.EmailSender;
 import com.homeputers.ebal2.api.email.SmtpEmailSender;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -18,7 +19,7 @@ import java.util.Properties;
 public class MailConfig {
 
     @Bean
-    @ConditionalOnProperty(value = "ebal.mail.smtp.enabled", havingValue = "true")
+    @ConditionalOnProperty(prefix = "ebal.mail.smtp", name = "enabled", havingValue = "true")
     public JavaMailSender javaMailSender(MailProperties properties) {
         MailProperties.Smtp smtp = properties.getSmtp();
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
@@ -37,14 +38,17 @@ public class MailConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(value = "ebal.mail.smtp.enabled", havingValue = "true")
-    public EmailSender smtpEmailSender(JavaMailSender javaMailSender, MailProperties properties) {
-        return new SmtpEmailSender(javaMailSender, properties);
-    }
-
-    @Bean
     @ConditionalOnMissingBean(EmailSender.class)
-    public EmailSender devEmailSender(MailProperties properties) {
+    public EmailSender emailSender(MailProperties properties,
+                                   ObjectProvider<JavaMailSender> javaMailSenderProvider) {
+        if (properties.getSmtp().isEnabled()) {
+            JavaMailSender javaMailSender = javaMailSenderProvider.getIfAvailable();
+            if (javaMailSender == null) {
+                throw new IllegalStateException(
+                        "SMTP email sender requires JavaMailSender bean when smtp.enabled=true");
+            }
+            return new SmtpEmailSender(javaMailSender, properties);
+        }
         return new DevEmailSender(properties);
     }
 }
