@@ -38,6 +38,13 @@
         where token = #{token}
     </update>
 
+    <update id="revokeByUserId">
+        update refresh_tokens
+        set revoked_at = #{revokedAt}
+        where user_id = #{userId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+          and revoked_at IS NULL
+    </update>
+
     <delete id="deleteExpired">
         delete from refresh_tokens
         where expires_at &lt; #{now}

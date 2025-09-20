@@ -85,6 +85,28 @@ The API seeds the user with a BCrypt password hash and grants the `ADMIN` role
 when the account does not already exist. Existing accounts are reactivated and
 granted the admin role if necessary.
 
+### Authentication configuration
+
+JWT-based authentication is enabled by default. Configure the secrets and
+allowed web origins through environment variables before starting the API:
+
+```dotenv
+EBAL_JWT_SECRET=replace-with-a-64-char-minimum-random-string
+EBAL_WEB_ORIGIN_DEV=http://localhost:5173
+EBAL_WEB_ORIGIN_PROD=https://app.example.com
+```
+
+Optional overrides:
+
+```dotenv
+EBAL_SECURITY_ENABLED=true             # set to false to disable auth entirely
+EBAL_JWT_ACCESS_TTL=PT15M              # ISO-8601 duration for access tokens
+EBAL_JWT_REFRESH_TTL=P30D              # ISO-8601 duration for refresh tokens
+```
+
+Refresh tokens are persisted and revoked automatically when passwords are
+changed or reset.
+
 ## Service calendar export
 
 The API provides a read-only iCalendar feed of upcoming services at

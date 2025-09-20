@@ -1,11 +1,17 @@
 package com.homeputers.ebal2.api.auth;
 
 import com.homeputers.ebal2.api.generated.AuthApi;
+import com.homeputers.ebal2.api.generated.model.AuthLoginRequest;
+import com.homeputers.ebal2.api.generated.model.AuthTokenPair;
+import com.homeputers.ebal2.api.generated.model.ChangePasswordRequest;
+import com.homeputers.ebal2.api.generated.model.RefreshTokenRequest;
 import com.homeputers.ebal2.api.generated.model.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,9 +20,47 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController implements AuthApi {
 
     private final CurrentUserFactory currentUserFactory;
+    private final AuthService authService;
+    private final HttpServletRequest request;
 
-    public AuthController(CurrentUserFactory currentUserFactory) {
+    public AuthController(CurrentUserFactory currentUserFactory,
+                         AuthService authService,
+                         HttpServletRequest request) {
         this.currentUserFactory = currentUserFactory;
+        this.authService = authService;
+        this.request = request;
+    }
+
+    @Override
+    public ResponseEntity<AuthTokenPair> login(AuthLoginRequest authLoginRequest) {
+        AuthTokenPair tokenPair = authService.login(
+                authLoginRequest.getEmail(),
+                authLoginRequest.getPassword(),
+                request.getHeader("User-Agent"),
+                resolveClientIpAddress());
+        return ResponseEntity.ok(tokenPair);
+    }
+
+    @Override
+    public ResponseEntity<AuthTokenPair> refreshAccessToken(RefreshTokenRequest refreshTokenRequest) {
+        AuthTokenPair tokenPair = authService.refresh(
+                refreshTokenRequest.getRefreshToken(),
+                request.getHeader("User-Agent"),
+                resolveClientIpAddress());
+        return ResponseEntity.ok(tokenPair);
+    }
+
+    @Override
+    public ResponseEntity<Void> changePassword(ChangePasswordRequest changePasswordRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        authService.changePassword(
+                authentication.getName(),
+                changePasswordRequest.getCurrentPassword(),
+                changePasswordRequest.getNewPassword());
+        return ResponseEntity.noContent().build();
     }
 
     @Override
@@ -25,5 +69,13 @@ public class AuthController implements AuthApi {
         return currentUserFactory.create(authentication)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+    }
+
+    private String resolveClientIpAddress() {
+        String forwarded = request.getHeader("X-Forwarded-For");
+        if (StringUtils.hasText(forwarded)) {
+            return forwarded.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 }
