@@ -70,6 +70,21 @@ If you prefer to avoid `make`, run `docker compose build` followed by
 Use `make logs` (or `docker compose logs -f`) from the `infra/` directory to
 monitor the containers. To stop everything, run `make down`.
 
+### Database seeding
+
+Set the following environment variables before starting the API if you want it
+to create a default administrator account automatically:
+
+```dotenv
+EBAL_SEED_ENABLED=true
+EBAL_SEED_ADMIN_EMAIL=admin@example.com
+EBAL_SEED_ADMIN_PASSWORD=ChangeMe123!
+```
+
+The API seeds the user with a BCrypt password hash and grants the `ADMIN` role
+when the account does not already exist. Existing accounts are reactivated and
+granted the admin role if necessary.
+
 ## Service calendar export
 
 The API provides a read-only iCalendar feed of upcoming services at

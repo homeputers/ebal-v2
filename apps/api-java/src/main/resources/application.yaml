@@ -24,3 +24,8 @@ ebal:
     secret-key: ${EBAL_STORAGE_SECRET_KEY:}
     bucket: ${EBAL_STORAGE_BUCKET:}
     region: ${EBAL_STORAGE_REGION:}
+  seed:
+    enabled: ${EBAL_SEED_ENABLED:false}
+    admin:
+      email: ${EBAL_SEED_ADMIN_EMAIL:admin@example.com}
+      password: ${EBAL_SEED_ADMIN_PASSWORD:ChangeMe123!}

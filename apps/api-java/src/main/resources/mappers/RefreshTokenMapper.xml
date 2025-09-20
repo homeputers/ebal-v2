@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homeputers.ebal2.api.domain.user.RefreshTokenMapper">
+    <resultMap id="refreshTokenResult" type="com.homeputers.ebal2.api.domain.user.RefreshToken">
+        <constructor>
+            <idArg column="token" javaType="java.lang.String" />
+            <arg column="user_id" javaType="java.util.UUID"
+                 typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+            <arg column="expires_at" javaType="java.time.OffsetDateTime" />
+            <arg column="revoked_at" javaType="java.time.OffsetDateTime" />
+            <arg column="created_at" javaType="java.time.OffsetDateTime" />
+            <arg column="user_agent" javaType="java.lang.String" />
+            <arg column="ip_address" javaType="java.lang.String" />
+        </constructor>
+    </resultMap>
+
+    <select id="findByToken" resultMap="refreshTokenResult">
+        select token, user_id, expires_at, revoked_at, created_at, user_agent, ip_address
+        from refresh_tokens
+        where token = #{token}
+    </select>
+
+    <insert id="insert">
+        insert into refresh_tokens (token, user_id, expires_at, created_at, user_agent, ip_address)
+        values (
+            #{token},
+            #{userId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{expiresAt},
+            #{createdAt},
+            #{userAgent},
+            #{ipAddress}
+        )
+    </insert>
+
+    <update id="revoke">
+        update refresh_tokens
+        set revoked_at = #{revokedAt}
+        where token = #{token}
+    </update>
+
+    <delete id="deleteExpired">
+        delete from refresh_tokens
+        where expires_at &lt; #{now}
+           or revoked_at IS NOT NULL
+    </delete>
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homeputers.ebal2.api.domain.user.UserMapper">
+    <resultMap id="userResult" type="com.homeputers.ebal2.api.domain.user.User">
+        <constructor>
+            <idArg column="id" javaType="java.util.UUID"
+                   typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+            <arg column="email" javaType="java.lang.String"/>
+            <arg column="password_hash" javaType="java.lang.String"/>
+            <arg column="is_active" javaType="boolean"/>
+            <arg column="created_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="updated_at" javaType="java.time.OffsetDateTime"/>
+        </constructor>
+    </resultMap>
+
+    <select id="findById" resultMap="userResult">
+        select id, email, password_hash, is_active, created_at, updated_at
+        from users
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </select>
+
+    <select id="findByEmail" resultMap="userResult">
+        select id, email, password_hash, is_active, created_at, updated_at
+        from users
+        where lower(email) = lower(#{email})
+    </select>
+
+    <insert id="insert">
+        insert into users (id, email, password_hash, is_active, created_at, updated_at)
+        values (
+            #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{email},
+            #{passwordHash},
+            #{isActive},
+            #{createdAt},
+            #{updatedAt}
+        )
+    </insert>
+
+    <update id="updatePassword">
+        update users
+        set password_hash = #{passwordHash},
+            updated_at = #{updatedAt}
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
+    <update id="updateActive">
+        update users
+        set is_active = #{isActive},
+            updated_at = #{updatedAt}
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
+    <update id="touch">
+        update users
+        set updated_at = #{updatedAt}
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+</mapper>
