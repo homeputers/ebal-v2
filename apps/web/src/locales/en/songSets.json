@@ -38,7 +38,20 @@
     "title": "Items",
     "loadFailed": "Failed to load items.",
     "empty": "No items",
-    "dragHandle": "Drag to reorder"
+    "dragHandle": "Drag to reorder",
+    "drag": {
+      "grab": "Grab to drag",
+      "dragging": "Dragging {{title}}",
+      "drop": "Drop to reorder",
+      "cancel": "Cancel drag",
+      "keyboard": {
+        "hint": "Press space to grab, arrow keys to move, space again to drop.",
+        "moveUp": "Move item up",
+        "moveDown": "Move item down",
+        "moveToTop": "Move item to top",
+        "moveToBottom": "Move item to bottom"
+      }
+    }
   },
   "notifications": {
     "itemAdded": "Item added",

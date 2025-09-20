@@ -38,7 +38,20 @@
     "title": "Elementos",
     "loadFailed": "No se pudieron cargar los elementos.",
     "empty": "Sin elementos",
-    "dragHandle": "Arrastrar para reordenar"
+    "dragHandle": "Arrastrar para reordenar",
+    "drag": {
+      "grab": "Sujetar para arrastrar",
+      "dragging": "Arrastrando {{title}}",
+      "drop": "Soltar para reordenar",
+      "cancel": "Cancelar arrastre",
+      "keyboard": {
+        "hint": "Presiona espacio para sujetar, flechas para mover y espacio otra vez para soltar.",
+        "moveUp": "Mover elemento arriba",
+        "moveDown": "Mover elemento abajo",
+        "moveToTop": "Mover elemento al inicio",
+        "moveToBottom": "Mover elemento al final"
+      }
+    }
   },
   "notifications": {
     "itemAdded": "Elemento agregado",

@@ -49,6 +49,29 @@
     "notifications": {
       "itemAdded": "Item added",
       "addFailed": "Failed to add item"
+    },
+    "toolbar": {
+      "title": "Plan builder",
+      "add": {
+        "label": "Add to plan",
+        "song": "Add song",
+        "reading": "Add reading",
+        "note": "Add note"
+      },
+      "arrangement": {
+        "label": "Choose arrangement",
+        "placeholder": "Search arrangements…"
+      },
+      "actions": {
+        "duplicate": "Duplicate item",
+        "remove": "Remove item",
+        "moveUp": "Move up",
+        "moveDown": "Move down",
+        "clearPlan": "Clear plan",
+        "preview": "Preview plan",
+        "share": "Share link",
+        "print": "Print"
+      }
     }
   },
   "planView": {
