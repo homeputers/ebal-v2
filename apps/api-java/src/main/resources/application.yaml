@@ -21,6 +21,19 @@ ebal:
       secret: ${EBAL_JWT_SECRET:ThisIsADefaultJwtSecretForLocalDevOnly_DoNotUseInProduction_ButItIsLongEnough1234}
       access-token-ttl: ${EBAL_JWT_ACCESS_TTL:PT15M}
       refresh-token-ttl: ${EBAL_JWT_REFRESH_TTL:P30D}
+    password-reset:
+      ttl: ${EBAL_PASSWORD_RESET_TTL:PT1H}
+  mail:
+    frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:5173}
+    smtp:
+      enabled: ${EBAL_MAIL_SMTP_ENABLED:false}
+      host: ${EBAL_MAIL_SMTP_HOST:}
+      port: ${EBAL_MAIL_SMTP_PORT:587}
+      username: ${EBAL_MAIL_SMTP_USERNAME:}
+      password: ${EBAL_MAIL_SMTP_PASSWORD:}
+      start-tls: ${EBAL_MAIL_SMTP_STARTTLS:true}
+      auth: ${EBAL_MAIL_SMTP_AUTH:true}
+      from-address: ${EBAL_MAIL_FROM:no-reply@example.com}
   otel:
     enabled: ${EBAL_OTEL_ENABLED:false}
     exporter:

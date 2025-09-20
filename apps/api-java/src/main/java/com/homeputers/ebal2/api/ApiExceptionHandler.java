@@ -1,6 +1,7 @@
 package com.homeputers.ebal2.api;
 
 import com.homeputers.ebal2.api.auth.InvalidCredentialsException;
+import com.homeputers.ebal2.api.auth.InvalidPasswordResetTokenException;
 import com.homeputers.ebal2.api.auth.InvalidRefreshTokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -35,6 +36,13 @@ public class ApiExceptionHandler {
     @ExceptionHandler({InvalidCredentialsException.class, InvalidRefreshTokenException.class})
     public ProblemDetail handleUnauthorized(RuntimeException ex) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        pd.setDetail(ex.getMessage());
+        return pd;
+    }
+
+    @ExceptionHandler(InvalidPasswordResetTokenException.class)
+    public ProblemDetail handleInvalidPasswordResetToken(InvalidPasswordResetTokenException ex) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         pd.setDetail(ex.getMessage());
         return pd;
     }

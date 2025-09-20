@@ -10,6 +10,8 @@ import java.util.UUID;
 public interface PasswordResetMapper {
     PasswordResetToken findByToken(@Param("token") String token);
 
+    PasswordResetToken findLatestByUserId(@Param("userId") UUID userId);
+
     void insert(@Param("token") String token,
                 @Param("userId") UUID userId,
                 @Param("expiresAt") OffsetDateTime expiresAt,

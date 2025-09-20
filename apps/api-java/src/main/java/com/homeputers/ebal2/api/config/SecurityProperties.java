@@ -16,6 +16,7 @@ public class SecurityProperties {
     private boolean enabled = true;
     private final Cors cors = new Cors();
     private final Jwt jwt = new Jwt();
+    private final PasswordReset passwordReset = new PasswordReset();
 
     public boolean isEnabled() {
         return enabled;
@@ -31,6 +32,10 @@ public class SecurityProperties {
 
     public Jwt getJwt() {
         return jwt;
+    }
+
+    public PasswordReset getPasswordReset() {
+        return passwordReset;
     }
 
     public static class Cors {
@@ -104,6 +109,23 @@ public class SecurityProperties {
         @AssertTrue(message = "Refresh token TTL must be positive")
         public boolean isRefreshTtlPositive() {
             return refreshTokenTtl != null && !refreshTokenTtl.isNegative() && !refreshTokenTtl.isZero();
+        }
+    }
+
+    public static class PasswordReset {
+        private Duration ttl = Duration.ofMinutes(60);
+
+        public Duration getTtl() {
+            return ttl;
+        }
+
+        public void setTtl(Duration ttl) {
+            this.ttl = ttl;
+        }
+
+        @AssertTrue(message = "Password reset TTL must be positive")
+        public boolean isTtlPositive() {
+            return ttl != null && !ttl.isNegative() && !ttl.isZero();
         }
     }
 }
