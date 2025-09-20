@@ -1,3 +1,25 @@
+## [0.2.0](https://github.com/homeputers/ebal-v2/compare/v0.1.3...v0.2.0) (2025-09-20)
+
+### Features
+
+* localize service print view ([#88](https://github.com/homeputers/ebal-v2/issues/88)) ([a6f4fbd](https://github.com/homeputers/ebal-v2/commit/a6f4fbdc4be8166024f526cd27e8c90de13fc6f1))
+* **web:** add Accept-Language axios interceptor ([#77](https://github.com/homeputers/ebal-v2/issues/77)) ([e954a5b](https://github.com/homeputers/ebal-v2/commit/e954a5b5387d579588c60787d683c5930ec73859))
+* **web:** add i18n coverage for key ui flows ([#73](https://github.com/homeputers/ebal-v2/issues/73)) ([8fdcb71](https://github.com/homeputers/ebal-v2/commit/8fdcb7180520cd125d4aa33b96e981921d598754))
+* **web:** add initial locale resources ([#70](https://github.com/homeputers/ebal-v2/issues/70)) ([cd4b793](https://github.com/homeputers/ebal-v2/commit/cd4b793e087a8bf55981f395931816a8b827c96b))
+* **web:** add intl formatting utilities ([#79](https://github.com/homeputers/ebal-v2/issues/79)) ([29910a9](https://github.com/homeputers/ebal-v2/commit/29910a9d89bccdc2b30dd8f215273a1cd0556af6))
+* **web:** add language aware routing ([#71](https://github.com/homeputers/ebal-v2/issues/71)) ([5597cab](https://github.com/homeputers/ebal-v2/commit/5597cab0f4d8e211efaa5585ecec4b2f5a64a441))
+* **web:** add language switcher component ([#72](https://github.com/homeputers/ebal-v2/issues/72)) ([5faffbc](https://github.com/homeputers/ebal-v2/commit/5faffbc3881b383a9ae54a0b3e072278c407d5e3))
+* **web:** add pluralized counts and formatted song updates ([#74](https://github.com/homeputers/ebal-v2/issues/74)) ([5b21187](https://github.com/homeputers/ebal-v2/commit/5b211873012f0785c82b23aaa9411fe4f92e89a3))
+* **web:** include language in query keys ([#78](https://github.com/homeputers/ebal-v2/issues/78)) ([ad40176](https://github.com/homeputers/ebal-v2/commit/ad4017672a7b65aaaaac5b243c6341327d963f83))
+* **web:** localize arrangement labels ([#80](https://github.com/homeputers/ebal-v2/issues/80)) ([fd313d2](https://github.com/homeputers/ebal-v2/commit/fd313d266b5849d06f97f817acfcf97e0246f178))
+* **web:** localize song form fields ([#76](https://github.com/homeputers/ebal-v2/issues/76)) ([1c01bb6](https://github.com/homeputers/ebal-v2/commit/1c01bb63d2d2c15de073e3f2590ebdfb35089a83))
+* **web:** localize zod validation errors ([#75](https://github.com/homeputers/ebal-v2/issues/75)) ([a0f6fe5](https://github.com/homeputers/ebal-v2/commit/a0f6fe51966bd0ac93a8aa523b71327d40c0f5da))
+* **web:** log missing translations in dev ([#82](https://github.com/homeputers/ebal-v2/issues/82)) ([3a26149](https://github.com/homeputers/ebal-v2/commit/3a26149052ebbdd94170d72aba5ca8b978ff90eb))
+* **web:** seed toolbar translations ([#87](https://github.com/homeputers/ebal-v2/issues/87)) ([aa64de1](https://github.com/homeputers/ebal-v2/commit/aa64de12f9f626bb9c722acaf0a3d2e4540202c3))
+
+### Bug Fixes
+
+* **web:** guard i18n resource namespaces ([#69](https://github.com/homeputers/ebal-v2/issues/69)) ([c0a1b3e](https://github.com/homeputers/ebal-v2/commit/c0a1b3ef05e1d8a74c40e11209340645f079123e))
 ## [0.1.3](https://github.com/homeputers/ebal-v2/compare/v0.1.2...v0.1.3) (2025-09-18)
 
 ### Bug Fixes
