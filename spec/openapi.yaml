@@ -31,35 +31,254 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StorageHealth'
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Authenticate with email and password
+      description: Issues a new access and refresh token pair for valid credentials.
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthLoginRequest'
+      responses:
+        '200':
+          description: Authenticated session tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenPair'
+  /auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Refresh an access token
+      description: Exchanges a valid refresh token for a new access token pair.
+      operationId: refreshAccessToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Refreshed session tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenPair'
+  /auth/forgot-password:
+    post:
+      tags:
+        - Auth
+      summary: Request a password reset email
+      description: Sends a password reset link to the provided email when a matching account exists.
+      operationId: requestPasswordReset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+      responses:
+        '204':
+          description: Reset instructions sent when applicable
+  /auth/reset-password:
+    post:
+      tags:
+        - Auth
+      summary: Reset a password using a token
+      description: Completes the password reset workflow using a previously issued token.
+      operationId: completePasswordReset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '204':
+          description: Password reset completed
+  /auth/change-password:
+    post:
+      tags:
+        - Auth
+      summary: Change the authenticated user's password
+      description: Allows an authenticated user to change their password using the current password for verification.
+      operationId: changePassword
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '204':
+          description: Password updated successfully
   /auth/me:
     get:
       tags:
         - Auth
-      summary: Retrieve the current principal
-      description: |
-        Returns information about the authenticated user making the request.
-        When the request is unauthenticated the API responds with an anonymous
-        placeholder user until session or OIDC login flows are enabled.
+      summary: Retrieve the current authenticated user
+      description: Returns information about the authenticated principal for the current request.
       operationId: getCurrentUser
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Current user information
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CurrentUser'
-              examples:
-                anonymous:
-                  summary: Anonymous user placeholder
-                  value:
-                    subject: anonymous
-                    displayName: Anonymous
-                    anonymous: true
-                    roles: []
-                    provider: null
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+  /admin/users:
+    get:
+      tags:
+        - Admin Users
+      summary: List users
+      description: Returns a paginated list of users filtered by query, role, or activation state.
+      operationId: listUsers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Free-text search across email and display name.
+        - name: role
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/Role'
+        - name: isActive
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Users page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageUserResponse'
+    post:
+      tags:
+        - Admin Users
+      summary: Create a new user
+      description: Creates a user and optionally sends a temporary password notification.
+      operationId: createUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /admin/users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Admin Users
+      summary: Retrieve a user
+      operationId: getUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    patch:
+      tags:
+        - Admin Users
+      summary: Update a user
+      operationId: updateUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      tags:
+        - Admin Users
+      summary: Deactivate or remove a user
+      operationId: deleteUser
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: No Content
+  /admin/users/{id}/reset-password:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      tags:
+        - Admin Users
+      summary: Send a password reset notification
+      description: Triggers a password reset email for the specified user.
+      operationId: resetUserPassword
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: No Content
   /search:
     get:
       tags: [Search]
+      security:
+        - bearerAuth: []
       operationId: search
       parameters:
         - name: q
@@ -79,6 +298,8 @@ paths:
   /groups:
     get:
       tags: [Groups]
+      security:
+        - bearerAuth: []
       operationId: listGroups
       parameters:
         - name: page
@@ -100,6 +321,8 @@ paths:
                 $ref: '#/components/schemas/PageGroupResponse'
     post:
       tags: [Groups]
+      security:
+        - bearerAuth: []
       operationId: createGroup
       requestBody:
         required: true
@@ -124,6 +347,8 @@ paths:
           format: uuid
     get:
       tags: [Groups]
+      security:
+        - bearerAuth: []
       operationId: getGroup
       responses:
         '200':
@@ -134,6 +359,8 @@ paths:
                 $ref: '#/components/schemas/GroupResponse'
     put:
       tags: [Groups]
+      security:
+        - bearerAuth: []
       operationId: updateGroup
       requestBody:
         required: true
@@ -150,6 +377,8 @@ paths:
                 $ref: '#/components/schemas/GroupResponse'
     delete:
       tags: [Groups]
+      security:
+        - bearerAuth: []
       operationId: deleteGroup
       responses:
         '204':
@@ -170,12 +399,16 @@ paths:
           format: uuid
     post:
       tags: [Groups]
+      security:
+        - bearerAuth: []
       operationId: addGroupMember
       responses:
         '204':
           description: No Content
     delete:
       tags: [Groups]
+      security:
+        - bearerAuth: []
       operationId: removeGroupMember
       responses:
         '204':
@@ -183,6 +416,8 @@ paths:
   /members:
     get:
       tags: [Members]
+      security:
+        - bearerAuth: []
       operationId: listMembers
       parameters:
         - name: q
@@ -209,6 +444,8 @@ paths:
                 $ref: '#/components/schemas/PageMemberResponse'
     post:
       tags: [Members]
+      security:
+        - bearerAuth: []
       operationId: createMember
       requestBody:
         required: true
@@ -233,6 +470,8 @@ paths:
           format: uuid
     get:
       tags: [Members]
+      security:
+        - bearerAuth: []
       operationId: getMember
       responses:
         '200':
@@ -243,6 +482,8 @@ paths:
                 $ref: '#/components/schemas/MemberResponse'
     put:
       tags: [Members]
+      security:
+        - bearerAuth: []
       operationId: updateMember
       requestBody:
         required: true
@@ -259,6 +500,8 @@ paths:
                 $ref: '#/components/schemas/MemberResponse'
     delete:
       tags: [Members]
+      security:
+        - bearerAuth: []
       operationId: deleteMember
       responses:
         '204':
@@ -266,6 +509,8 @@ paths:
   /services:
     get:
       tags: [Services]
+      security:
+        - bearerAuth: []
       operationId: listServices
       parameters:
         - name: page
@@ -287,6 +532,8 @@ paths:
                 $ref: '#/components/schemas/PageServiceResponse'
     post:
       tags: [Services]
+      security:
+        - bearerAuth: []
       operationId: createService
       requestBody:
         required: true
@@ -331,6 +578,8 @@ paths:
           format: uuid
     get:
       tags: [Services]
+      security:
+        - bearerAuth: []
       operationId: getService
       responses:
         '200':
@@ -341,6 +590,8 @@ paths:
                 $ref: '#/components/schemas/ServiceResponse'
     put:
       tags: [Services]
+      security:
+        - bearerAuth: []
       operationId: updateService
       requestBody:
         required: true
@@ -357,6 +608,8 @@ paths:
                 $ref: '#/components/schemas/ServiceResponse'
     delete:
       tags: [Services]
+      security:
+        - bearerAuth: []
       operationId: deleteService
       responses:
         '204':
@@ -371,6 +624,8 @@ paths:
           format: uuid
     get:
       tags: [Services]
+      security:
+        - bearerAuth: []
       operationId: listServicePlanItems
       responses:
         '200':
@@ -383,6 +638,8 @@ paths:
                   $ref: '#/components/schemas/ServicePlanItemResponse'
     post:
       tags: [Services]
+      security:
+        - bearerAuth: []
       operationId: addServicePlanItem
       requestBody:
         required: true
@@ -407,6 +664,8 @@ paths:
           format: uuid
     put:
       tags: [Service Plan Items]
+      security:
+        - bearerAuth: []
       operationId: updateServicePlanItem
       requestBody:
         required: true
@@ -423,6 +682,8 @@ paths:
                 $ref: '#/components/schemas/ServicePlanItemResponse'
     delete:
       tags: [Service Plan Items]
+      security:
+        - bearerAuth: []
       operationId: deleteServicePlanItem
       responses:
         '204':
@@ -430,6 +691,8 @@ paths:
   /songs:
     get:
       tags: [Songs]
+      security:
+        - bearerAuth: []
       operationId: listSongs
       parameters:
         - name: title
@@ -461,6 +724,8 @@ paths:
                 $ref: '#/components/schemas/PageSongResponse'
     post:
       tags: [Songs]
+      security:
+        - bearerAuth: []
       operationId: createSong
       requestBody:
         required: true
@@ -485,6 +750,8 @@ paths:
           format: uuid
     get:
       tags: [Songs]
+      security:
+        - bearerAuth: []
       operationId: getSong
       responses:
         '200':
@@ -495,6 +762,8 @@ paths:
                 $ref: '#/components/schemas/SongResponse'
     put:
       tags: [Songs]
+      security:
+        - bearerAuth: []
       operationId: updateSong
       requestBody:
         required: true
@@ -511,6 +780,8 @@ paths:
                 $ref: '#/components/schemas/SongResponse'
     delete:
       tags: [Songs]
+      security:
+        - bearerAuth: []
       operationId: deleteSong
       responses:
         '204':
@@ -525,6 +796,8 @@ paths:
           format: uuid
     get:
       tags: [Songs]
+      security:
+        - bearerAuth: []
       operationId: listArrangements
       responses:
         '200':
@@ -537,6 +810,8 @@ paths:
                   $ref: '#/components/schemas/ArrangementResponse'
     post:
       tags: [Songs]
+      security:
+        - bearerAuth: []
       operationId: addArrangement
       requestBody:
         required: true
@@ -561,6 +836,8 @@ paths:
           format: uuid
     get:
       tags: [Songs]
+      security:
+        - bearerAuth: []
       operationId: getArrangement
       responses:
         '200':
@@ -571,6 +848,8 @@ paths:
                 $ref: '#/components/schemas/ArrangementResponse'
     put:
       tags: [Songs]
+      security:
+        - bearerAuth: []
       operationId: updateArrangement
       requestBody:
         required: true
@@ -587,6 +866,8 @@ paths:
                 $ref: '#/components/schemas/ArrangementResponse'
     delete:
       tags: [Songs]
+      security:
+        - bearerAuth: []
       operationId: deleteArrangement
       responses:
         '204':
@@ -594,6 +875,8 @@ paths:
   /song-sets:
     get:
       tags: [Song Sets]
+      security:
+        - bearerAuth: []
       operationId: listSongSets
       parameters:
         - name: page
@@ -615,6 +898,8 @@ paths:
                 $ref: '#/components/schemas/PageSongSetResponse'
     post:
       tags: [Song Sets]
+      security:
+        - bearerAuth: []
       operationId: createSongSet
       requestBody:
         required: true
@@ -639,6 +924,8 @@ paths:
           format: uuid
     get:
       tags: [Song Sets]
+      security:
+        - bearerAuth: []
       operationId: getSongSet
       responses:
         '200':
@@ -649,6 +936,8 @@ paths:
                 $ref: '#/components/schemas/SongSetResponse'
     put:
       tags: [Song Sets]
+      security:
+        - bearerAuth: []
       operationId: updateSongSet
       requestBody:
         required: true
@@ -665,6 +954,8 @@ paths:
                 $ref: '#/components/schemas/SongSetResponse'
     delete:
       tags: [Song Sets]
+      security:
+        - bearerAuth: []
       operationId: deleteSongSet
       responses:
         '204':
@@ -679,6 +970,8 @@ paths:
           format: uuid
     get:
       tags: [Song Sets]
+      security:
+        - bearerAuth: []
       operationId: listSongSetItems
       responses:
         '200':
@@ -691,6 +984,8 @@ paths:
                   $ref: '#/components/schemas/SongSetItemResponse'
     post:
       tags: [Song Sets]
+      security:
+        - bearerAuth: []
       operationId: addSongSetItem
       requestBody:
         required: true
@@ -721,6 +1016,8 @@ paths:
           format: uuid
     delete:
       tags: [Song Sets]
+      security:
+        - bearerAuth: []
       operationId: removeSongSetItem
       responses:
         '204':
@@ -735,6 +1032,8 @@ paths:
           format: uuid
     post:
       tags: [Song Sets]
+      security:
+        - bearerAuth: []
       operationId: reorderSongSetItems
       requestBody:
         required: true
@@ -758,6 +1057,8 @@ paths:
           format: uuid
     put:
       tags: [Song Set Items]
+      security:
+        - bearerAuth: []
       operationId: updateSongSetItem
       requestBody:
         required: true
@@ -774,11 +1075,18 @@ paths:
                 $ref: '#/components/schemas/SongSetItemResponse'
     delete:
       tags: [Song Set Items]
+      security:
+        - bearerAuth: []
       operationId: deleteSongSetItem
       responses:
         '204':
           description: No Content
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Health:
       type: object
@@ -794,35 +1102,127 @@ components:
           description: High level status string for the storage module.
       example:
         status: enabled
-    CurrentUser:
+    Role:
+      type: string
+      description: Role assigned to a user determining access level.
+      enum: [ADMIN, PLANNER, MUSICIAN, VIEWER]
+    User:
       type: object
-      required: [subject, displayName, anonymous, roles]
+      required: [id, email, displayName, roles, isActive, createdAt, updatedAt]
       properties:
-        subject:
+        id:
           type: string
-          nullable: true
-          description: Unique identifier of the authenticated principal when available.
+          format: uuid
+        email:
+          type: string
+          format: email
         displayName:
           type: string
-          description: Human readable name for the current user.
-        anonymous:
-          type: boolean
-          description: True when the request is unauthenticated or security is disabled.
         roles:
           type: array
-          description: Granted roles or authorities, empty when anonymous.
           items:
-            type: string
-        provider:
+            $ref: '#/components/schemas/Role'
+        isActive:
+          type: boolean
+        createdAt:
           type: string
-          nullable: true
-          description: Identity provider id used once OIDC is enabled.
-      example:
-        subject: anonymous
-        displayName: Anonymous
-        anonymous: true
-        roles: []
-        provider: null
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    PageUserResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        number:
+          type: integer
+        size:
+          type: integer
+    AuthLoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    AuthTokenPair:
+      type: object
+      required: [accessToken, refreshToken, expiresIn]
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+          description: Access token expiration in seconds.
+    RefreshTokenRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+    ChangePasswordRequest:
+      type: object
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+    ForgotPasswordRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+    ResetPasswordRequest:
+      type: object
+      required: [token, newPassword]
+      properties:
+        token:
+          type: string
+        newPassword:
+          type: string
+    CreateUserRequest:
+      type: object
+      required: [email, displayName, roles]
+      properties:
+        email:
+          type: string
+          format: email
+        displayName:
+          type: string
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+        temporaryPassword:
+          type: string
+        isActive:
+          type: boolean
+    UpdateUserRequest:
+      type: object
+      properties:
+        displayName:
+          type: string
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+        isActive:
+          type: boolean
     GroupRequest:
       type: object
       required: [name]

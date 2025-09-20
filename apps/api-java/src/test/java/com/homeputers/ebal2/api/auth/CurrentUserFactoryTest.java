@@ -1,6 +1,7 @@
 package com.homeputers.ebal2.api.auth;
 
-import com.homeputers.ebal2.api.generated.model.CurrentUser;
+import com.homeputers.ebal2.api.generated.model.Role;
+import com.homeputers.ebal2.api.generated.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
@@ -9,6 +10,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,45 +19,40 @@ class CurrentUserFactoryTest {
     private final CurrentUserFactory factory = new CurrentUserFactory(new AuthenticationTrustResolverImpl());
 
     @Test
-    void createsAnonymousUserWhenAuthenticationMissing() {
-        CurrentUser currentUser = factory.create(null);
+    void returnsEmptyWhenAuthenticationMissing() {
+        Optional<User> currentUser = factory.create(null);
 
-        assertThat(currentUser.getAnonymous()).isTrue();
-        assertThat(currentUser.getSubject()).isNotNull();
-        assertThat(currentUser.getSubject().isPresent()).isTrue();
-        assertThat(currentUser.getSubject().get()).isEqualTo("anonymous");
-        assertThat(currentUser.getDisplayName()).isEqualTo("Anonymous");
-        assertThat(currentUser.getRoles()).isEmpty();
-        assertThat(currentUser.getProvider()).isNotNull();
-        assertThat(currentUser.getProvider().isPresent()).isFalse();
+        assertThat(currentUser).isEmpty();
     }
 
     @Test
-    void treatsAnonymousAuthenticationTokenAsAnonymous() {
+    void treatsAnonymousAuthenticationTokenAsUnauthenticated() {
         AnonymousAuthenticationToken authentication = new AnonymousAuthenticationToken(
                 "key", "guest", AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
 
-        CurrentUser currentUser = factory.create(authentication);
+        Optional<User> currentUser = factory.create(authentication);
 
-        assertThat(currentUser.getAnonymous()).isTrue();
-        assertThat(currentUser.getRoles()).isEmpty();
+        assertThat(currentUser).isEmpty();
     }
 
     @Test
     void createsAuthenticatedUserDetails() {
         TestingAuthenticationToken authentication = new TestingAuthenticationToken(
-                "alice", "password", List.of(new SimpleGrantedAuthority("ROLE_USER")));
+                "alice@example.com", "password", List.of(
+                        new SimpleGrantedAuthority("ROLE_ADMIN"),
+                        new SimpleGrantedAuthority("ROLE_IGNORED")));
         authentication.setAuthenticated(true);
 
-        CurrentUser currentUser = factory.create(authentication);
+        Optional<User> currentUser = factory.create(authentication);
 
-        assertThat(currentUser.getAnonymous()).isFalse();
-        assertThat(currentUser.getSubject()).isNotNull();
-        assertThat(currentUser.getSubject().isPresent()).isTrue();
-        assertThat(currentUser.getSubject().get()).isEqualTo("alice");
-        assertThat(currentUser.getDisplayName()).isEqualTo("alice");
-        assertThat(currentUser.getRoles()).containsExactly("ROLE_USER");
-        assertThat(currentUser.getProvider()).isNotNull();
-        assertThat(currentUser.getProvider().isPresent()).isFalse();
+        assertThat(currentUser).isPresent();
+        User user = currentUser.get();
+        assertThat(user.getId()).isNotNull();
+        assertThat(user.getEmail()).isEqualTo("alice@example.com");
+        assertThat(user.getDisplayName()).isEqualTo("alice@example.com");
+        assertThat(user.getRoles()).containsExactly(Role.ADMIN);
+        assertThat(user.getIsActive()).isTrue();
+        assertThat(user.getCreatedAt()).isNotNull();
+        assertThat(user.getUpdatedAt()).isNotNull();
     }
 }
