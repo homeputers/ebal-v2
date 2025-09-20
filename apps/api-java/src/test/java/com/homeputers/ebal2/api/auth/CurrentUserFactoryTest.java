@@ -61,6 +61,7 @@ class CurrentUserFactoryTest {
     @Test
     void extractsEmailFromJwtAuthenticationToken() {
         Jwt jwt = Jwt.withTokenValue("token")
+                .header("alg", "none")
                 .subject("3fa85f64-5717-4562-b3fc-2c963f66afa6")
                 .claim("email", "jwt-user@example.com")
                 .claim("roles", List.of("PLANNER"))

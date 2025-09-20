@@ -42,10 +42,11 @@ class AuthControllerTest extends AbstractIntegrationTest {
 
     @Test
     void returnsUnauthorizedWhenAnonymous() {
-        ResponseEntity<User> response = restTemplate.getForEntity("/api/v1/auth/me", User.class);
+        ResponseEntity<ProblemDetail> response = restTemplate.getForEntity("/api/v1/auth/me", ProblemDetail.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getBody()).isNull();
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getDetail()).isEqualTo("Authentication is required to access this resource.");
     }
 
     @Test
