@@ -49,6 +49,29 @@
     "notifications": {
       "itemAdded": "Elemento agregado",
       "addFailed": "No se pudo agregar el elemento"
+    },
+    "toolbar": {
+      "title": "Constructor del plan",
+      "add": {
+        "label": "Agregar al plan",
+        "song": "Agregar canción",
+        "reading": "Agregar lectura",
+        "note": "Agregar nota"
+      },
+      "arrangement": {
+        "label": "Elegir arreglo",
+        "placeholder": "Buscar arreglos…"
+      },
+      "actions": {
+        "duplicate": "Duplicar elemento",
+        "remove": "Eliminar elemento",
+        "moveUp": "Mover arriba",
+        "moveDown": "Mover abajo",
+        "clearPlan": "Limpiar plan",
+        "preview": "Vista previa del plan",
+        "share": "Compartir enlace",
+        "print": "Imprimir"
+      }
     }
   },
   "planView": {

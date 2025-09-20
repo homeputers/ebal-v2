@@ -22,6 +22,28 @@
     "layoutAbove": "Chords above",
     "layoutInline": "Inline"
   },
+  "editor": {
+    "toolbar": {
+      "title": "Arrangement editor",
+      "transpose": {
+        "label": "Transpose",
+        "increase": "Raise key",
+        "decrease": "Lower key",
+        "reset": "Reset transpose"
+      },
+      "accidentals": {
+        "label": "Accidentals",
+        "useSharps": "Show sharps (♯)",
+        "useFlats": "Show flats (♭)"
+      },
+      "preview": {
+        "label": "Preview",
+        "open": "Open preview",
+        "close": "Hide preview",
+        "live": "Live preview updates automatically"
+      }
+    }
+  },
   "actions": {
     "new": "New Arrangement"
   },

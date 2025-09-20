@@ -22,6 +22,28 @@
     "layoutAbove": "Acordes arriba",
     "layoutInline": "En línea"
   },
+  "editor": {
+    "toolbar": {
+      "title": "Editor de arreglos",
+      "transpose": {
+        "label": "Transponer",
+        "increase": "Subir tonalidad",
+        "decrease": "Bajar tonalidad",
+        "reset": "Restablecer transposición"
+      },
+      "accidentals": {
+        "label": "Alteraciones",
+        "useSharps": "Mostrar sostenidos (♯)",
+        "useFlats": "Mostrar bemoles (♭)"
+      },
+      "preview": {
+        "label": "Vista previa",
+        "open": "Abrir vista previa",
+        "close": "Ocultar vista previa",
+        "live": "La vista previa se actualiza automáticamente"
+      }
+    }
+  },
   "actions": {
     "new": "Nuevo arreglo"
   },
