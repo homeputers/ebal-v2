@@ -1,7 +1,8 @@
 package com.homeputers.ebal2.api.auth;
 
 import com.homeputers.ebal2.api.generated.AuthApi;
-import com.homeputers.ebal2.api.generated.model.CurrentUser;
+import com.homeputers.ebal2.api.generated.model.User;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,9 +20,10 @@ public class AuthController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<CurrentUser> getCurrentUser() {
+    public ResponseEntity<User> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CurrentUser currentUser = currentUserFactory.create(authentication);
-        return ResponseEntity.ok(currentUser);
+        return currentUserFactory.create(authentication)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 }

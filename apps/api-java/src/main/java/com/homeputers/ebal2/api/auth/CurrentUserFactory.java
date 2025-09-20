@@ -1,26 +1,29 @@
 package com.homeputers.ebal2.api.auth;
 
-import com.homeputers.ebal2.api.generated.model.CurrentUser;
-import org.openapitools.jackson.nullable.JsonNullable;
+import com.homeputers.ebal2.api.generated.model.Role;
+import com.homeputers.ebal2.api.generated.model.User;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
- * Builds {@link CurrentUser} payloads from the Spring Security context.
+ * Builds {@link User} payloads from the Spring Security context.
  */
 @Component
 public class CurrentUserFactory {
 
     static final String ANONYMOUS_SUBJECT = "anonymous";
-    static final String ANONYMOUS_DISPLAY_NAME = "Anonymous";
 
     private final AuthenticationTrustResolver trustResolver;
 
@@ -28,18 +31,21 @@ public class CurrentUserFactory {
         this.trustResolver = trustResolver;
     }
 
-    public CurrentUser create(@Nullable Authentication authentication) {
+    public Optional<User> create(@Nullable Authentication authentication) {
         if (!isAuthenticated(authentication)) {
-            return anonymousUser();
+            return Optional.empty();
         }
 
-        CurrentUser user = new CurrentUser();
-        user.setSubject(JsonNullable.of(authentication.getName()));
+        User user = new User();
+        user.setId(resolveId(authentication));
+        user.setEmail(resolveEmail(authentication));
         user.setDisplayName(resolveDisplayName(authentication));
-        user.setAnonymous(Boolean.FALSE);
         user.setRoles(resolveRoles(authentication));
-        user.setProvider(resolveProvider(authentication));
-        return user;
+        user.setIsActive(Boolean.TRUE);
+        OffsetDateTime now = OffsetDateTime.now();
+        user.setCreatedAt(now);
+        user.setUpdatedAt(now);
+        return Optional.of(user);
     }
 
     private boolean isAuthenticated(@Nullable Authentication authentication) {
@@ -48,24 +54,22 @@ public class CurrentUserFactory {
                 && !trustResolver.isAnonymous(authentication);
     }
 
-    private CurrentUser anonymousUser() {
-        CurrentUser user = new CurrentUser();
-        user.setSubject(JsonNullable.of(ANONYMOUS_SUBJECT));
-        user.setDisplayName(ANONYMOUS_DISPLAY_NAME);
-        user.setAnonymous(Boolean.TRUE);
-        user.setRoles(Collections.emptyList());
-        user.setProvider(JsonNullable.undefined());
-        return user;
+    private UUID resolveId(Authentication authentication) {
+        String identifier = Objects.requireNonNullElse(authentication.getName(), ANONYMOUS_SUBJECT);
+        return UUID.nameUUIDFromBytes(identifier.getBytes(StandardCharsets.UTF_8));
     }
 
-    private List<String> resolveRoles(Authentication authentication) {
-        if (authentication.getAuthorities() == null) {
-            return Collections.emptyList();
+    private List<Role> resolveRoles(Authentication authentication) {
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        if (authorities == null) {
+            return List.of();
         }
-        return authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        List<Role> roles = new ArrayList<>();
+        for (GrantedAuthority authority : authorities) {
+            Optional<Role> role = mapAuthorityToRole(authority);
+            role.ifPresent(roles::add);
+        }
+        return roles;
     }
 
     private String resolveDisplayName(Authentication authentication) {
@@ -73,8 +77,26 @@ public class CurrentUserFactory {
         return authentication.getName();
     }
 
-    private JsonNullable<String> resolveProvider(Authentication authentication) {
-        // For session logins this can remain null; for OIDC we'll expose the registration id.
-        return JsonNullable.undefined();
+    private String resolveEmail(Authentication authentication) {
+        String name = authentication.getName();
+        if (name == null || name.isBlank()) {
+            return ANONYMOUS_SUBJECT + "@example.com";
+        }
+        return name;
+    }
+
+    private Optional<Role> mapAuthorityToRole(GrantedAuthority authority) {
+        if (authority == null || authority.getAuthority() == null) {
+            return Optional.empty();
+        }
+        String value = authority.getAuthority();
+        if (value.startsWith("ROLE_")) {
+            value = value.substring("ROLE_".length());
+        }
+        try {
+            return Optional.of(Role.fromValue(value));
+        } catch (IllegalArgumentException ex) {
+            return Optional.empty();
+        }
     }
 }

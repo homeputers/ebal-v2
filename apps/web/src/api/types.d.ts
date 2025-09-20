@@ -608,25 +608,6 @@ export interface components {
             /** @description High level status string for the storage module. */
             status: string;
         };
-        /** @example {
-         *       "subject": "anonymous",
-         *       "displayName": "Anonymous",
-         *       "anonymous": true,
-         *       "roles": [],
-         *       "provider": null
-         *     } */
-        CurrentUser: {
-            /** @description Unique identifier of the authenticated principal when available. */
-            subject: string | null;
-            /** @description Human readable name for the current user. */
-            displayName: string;
-            /** @description True when the request is unauthenticated or security is disabled. */
-            anonymous: boolean;
-            /** @description Granted roles or authorities, empty when anonymous. */
-            roles: string[];
-            /** @description Identity provider id used once OIDC is enabled. */
-            provider?: string | null;
-        };
         /**
          * @description Role assigned to a user determining access level.
          * @enum {string}
@@ -1022,6 +1003,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["User"];
                 };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -137,6 +137,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
   /admin/users:
     get:
       tags:
@@ -1100,35 +1102,6 @@ components:
           description: High level status string for the storage module.
       example:
         status: enabled
-    CurrentUser:
-      type: object
-      required: [subject, displayName, anonymous, roles]
-      properties:
-        subject:
-          type: string
-          nullable: true
-          description: Unique identifier of the authenticated principal when available.
-        displayName:
-          type: string
-          description: Human readable name for the current user.
-        anonymous:
-          type: boolean
-          description: True when the request is unauthenticated or security is disabled.
-        roles:
-          type: array
-          description: Granted roles or authorities, empty when anonymous.
-          items:
-            type: string
-        provider:
-          type: string
-          nullable: true
-          description: Identity provider id used once OIDC is enabled.
-      example:
-        subject: anonymous
-        displayName: Anonymous
-        anonymous: true
-        roles: []
-        provider: null
     Role:
       type: string
       description: Role assigned to a user determining access level.
