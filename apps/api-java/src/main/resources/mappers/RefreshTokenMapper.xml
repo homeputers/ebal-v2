@@ -40,7 +40,7 @@
 
     <delete id="deleteExpired">
         delete from refresh_tokens
-        where expires_at < #{now}
+        where expires_at &lt; #{now}
            or revoked_at IS NOT NULL
     </delete>
 </mapper>
