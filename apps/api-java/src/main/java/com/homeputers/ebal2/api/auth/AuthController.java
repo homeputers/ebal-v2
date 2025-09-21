@@ -70,11 +70,8 @@ public class AuthController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<Void> requestPasswordReset(String acceptLanguage,
-                                                     ForgotPasswordRequest forgotPasswordRequest) {
-        String headerValue = StringUtils.hasText(acceptLanguage)
-                ? acceptLanguage
-                : request.getHeader(HttpHeaders.ACCEPT_LANGUAGE);
+    public ResponseEntity<Void> requestPasswordReset(ForgotPasswordRequest forgotPasswordRequest) {
+        String headerValue = request.getHeader(HttpHeaders.ACCEPT_LANGUAGE);
         passwordResetService.requestPasswordReset(
                 forgotPasswordRequest.getEmail(),
                 headerValue);
