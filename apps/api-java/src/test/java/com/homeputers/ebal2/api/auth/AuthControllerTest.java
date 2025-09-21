@@ -33,6 +33,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -172,9 +173,13 @@ class AuthControllerTest extends AbstractIntegrationTest {
         request.setEmail(EMAIL);
         OffsetDateTime beforeRequest = OffsetDateTime.now();
 
-        ResponseEntity<Void> response = restTemplate.postForEntity(
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HttpHeaders.ACCEPT_LANGUAGE, "es-MX");
+        ResponseEntity<Void> response = restTemplate.exchange(
                 "/api/v1/auth/forgot-password",
-                request,
+                HttpMethod.POST,
+                new HttpEntity<>(request, headers),
                 Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
@@ -189,8 +194,10 @@ class AuthControllerTest extends AbstractIntegrationTest {
         assertThat(deltaSeconds).isLessThanOrEqualTo(5);
 
         ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
-        verify(emailSender).sendPasswordResetEmail(eq(EMAIL), urlCaptor.capture());
+        ArgumentCaptor<Locale> localeCaptor = ArgumentCaptor.forClass(Locale.class);
+        verify(emailSender).sendPasswordResetEmail(eq(EMAIL), urlCaptor.capture(), localeCaptor.capture());
         assertThat(urlCaptor.getValue()).contains(token.token());
+        assertThat(localeCaptor.getValue().toLanguageTag()).isEqualTo("es-MX");
     }
 
     @Test

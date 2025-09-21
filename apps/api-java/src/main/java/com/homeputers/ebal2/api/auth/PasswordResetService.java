@@ -14,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -44,7 +45,7 @@ public class PasswordResetService {
         this.emailSender = emailSender;
     }
 
-    public void requestPasswordReset(String email) {
+    public void requestPasswordReset(String email, String acceptLanguage) {
         if (!StringUtils.hasText(email)) {
             return;
         }
@@ -63,7 +64,8 @@ public class PasswordResetService {
         passwordResetMapper.insert(token, user.id(), expiresAt, now);
 
         String resetUrl = buildResetUrl(token);
-        emailSender.sendPasswordResetEmail(user.email(), resetUrl);
+        Locale locale = resolveLocale(acceptLanguage);
+        emailSender.sendPasswordResetEmail(user.email(), resetUrl, locale);
     }
 
     public void resetPassword(String token, String newPassword) {
@@ -107,5 +109,22 @@ public class PasswordResetService {
                 .build()
                 .toUri();
         return uri.toString();
+    }
+
+    private Locale resolveLocale(String acceptLanguage) {
+        if (StringUtils.hasText(acceptLanguage)) {
+            try {
+                List<Locale.LanguageRange> ranges = Locale.LanguageRange.parse(acceptLanguage);
+                for (Locale.LanguageRange range : ranges) {
+                    Locale locale = Locale.forLanguageTag(range.getRange());
+                    if (StringUtils.hasText(locale.getLanguage())) {
+                        return locale;
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {
+                // ignore malformed headers and fall back to default
+            }
+        }
+        return Locale.ENGLISH;
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -40,15 +41,16 @@ public class MailConfig {
     @Bean
     @ConditionalOnMissingBean(EmailSender.class)
     public EmailSender emailSender(MailProperties properties,
-                                   ObjectProvider<JavaMailSender> javaMailSenderProvider) {
+                                   ObjectProvider<JavaMailSender> javaMailSenderProvider,
+                                   MessageSource messageSource) {
         if (properties.getSmtp().isEnabled()) {
             JavaMailSender javaMailSender = javaMailSenderProvider.getIfAvailable();
             if (javaMailSender == null) {
                 throw new IllegalStateException(
                         "SMTP email sender requires JavaMailSender bean when smtp.enabled=true");
             }
-            return new SmtpEmailSender(javaMailSender, properties);
+            return new SmtpEmailSender(javaMailSender, properties, messageSource);
         }
-        return new DevEmailSender(properties);
+        return new DevEmailSender(properties, messageSource);
     }
 }
