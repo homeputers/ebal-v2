@@ -102,7 +102,13 @@ const setCurrentTokens = (tokens: AuthTokenPair) => {
   notifySubscribers();
 };
 
-export const getAuthTokens = () => currentTokens;
+export const getAuthTokens = () => {
+  if (!currentTokens) {
+    currentTokens = loadStoredTokens();
+  }
+
+  return currentTokens;
+};
 
 export const subscribeToAuthTokens = (listener: () => void) => {
   subscribers.add(listener);
