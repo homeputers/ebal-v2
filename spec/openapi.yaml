@@ -78,6 +78,13 @@ paths:
       summary: Request a password reset email
       description: Sends a password reset link to the provided email when a matching account exists.
       operationId: requestPasswordReset
+      parameters:
+        - name: Accept-Language
+          in: header
+          description: Preferred language for the password reset email content.
+          required: false
+          schema:
+            type: string
       requestBody:
         required: true
         content:

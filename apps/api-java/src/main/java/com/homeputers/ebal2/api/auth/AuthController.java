@@ -4,7 +4,9 @@ import com.homeputers.ebal2.api.generated.AuthApi;
 import com.homeputers.ebal2.api.generated.model.AuthLoginRequest;
 import com.homeputers.ebal2.api.generated.model.AuthTokenPair;
 import com.homeputers.ebal2.api.generated.model.ChangePasswordRequest;
+import com.homeputers.ebal2.api.generated.model.ForgotPasswordRequest;
 import com.homeputers.ebal2.api.generated.model.RefreshTokenRequest;
+import com.homeputers.ebal2.api.generated.model.ResetPasswordRequest;
 import com.homeputers.ebal2.api.generated.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -21,13 +23,16 @@ public class AuthController implements AuthApi {
 
     private final CurrentUserFactory currentUserFactory;
     private final AuthService authService;
+    private final PasswordResetService passwordResetService;
     private final HttpServletRequest request;
 
     public AuthController(CurrentUserFactory currentUserFactory,
                          AuthService authService,
+                         PasswordResetService passwordResetService,
                          HttpServletRequest request) {
         this.currentUserFactory = currentUserFactory;
         this.authService = authService;
+        this.passwordResetService = passwordResetService;
         this.request = request;
     }
 
@@ -60,6 +65,22 @@ public class AuthController implements AuthApi {
                 authentication.getName(),
                 changePasswordRequest.getCurrentPassword(),
                 changePasswordRequest.getNewPassword());
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> requestPasswordReset(ForgotPasswordRequest forgotPasswordRequest, String acceptLanguage) {
+        passwordResetService.requestPasswordReset(
+                forgotPasswordRequest.getEmail(),
+                acceptLanguage);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> completePasswordReset(ResetPasswordRequest resetPasswordRequest) {
+        passwordResetService.resetPassword(
+                resetPasswordRequest.getToken(),
+                resetPasswordRequest.getNewPassword());
         return ResponseEntity.noContent().build();
     }
 
