@@ -7,6 +7,27 @@ import axios, {
 
 import { getAppLanguage } from '@/i18n';
 
+type InterceptorAttacher = (instance: AxiosInstance) => AxiosInstance;
+
+const interceptorAttachers: InterceptorAttacher[] = [];
+const axiosInstances = new Set<AxiosInstance>([axios]);
+
+const applyInterceptors = (instance: AxiosInstance): AxiosInstance => {
+  interceptorAttachers.forEach((attacher) => {
+    attacher(instance);
+  });
+  return instance;
+};
+
+export const registerAxiosInterceptor = (
+  attacher: InterceptorAttacher,
+) => {
+  interceptorAttachers.push(attacher);
+  axiosInstances.forEach((instance) => {
+    attacher(instance);
+  });
+};
+
 const withAcceptLanguage = (
   config: InternalAxiosRequestConfig,
   language: string,
@@ -17,27 +38,22 @@ const withAcceptLanguage = (
   return config;
 };
 
-const injectAcceptLanguage = (
-  config: InternalAxiosRequestConfig,
-): InternalAxiosRequestConfig => {
-  const language = getAppLanguage();
-  return withAcceptLanguage(config, language);
-};
-
-export const attachAcceptLanguageInterceptor = (
-  instance: AxiosInstance,
-): AxiosInstance => {
-  instance.interceptors.request.use(injectAcceptLanguage);
+const attachAcceptLanguageInterceptor: InterceptorAttacher = (instance) => {
+  instance.interceptors.request.use((config) => {
+    const language = getAppLanguage();
+    return withAcceptLanguage(config, language);
+  });
   return instance;
 };
 
-attachAcceptLanguageInterceptor(axios);
+registerAxiosInterceptor(attachAcceptLanguageInterceptor);
 
 export const createAxiosInstance = (
   config?: CreateAxiosDefaults,
 ): AxiosInstance => {
   const instance = axios.create(config);
-  return attachAcceptLanguageInterceptor(instance);
+  axiosInstances.add(instance);
+  return applyInterceptors(instance);
 };
 
 export const httpClient = createAxiosInstance();
