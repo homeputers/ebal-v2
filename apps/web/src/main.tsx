@@ -4,6 +4,7 @@ import { I18nextProvider } from 'react-i18next';
 import { z } from 'zod';
 import App from './App';
 import i18n from './i18n';
+import './api/auth';
 import './index.css';
 import zodErrorMap from './lib/zodErrorMap';
 
