@@ -20,14 +20,22 @@ export default function ResetPasswordPage() {
   const language = params.lang;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token') ?? '';
+  const initialToken = searchParams.get('token') ?? '';
   const resetPasswordMutation = useResetPassword();
   const [hasInvalidTokenError, setHasInvalidTokenError] = useState(false);
+  const [invalidTokenValue, setInvalidTokenValue] = useState<string | null>(null);
+  const [allowManualTokenEntry, setAllowManualTokenEntry] = useState(
+    initialToken.trim().length === 0,
+  );
 
   const schema = useMemo(
     () =>
       z
         .object({
+          token: z
+            .string()
+            .trim()
+            .min(1, { message: tValidation('required') }),
           newPassword: z
             .string()
             .min(MIN_PASSWORD_LENGTH, {
@@ -52,36 +60,70 @@ export default function ResetPasswordPage() {
     register,
     handleSubmit,
     reset,
+    watch,
+    setError,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordForm>({
     resolver: zodResolver(schema),
     defaultValues: {
+      token: initialToken,
       newPassword: '',
       confirmPassword: '',
     },
   });
 
-  const isTokenMissing = token.trim().length === 0;
+  const tokenValue = watch('token') ?? '';
+  const trimmedTokenValue = tokenValue.trim();
+  const isTokenMissing = trimmedTokenValue.length === 0;
   const resetLinkWarningMessage = t('resetPassword.notifications.missingToken');
-  const shouldShowResetLinkWarning = isTokenMissing || hasInvalidTokenError;
+  const shouldShowResetLinkWarning = (allowManualTokenEntry && isTokenMissing) || hasInvalidTokenError;
 
   useEffect(() => {
+    reset({
+      token: initialToken,
+      newPassword: '',
+      confirmPassword: '',
+    });
+    setAllowManualTokenEntry(initialToken.trim().length === 0);
     setHasInvalidTokenError(false);
-  }, [token]);
+    setInvalidTokenValue(null);
+    clearErrors('token');
+  }, [initialToken, reset, clearErrors]);
+
+  useEffect(() => {
+    if (invalidTokenValue === null) {
+      return;
+    }
+
+    if (tokenValue !== invalidTokenValue) {
+      setHasInvalidTokenError(false);
+      setInvalidTokenValue(null);
+      clearErrors('token');
+    }
+  }, [tokenValue, invalidTokenValue, clearErrors]);
 
   const onSubmit = handleSubmit(async (values) => {
-    if (isTokenMissing) {
+    const rawToken = values.token;
+    const normalizedToken = rawToken.trim();
+
+    if (!normalizedToken) {
       toast.error(resetLinkWarningMessage);
+      setError('token', { type: 'manual', message: resetLinkWarningMessage });
       return;
     }
 
     try {
       await resetPasswordMutation.mutateAsync({
-        token,
+        token: normalizedToken,
         newPassword: values.newPassword,
       });
       toast.success(t('resetPassword.notifications.success'));
-      reset();
+      reset({
+        token: initialToken,
+        newPassword: '',
+        confirmPassword: '',
+      });
       navigate(buildLanguagePath(language, 'login'));
     } catch (error) {
       let responseMessage: string | null = null;
@@ -90,7 +132,11 @@ export default function ResetPasswordPage() {
       if (isAxiosError(error)) {
         const status = error.response?.status ?? 0;
         if ([400, 404, 410].includes(status)) {
+          const attemptedToken = rawToken;
           setHasInvalidTokenError(true);
+          setInvalidTokenValue(attemptedToken);
+          setAllowManualTokenEntry(true);
+          setError('token', { type: 'manual', message: resetLinkWarningMessage });
           fallbackMessage = resetLinkWarningMessage;
         }
 
@@ -135,6 +181,23 @@ export default function ResetPasswordPage() {
         </div>
       ) : null}
       <form className="mt-4 space-y-4" onSubmit={onSubmit} noValidate>
+        {allowManualTokenEntry ? (
+          <div>
+            <label className="block text-sm font-medium text-gray-700" htmlFor="token">
+              {t('resetPassword.fields.token')}
+            </label>
+            <input
+              id="token"
+              type="text"
+              autoComplete="off"
+              className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              {...register('token')}
+            />
+            {errors.token ? <p className="mt-1 text-sm text-red-600">{errors.token.message}</p> : null}
+          </div>
+        ) : (
+          <input type="hidden" {...register('token')} />
+        )}
         <div>
           <label className="block text-sm font-medium text-gray-700" htmlFor="newPassword">
             {t('resetPassword.fields.newPassword')}
@@ -167,11 +230,7 @@ export default function ResetPasswordPage() {
         </div>
         <button
           type="submit"
-          disabled={
-            isSubmitting ||
-            resetPasswordMutation.isPending ||
-            isTokenMissing
-          }
+          disabled={isSubmitting || resetPasswordMutation.isPending || isTokenMissing}
           className="w-full rounded-md bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
         >
           {t('resetPassword.actions.submit')}
