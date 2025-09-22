@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,6 +22,7 @@ export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token') ?? '';
   const resetPasswordMutation = useResetPassword();
+  const [hasInvalidTokenError, setHasInvalidTokenError] = useState(false);
 
   const schema = useMemo(
     () =>
@@ -61,10 +62,16 @@ export default function ResetPasswordPage() {
   });
 
   const isTokenMissing = token.trim().length === 0;
+  const resetLinkWarningMessage = t('resetPassword.notifications.missingToken');
+  const shouldShowResetLinkWarning = isTokenMissing || hasInvalidTokenError;
+
+  useEffect(() => {
+    setHasInvalidTokenError(false);
+  }, [token]);
 
   const onSubmit = handleSubmit(async (values) => {
     if (isTokenMissing) {
-      toast.error(t('resetPassword.notifications.missingToken'));
+      toast.error(resetLinkWarningMessage);
       return;
     }
 
@@ -77,10 +84,32 @@ export default function ResetPasswordPage() {
       reset();
       navigate(buildLanguagePath(language, 'login'));
     } catch (error) {
-      const message = isAxiosError(error)
-        ? error.response?.data?.message ?? error.response?.data?.error
-        : null;
-      toast.error(message ?? t('resetPassword.notifications.error'));
+      let responseMessage: string | null = null;
+      let fallbackMessage = t('resetPassword.notifications.error');
+
+      if (isAxiosError(error)) {
+        const status = error.response?.status ?? 0;
+        if ([400, 404, 410].includes(status)) {
+          setHasInvalidTokenError(true);
+          fallbackMessage = resetLinkWarningMessage;
+        }
+
+        const data = error.response?.data as
+          | {
+              detail?: unknown;
+              message?: unknown;
+              error?: unknown;
+            }
+          | undefined;
+
+        const detailMessage = typeof data?.detail === 'string' ? data.detail : null;
+        const message = typeof data?.message === 'string' ? data.message : null;
+        const errorMessage = typeof data?.error === 'string' ? data.error : null;
+
+        responseMessage = detailMessage ?? message ?? errorMessage;
+      }
+
+      toast.error(responseMessage ?? fallbackMessage);
     }
   });
 
@@ -97,9 +126,12 @@ export default function ResetPasswordPage() {
         </Link>
       }
     >
-      {isTokenMissing ? (
-        <div className="rounded border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-800">
-          {t('resetPassword.notifications.missingToken')}
+      {shouldShowResetLinkWarning ? (
+        <div
+          role="alert"
+          className="rounded border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-800"
+        >
+          {resetLinkWarningMessage}
         </div>
       ) : null}
       <form className="mt-4 space-y-4" onSubmit={onSubmit} noValidate>
