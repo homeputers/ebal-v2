@@ -9,7 +9,6 @@ import com.homeputers.ebal2.api.generated.model.RefreshTokenRequest;
 import com.homeputers.ebal2.api.generated.model.ResetPasswordRequest;
 import com.homeputers.ebal2.api.generated.model.User;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -70,11 +69,10 @@ public class AuthController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<Void> requestPasswordReset(ForgotPasswordRequest forgotPasswordRequest) {
-        String headerValue = request.getHeader(HttpHeaders.ACCEPT_LANGUAGE);
+    public ResponseEntity<Void> requestPasswordReset(ForgotPasswordRequest forgotPasswordRequest, String acceptLanguage) {
         passwordResetService.requestPasswordReset(
                 forgotPasswordRequest.getEmail(),
-                headerValue);
+                acceptLanguage);
         return ResponseEntity.noContent().build();
     }
 
