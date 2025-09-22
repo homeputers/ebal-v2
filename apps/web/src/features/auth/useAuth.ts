@@ -1,20 +1,18 @@
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 
 import {
   getAuthTokens,
   subscribeToAuthTokens,
   getCurrentUser,
-  login as loginRequest,
   logout as logoutRequest,
   type CurrentUser,
   type LoginRequest,
   type LoginResponse,
   type Role,
 } from '@/api/auth';
-
-const AUTH_QUERY_KEY = ['auth', 'me'] as const;
+import { authQueryKeys, useLogin } from '@/features/auth/hooks';
 
 type LoginFn = (payload: LoginRequest) => Promise<LoginResponse>;
 
@@ -38,7 +36,7 @@ export function useAuth(): UseAuthResult {
   const hasAccessToken = Boolean(tokens?.accessToken);
 
   const meQuery = useQuery({
-    queryKey: AUTH_QUERY_KEY,
+    queryKey: authQueryKeys.me(),
     queryFn: getCurrentUser,
     enabled: hasAccessToken,
     retry: (failureCount, error) => {
@@ -50,16 +48,11 @@ export function useAuth(): UseAuthResult {
     },
   });
 
-  const loginMutation = useMutation({
-    mutationFn: (payload: LoginRequest) => loginRequest(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEY });
-    },
-  });
+  const loginMutation = useLogin();
 
   const logout = useCallback(() => {
     logoutRequest();
-    queryClient.removeQueries({ queryKey: ['auth'] });
+    queryClient.removeQueries({ queryKey: authQueryKeys.all });
   }, [queryClient]);
 
   const roles = useMemo(() => meQuery.data?.roles ?? [], [meQuery.data]);

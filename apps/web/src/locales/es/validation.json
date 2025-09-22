@@ -3,6 +3,7 @@
   "required": "Este campo es obligatorio.",
   "invalidType": "Ingresa un valor válido.",
   "invalidEnumValue": "Elige una de las opciones permitidas.",
+  "passwordMismatch": "Las contraseñas deben coincidir.",
   "email": "Ingresa una dirección de correo válida.",
   "minLength": "Debe tener al menos {{count}} caracteres.",
   "tooSmall": {

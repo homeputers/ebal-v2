@@ -6,6 +6,7 @@ export const DEFAULT_LANGUAGE = 'en';
 export const LANGUAGE_STORAGE_KEY = 'i18nextLng';
 export const NAMESPACES = [
   'common',
+  'auth',
   'members',
   'songs',
   'arrangements',

@@ -12,6 +12,9 @@ import { RequestBodyOf, ResponseOf } from './type-helpers';
 
 type LoginPath = keyof paths & '/auth/login';
 type RefreshPath = keyof paths & '/auth/refresh';
+type ForgotPasswordPath = keyof paths & '/auth/forgot-password';
+type ResetPasswordPath = keyof paths & '/auth/reset-password';
+type ChangePasswordPath = keyof paths & '/auth/change-password';
 type MePath = keyof paths & '/auth/me';
 
 type AuthTokenPair = ResponseOf<LoginPath, 'post', 200>;
@@ -20,6 +23,9 @@ export type CurrentUser = ResponseOf<MePath, 'get', 200>;
 
 export type LoginRequest = RequestBodyOf<LoginPath, 'post'>;
 export type LoginResponse = AuthTokenPair;
+export type ForgotPasswordRequest = RequestBodyOf<ForgotPasswordPath, 'post'>;
+export type ResetPasswordRequest = RequestBodyOf<ResetPasswordPath, 'post'>;
+export type ChangePasswordRequest = RequestBodyOf<ChangePasswordPath, 'post'>;
 export type Role = CurrentUser['roles'][number];
 
 export type AuthTokens = AuthTokenPair & { expiresAt: number };
@@ -115,6 +121,20 @@ export const login = async (body: LoginRequest) => {
   const { data } = await apiClient.post<LoginResponse>('/auth/login', body);
   setCurrentTokens(data);
   return data;
+};
+
+export const requestPasswordReset = async (
+  body: ForgotPasswordRequest,
+) => {
+  await apiClient.post('/auth/forgot-password', body);
+};
+
+export const resetPassword = async (body: ResetPasswordRequest) => {
+  await apiClient.post('/auth/reset-password', body);
+};
+
+export const changePassword = async (body: ChangePasswordRequest) => {
+  await apiClient.post('/auth/change-password', body);
 };
 
 const requestTokenRefresh = async () => {
