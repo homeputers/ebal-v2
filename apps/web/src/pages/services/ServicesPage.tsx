@@ -10,6 +10,7 @@ import {
 import ServiceForm from '../../features/services/ServiceForm';
 import type { ListServicesResponse } from '../../api/services';
 import { formatDate } from '@/i18n/intl';
+import { useAuth } from '@/features/auth/useAuth';
 
 function Modal({
   open,
@@ -36,6 +37,7 @@ function Modal({
 export default function ServicesPage() {
   const { t, i18n } = useTranslation('services');
   const { t: tCommon } = useTranslation('common');
+  const { hasRole } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const queryParam = searchParams.get('query') ?? '';
   const fromParam = searchParams.get('from') ?? '';
@@ -80,6 +82,15 @@ export default function ServicesPage() {
     NonNullable<ListServicesResponse['content']>[number] | null
   >(null);
 
+  const canManageServices = hasRole('ADMIN') || hasRole('PLANNER');
+
+  useEffect(() => {
+    if (!canManageServices) {
+      setCreating(false);
+      setEditing(null);
+    }
+  }, [canManageServices]);
+
   const handleCreate = (vals: Parameters<typeof createMut.mutate>[0]) => {
     createMut.mutate(vals, { onSuccess: () => setCreating(false) });
   };
@@ -118,12 +129,14 @@ export default function ServicesPage() {
           onChange={(e) => handleDateChange('to', e.target.value)}
           className="border p-2 rounded"
         />
-        <button
-          onClick={() => setCreating(true)}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          {t('actions.new')}
-        </button>
+        {canManageServices ? (
+          <button
+            onClick={() => setCreating(true)}
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            {t('actions.new')}
+          </button>
+        ) : null}
       </div>
       {isLoading && <div>{tCommon('status.loading')}</div>}
       {isError && <div>{tCommon('status.loadFailed')}</div>}
@@ -145,23 +158,35 @@ export default function ServicesPage() {
                   <td className="p-2 text-right">
                     <div className="flex gap-2 justify-end">
                       <Link
-                        to={s.id ?? ''}
+                        to={
+                          canManageServices
+                            ? s.id ?? ''
+                            : `${s.id ?? ''}/plan`
+                        }
                         className="px-2 py-1 text-sm bg-green-500 text-white rounded"
                       >
-                        {t('actions.openPlan')}
+                        {t(
+                          canManageServices
+                            ? 'actions.openPlan'
+                            : 'actions.planView',
+                        )}
                       </Link>
-                      <button
-                        className="px-2 py-1 text-sm bg-gray-200 rounded"
-                        onClick={() => setEditing(s)}
-                      >
-                        {tCommon('actions.edit')}
-                      </button>
-                      <button
-                        className="px-2 py-1 text-sm bg-red-500 text-white rounded"
-                        onClick={() => deleteMut.mutate(s.id!)}
-                      >
-                        {tCommon('actions.delete')}
-                      </button>
+                      {canManageServices ? (
+                        <>
+                          <button
+                            className="px-2 py-1 text-sm bg-gray-200 rounded"
+                            onClick={() => setEditing(s)}
+                          >
+                            {tCommon('actions.edit')}
+                          </button>
+                          <button
+                            className="px-2 py-1 text-sm bg-red-500 text-white rounded"
+                            onClick={() => deleteMut.mutate(s.id!)}
+                          >
+                            {tCommon('actions.delete')}
+                          </button>
+                        </>
+                      ) : null}
                     </div>
                   </td>
                 </tr>
@@ -199,27 +224,33 @@ export default function ServicesPage() {
         !isLoading && <div>{t('list.empty')}</div>
       )}
 
-      <Modal open={creating} onClose={() => setCreating(false)}>
-        <h2 className="text-lg font-semibold mb-2">{t('modals.createTitle')}</h2>
-        <ServiceForm
-          onSubmit={handleCreate}
-          onCancel={() => setCreating(false)}
-        />
-      </Modal>
+      {canManageServices ? (
+        <>
+          <Modal open={creating} onClose={() => setCreating(false)}>
+            <h2 className="text-lg font-semibold mb-2">{t('modals.createTitle')}</h2>
+            <ServiceForm
+              onSubmit={handleCreate}
+              onCancel={() => setCreating(false)}
+            />
+          </Modal>
 
-      <Modal open={!!editing} onClose={() => setEditing(null)}>
-        <h2 className="text-lg font-semibold mb-2">{t('modals.editTitle')}</h2>
-        {editing && (
-          <ServiceForm
-            defaultValues={{
-              startsAt: editing.startsAt ? editing.startsAt.slice(0, 16) : '',
-              location: editing.location || '',
-            }}
-            onSubmit={(vals) => handleUpdate(editing.id!, vals)}
-            onCancel={() => setEditing(null)}
-          />
-        )}
-      </Modal>
+          <Modal open={!!editing} onClose={() => setEditing(null)}>
+            <h2 className="text-lg font-semibold mb-2">{t('modals.editTitle')}</h2>
+            {editing && (
+              <ServiceForm
+                defaultValues={{
+                  startsAt: editing.startsAt
+                    ? editing.startsAt.slice(0, 16)
+                    : '',
+                  location: editing.location || '',
+                }}
+                onSubmit={(vals) => handleUpdate(editing.id!, vals)}
+                onCancel={() => setEditing(null)}
+              />
+            )}
+          </Modal>
+        </>
+      ) : null}
     </div>
   );
 }

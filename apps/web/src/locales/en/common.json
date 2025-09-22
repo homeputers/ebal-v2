@@ -36,6 +36,12 @@
   "labels": {
     "notAvailable": "N/A"
   },
+  "auth": {
+    "requiredTitle": "Sign in required",
+    "requiredDescription": "Please sign in to continue.",
+    "forbiddenTitle": "Access restricted",
+    "forbiddenDescription": "You do not have permission to view this page."
+  },
   "language": {
     "change": "Change language",
     "select": "Select language",

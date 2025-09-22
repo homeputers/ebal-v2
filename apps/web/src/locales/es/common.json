@@ -36,6 +36,12 @@
   "labels": {
     "notAvailable": "N/D"
   },
+  "auth": {
+    "requiredTitle": "Inicio de sesión requerido",
+    "requiredDescription": "Inicia sesión para continuar.",
+    "forbiddenTitle": "Acceso restringido",
+    "forbiddenDescription": "No tienes permiso para ver esta página."
+  },
   "language": {
     "change": "Cambiar idioma",
     "select": "Seleccionar idioma",

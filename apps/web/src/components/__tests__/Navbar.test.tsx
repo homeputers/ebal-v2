@@ -2,6 +2,7 @@ import { act, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 
+import type { Role } from '@/api/auth';
 import i18n from '@/i18n';
 import { Navbar } from '../Navbar';
 
@@ -9,6 +10,33 @@ vi.mock('@/components/LanguageSwitcher', () => ({
   LanguageSwitcher: ({ currentLanguage }: { currentLanguage: string }) => (
     <div data-testid="language-switcher">{currentLanguage}</div>
   ),
+}));
+
+const mockUseAuth = vi.fn(() => ({
+  login: vi.fn(),
+  logout: vi.fn(),
+  me: null,
+  isAuthenticated: true,
+  roles: [] as Role[],
+  hasRole: (role: Role) => activeRoles.has(role),
+}));
+
+let activeRoles: Set<Role> = new Set<Role>([
+  'ADMIN',
+  'PLANNER',
+  'MUSICIAN',
+  'VIEWER',
+]);
+
+const setActiveRoles = (roles: Role[]) => {
+  activeRoles = new Set<Role>(roles);
+};
+
+vi.mock('@/features/auth/useAuth', () => ({
+  useAuth: () => ({
+    ...mockUseAuth(),
+    roles: Array.from(activeRoles),
+  }),
 }));
 
 const changeLanguage = async (language: string) => {
@@ -47,10 +75,27 @@ describe('Navbar', () => {
     language,
     labels,
   }) => {
+    setActiveRoles(['ADMIN', 'PLANNER', 'MUSICIAN', 'VIEWER']);
+    mockUseAuth.mockClear();
     await renderNavbar(language);
 
     for (const label of labels) {
       expect(screen.getByRole('link', { name: label })).toBeInTheDocument();
     }
+  });
+
+  it('hides planner-only navigation links when role missing', async () => {
+    setActiveRoles(['MUSICIAN']);
+    mockUseAuth.mockClear();
+
+    await renderNavbar('en');
+
+    expect(screen.getByRole('link', { name: 'Services' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Members' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Groups' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Songs' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: 'Song Sets' }),
+    ).not.toBeInTheDocument();
   });
 });
