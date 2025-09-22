@@ -3,6 +3,7 @@
   "required": "This field is required.",
   "invalidType": "Enter a valid value.",
   "invalidEnumValue": "Please choose one of the allowed options.",
+  "passwordMismatch": "Passwords must match.",
   "email": "Enter a valid email address.",
   "minLength": "Must be at least {{count}} characters long.",
   "tooSmall": {

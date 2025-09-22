@@ -12,15 +12,6 @@ vi.mock('@/components/LanguageSwitcher', () => ({
   ),
 }));
 
-const mockUseAuth = vi.fn(() => ({
-  login: vi.fn(),
-  logout: vi.fn(),
-  me: null,
-  isAuthenticated: true,
-  roles: [] as Role[],
-  hasRole: (role: Role) => activeRoles.has(role),
-}));
-
 let activeRoles: Set<Role> = new Set<Role>([
   'ADMIN',
   'PLANNER',
@@ -28,15 +19,29 @@ let activeRoles: Set<Role> = new Set<Role>([
   'VIEWER',
 ]);
 
+let isAuthenticated = true;
+
+const logoutMock = vi.fn();
+
+const mockUseAuth = vi.fn(() => ({
+  login: vi.fn(),
+  logout: logoutMock,
+  me: null,
+  isAuthenticated,
+  roles: Array.from(activeRoles),
+  hasRole: (role: Role) => activeRoles.has(role),
+}));
+
 const setActiveRoles = (roles: Role[]) => {
   activeRoles = new Set<Role>(roles);
 };
 
+const setIsAuthenticated = (value: boolean) => {
+  isAuthenticated = value;
+};
+
 vi.mock('@/features/auth/useAuth', () => ({
-  useAuth: () => ({
-    ...mockUseAuth(),
-    roles: Array.from(activeRoles),
-  }),
+  useAuth: () => mockUseAuth(),
 }));
 
 const changeLanguage = async (language: string) => {
@@ -60,6 +65,9 @@ const renderNavbar = async (language: string) => {
 describe('Navbar', () => {
   afterEach(async () => {
     await changeLanguage('en');
+    setIsAuthenticated(true);
+    setActiveRoles(['ADMIN', 'PLANNER', 'MUSICIAN', 'VIEWER']);
+    logoutMock.mockClear();
   });
 
   it.each([
@@ -97,5 +105,40 @@ describe('Navbar', () => {
     expect(
       screen.queryByRole('link', { name: 'Song Sets' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('renders logout control when authenticated', async () => {
+    setIsAuthenticated(true);
+    mockUseAuth.mockClear();
+
+    await renderNavbar('en');
+
+    expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();
+  });
+
+  it('hides logout control when unauthenticated', async () => {
+    setIsAuthenticated(false);
+    mockUseAuth.mockClear();
+
+    await renderNavbar('en');
+
+    expect(
+      screen.queryByRole('button', { name: 'Log out' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('calls logout handler when logout button clicked', async () => {
+    setIsAuthenticated(true);
+    mockUseAuth.mockClear();
+    logoutMock.mockClear();
+
+    await renderNavbar('en');
+
+    const button = screen.getByRole('button', { name: 'Log out' });
+    await act(async () => {
+      button.click();
+    });
+
+    expect(logoutMock).toHaveBeenCalledTimes(1);
   });
 });
