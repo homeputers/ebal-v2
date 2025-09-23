@@ -19,6 +19,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -80,6 +81,29 @@ class UserAdminServiceTest extends AbstractIntegrationTest {
         ArgumentCaptor<String> emailCaptor = ArgumentCaptor.forClass(String.class);
         verify(emailSender).sendUserInvitationEmail(emailCaptor.capture(), eq("New User"), eq("Temp123!"), eq(Locale.ENGLISH));
         assertThat(emailCaptor.getValue()).isEqualTo("new.user@example.com");
+    }
+
+    @Test
+    void createUserSendsInvitationUsingRequestLocale() {
+        Locale spanish = Locale.forLanguageTag("es-MX");
+        LocaleContextHolder.setLocale(spanish);
+        try {
+            CreateUserRequest request = new CreateUserRequest();
+            request.setEmail("spanish.user@example.com");
+            request.setDisplayName("Spanish User");
+            request.setRoles(List.of(Role.ADMIN));
+            request.setTemporaryPassword("Temp456!");
+
+            userAdminService.createUser(request);
+
+            verify(emailSender).sendUserInvitationEmail(
+                    eq("spanish.user@example.com"),
+                    eq("Spanish User"),
+                    eq("Temp456!"),
+                    eq(spanish));
+        } finally {
+            LocaleContextHolder.resetLocaleContext();
+        }
     }
 
     @Test

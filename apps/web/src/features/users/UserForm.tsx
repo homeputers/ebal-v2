@@ -159,7 +159,8 @@ export function UserCreateForm({
         </label>
         <input
           id="temporaryPassword"
-          type="text"
+          type="password"
+          autoComplete="new-password"
           {...register('temporaryPassword')}
           className="mt-1 w-full rounded border p-2"
         />
