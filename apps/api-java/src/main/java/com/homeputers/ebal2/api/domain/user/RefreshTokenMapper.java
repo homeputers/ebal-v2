@@ -4,11 +4,14 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Mapper
 public interface RefreshTokenMapper {
     RefreshToken findByToken(@Param("token") String token);
+
+    List<RefreshToken> findByUserId(@Param("userId") UUID userId);
 
     void insert(@Param("token") String token,
                 @Param("userId") UUID userId,

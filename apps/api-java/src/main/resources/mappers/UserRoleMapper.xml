@@ -18,9 +18,49 @@
         on conflict (user_id, role) do nothing
     </insert>
 
+    <resultMap id="userRoleResult" type="com.homeputers.ebal2.api.domain.user.UserRole">
+        <constructor>
+            <arg column="user_id" javaType="java.util.UUID"
+                 typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+            <arg column="role" javaType="java.lang.String"/>
+            <arg column="created_at" javaType="java.time.OffsetDateTime"/>
+        </constructor>
+    </resultMap>
+
     <delete id="delete">
         delete from user_roles
         where user_id = #{userId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
           and role = #{role}
     </delete>
+
+    <delete id="deleteByUserId">
+        delete from user_roles
+        where user_id = #{userId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </delete>
+
+    <select id="findByUserIds" resultMap="userRoleResult">
+        select user_id, role, created_at
+        from user_roles
+        where user_id in
+        <foreach item="id" collection="userIds" open="(" separator="," close=")">
+            #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+        </foreach>
+    </select>
+
+    <select id="countByRole" resultType="int">
+        select count(distinct ur.user_id)
+        from user_roles ur
+                 join users u on u.id = ur.user_id
+        where ur.role = #{role}
+          and u.is_active = true
+    </select>
+
+    <select id="countByRoleExcludingUser" resultType="int">
+        select count(distinct ur.user_id)
+        from user_roles ur
+                 join users u on u.id = ur.user_id
+        where ur.role = #{role}
+          and ur.user_id &lt;&gt; #{userId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+          and u.is_active = true
+    </select>
 </mapper>

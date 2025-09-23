@@ -16,6 +16,7 @@ import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -126,5 +127,26 @@ public class PasswordResetService {
             }
         }
         return Locale.ENGLISH;
+    }
+
+    public void sendPasswordResetForUser(UUID userId) {
+        if (userId == null) {
+            throw new NoSuchElementException("User not found");
+        }
+
+        User user = userMapper.findById(userId);
+        if (user == null || !user.isActive()) {
+            throw new NoSuchElementException("User not found");
+        }
+
+        OffsetDateTime now = OffsetDateTime.now();
+        passwordResetMapper.deleteExpired(now);
+
+        String token = UUID.randomUUID().toString();
+        OffsetDateTime expiresAt = now.plus(securityProperties.getPasswordReset().getTtl());
+        passwordResetMapper.insert(token, user.id(), expiresAt, now);
+
+        String resetUrl = buildResetUrl(token);
+        emailSender.sendPasswordResetEmail(user.email(), resetUrl, Locale.ENGLISH);
     }
 }
