@@ -146,6 +146,220 @@ paths:
                 $ref: '#/components/schemas/User'
         '401':
           description: Unauthorized
+  /me:
+    get:
+      tags:
+        - Profile
+      summary: Retrieve the signed-in user's profile
+      description: Returns profile details for the currently authenticated user.
+      operationId: getMyProfile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current profile information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyProfile'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+    patch:
+      tags:
+        - Profile
+      summary: Update the signed-in user's profile
+      description: Updates the display name or avatar preferences for the authenticated user.
+      operationId: updateMyProfile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMyProfileRequest'
+      responses:
+        '200':
+          description: Updated profile information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyProfile'
+        '400':
+          description: Invalid profile update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+  /me/avatar:
+    post:
+      tags:
+        - Profile
+      summary: Upload a new avatar for the signed-in user
+      description: Accepts a square image up to 2MB in PNG, JPEG, or WebP format. The server may crop or resize the image.
+      operationId: uploadMyAvatar
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Avatar image file (PNG, JPEG, or WebP, up to 2MB).
+      responses:
+        '200':
+          description: Avatar uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadAvatarResponse'
+        '400':
+          description: Invalid avatar upload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+    delete:
+      tags:
+        - Profile
+      summary: Remove the signed-in user's avatar
+      description: Deletes the current avatar image for the authenticated user.
+      operationId: deleteMyAvatar
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Avatar removed
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+  /me/change-password:
+    post:
+      tags:
+        - Profile
+      summary: Change the signed-in user's password
+      description: Alias of the change password flow requiring the current password.
+      operationId: changeMyPassword
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '204':
+          description: Password updated successfully
+        '400':
+          description: Invalid password change request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+  /me/change-email:
+    post:
+      tags:
+        - Profile
+      summary: Request an email change for the signed-in user
+      description: Sends a confirmation link to the new email address after validating the current password.
+      operationId: requestMyEmailChange
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeMyEmailRequest'
+      responses:
+        '204':
+          description: Email change initiated
+        '400':
+          description: Invalid email change request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '409':
+          description: Email already in use
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+  /me/confirm-email:
+    post:
+      tags:
+        - Profile
+      summary: Confirm a pending email change for the signed-in user
+      description: Consumes the confirmation token, applies the new email, and revokes existing refresh tokens.
+      operationId: confirmMyEmail
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmMyEmailRequest'
+      responses:
+        '204':
+          description: Email change confirmed
+        '400':
+          description: Invalid confirmation token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '409':
+          description: Email already in use
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
   /admin/users:
     get:
       tags:
@@ -1109,6 +1323,29 @@ components:
           description: High level status string for the storage module.
       example:
         status: enabled
+    ProblemDetail:
+      type: object
+      description: RFC 7807 problem details with optional application-specific fields.
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri
+        errors:
+          type: object
+          additionalProperties:
+            type: string
+        code:
+          type: string
     Role:
       type: string
       description: Role assigned to a user determining access level.
@@ -1131,6 +1368,33 @@ components:
             $ref: '#/components/schemas/Role'
         isActive:
           type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    MyProfile:
+      type: object
+      required: [id, email, displayName, roles, isActive, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        displayName:
+          type: string
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+        isActive:
+          type: boolean
+        avatarUrl:
+          type: string
+          format: uri
         createdAt:
           type: string
           format: date-time
@@ -1187,6 +1451,40 @@ components:
           type: string
         newPassword:
           type: string
+    UpdateMyProfileRequest:
+      type: object
+      properties:
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 120
+        avatarAction:
+          type: string
+          description: Action to take for the current avatar image.
+          enum: [KEEP, REMOVE]
+          default: KEEP
+    ChangeMyEmailRequest:
+      type: object
+      required: [currentPassword, newEmail]
+      properties:
+        currentPassword:
+          type: string
+        newEmail:
+          type: string
+          format: email
+    ConfirmMyEmailRequest:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+    UploadAvatarResponse:
+      type: object
+      required: [avatarUrl]
+      properties:
+        avatarUrl:
+          type: string
+          format: uri
     ForgotPasswordRequest:
       type: object
       required: [email]
