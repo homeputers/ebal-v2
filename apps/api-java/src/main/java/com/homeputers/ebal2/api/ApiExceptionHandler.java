@@ -5,11 +5,11 @@ import com.homeputers.ebal2.api.admin.user.LastAdminRemovalException;
 import com.homeputers.ebal2.api.auth.InvalidCredentialsException;
 import com.homeputers.ebal2.api.auth.InvalidPasswordResetTokenException;
 import com.homeputers.ebal2.api.auth.InvalidRefreshTokenException;
+import com.homeputers.ebal2.api.security.ProblemDetailHttpWriter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,68 +22,76 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
+    private final ProblemDetailHttpWriter problemDetailHttpWriter;
+
+    public ApiExceptionHandler(ProblemDetailHttpWriter problemDetailHttpWriter) {
+        this.problemDetailHttpWriter = problemDetailHttpWriter;
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ProblemDetail> handleValidation(MethodArgumentNotValidException ex) {
+    public void handleValidation(MethodArgumentNotValidException ex, HttpServletResponse response) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
         pd.setProperty("errors", errors);
-        return respond(pd);
+        respond(pd, response);
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ProblemDetail> handleNotFound(NoSuchElementException ex) {
+    public void handleNotFound(NoSuchElementException ex, HttpServletResponse response) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         pd.setDetail(ex.getMessage());
-        return respond(pd);
+        respond(pd, response);
     }
 
     @ExceptionHandler({InvalidCredentialsException.class, InvalidRefreshTokenException.class})
-    public ResponseEntity<ProblemDetail> handleUnauthorized(RuntimeException ex) {
+    public void handleUnauthorized(RuntimeException ex, HttpServletResponse response) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
         pd.setDetail(ex.getMessage());
-        return respond(pd);
+        respond(pd, response);
     }
 
     @ExceptionHandler(InvalidPasswordResetTokenException.class)
-    public ResponseEntity<ProblemDetail> handleInvalidPasswordResetToken(InvalidPasswordResetTokenException ex) {
+    public void handleInvalidPasswordResetToken(InvalidPasswordResetTokenException ex, HttpServletResponse response) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         pd.setDetail(ex.getMessage());
-        return respond(pd);
+        respond(pd, response);
     }
 
     @ExceptionHandler(DuplicateEmailException.class)
-    public ResponseEntity<ProblemDetail> handleDuplicateEmail(DuplicateEmailException ex) {
+    public void handleDuplicateEmail(DuplicateEmailException ex, HttpServletResponse response) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);
         pd.setDetail(ex.getMessage());
-        return respond(pd);
+        respond(pd, response);
     }
 
     @ExceptionHandler(OptimisticLockingFailureException.class)
-    public ResponseEntity<ProblemDetail> handleOptimisticLocking(OptimisticLockingFailureException ex) {
+    public void handleOptimisticLocking(OptimisticLockingFailureException ex, HttpServletResponse response) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);
         pd.setDetail(ex.getMessage());
-        return respond(pd);
+        respond(pd, response);
     }
 
     @ExceptionHandler(LastAdminRemovalException.class)
-    public ResponseEntity<ProblemDetail> handleLastAdmin(LastAdminRemovalException ex) {
+    public void handleLastAdmin(LastAdminRemovalException ex, HttpServletResponse response) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         pd.setDetail(ex.getMessage());
         pd.setProperty("code", LastAdminRemovalException.ERROR_CODE);
-        return respond(pd);
+        respond(pd, response);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ProblemDetail> handleIllegalArgument(IllegalArgumentException ex) {
+    public void handleIllegalArgument(IllegalArgumentException ex, HttpServletResponse response) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         pd.setDetail(ex.getMessage());
-        return respond(pd);
+        respond(pd, response);
     }
 
-    private ResponseEntity<ProblemDetail> respond(ProblemDetail pd) {
-        return ResponseEntity.status(pd.getStatus())
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(pd);
+    private void respond(ProblemDetail pd, HttpServletResponse response) {
+        try {
+            problemDetailHttpWriter.write(response, pd);
+        } catch (Exception ex) {
+            throw new IllegalStateException("Failed to write problem detail response", ex);
+        }
     }
 }
