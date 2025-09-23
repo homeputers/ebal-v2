@@ -6,13 +6,18 @@ import com.homeputers.ebal2.api.auth.InvalidCredentialsException;
 import com.homeputers.ebal2.api.auth.InvalidPasswordResetTokenException;
 import com.homeputers.ebal2.api.auth.InvalidRefreshTokenException;
 import org.springframework.dao.OptimisticLockingFailureException;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -72,7 +77,33 @@ public class ApiExceptionHandler {
             customizer.accept(problemDetail);
         }
         return ResponseEntity.status(status)
-                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .contentType(negotiateContentType())
                 .body(problemDetail);
+    }
+
+    private MediaType negotiateContentType() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
+            return MediaType.APPLICATION_PROBLEM_JSON;
+        }
+
+        HttpServletRequest request = attributes.getRequest();
+        String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
+        if (acceptHeader == null || acceptHeader.isBlank()) {
+            return MediaType.APPLICATION_PROBLEM_JSON;
+        }
+
+        var acceptedTypes = MediaType.parseMediaTypes(acceptHeader);
+        MediaType.sortBySpecificityAndQuality(acceptedTypes);
+        for (MediaType acceptedType : acceptedTypes) {
+            if (acceptedType.isCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON)) {
+                return MediaType.APPLICATION_PROBLEM_JSON;
+            }
+            if (acceptedType.includes(MediaType.APPLICATION_JSON) || acceptedType.isCompatibleWith(MediaType.APPLICATION_JSON)) {
+                return MediaType.APPLICATION_JSON;
+            }
+        }
+
+        return MediaType.APPLICATION_PROBLEM_JSON;
     }
 }
