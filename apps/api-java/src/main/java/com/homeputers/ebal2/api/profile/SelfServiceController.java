@@ -34,7 +34,7 @@ public class SelfServiceController implements ProfileApi {
     public ResponseEntity<MyProfile> getMyProfile() {
         return resolveUserId()
                 .map(userId -> ResponseEntity.ok(MyProfileDtoMapper.toDto(selfServiceService.getMyProfile(userId))))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<MyProfile>build());
     }
 
     @Override
@@ -44,14 +44,14 @@ public class SelfServiceController implements ProfileApi {
                     MyProfileView view = selfServiceService.updateMyProfile(userId, updateMyProfileRequest);
                     return ResponseEntity.ok(MyProfileDtoMapper.toDto(view));
                 })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<MyProfile>build());
     }
 
     @Override
     public ResponseEntity<UploadAvatarResponse> uploadMyAvatar(MultipartFile file) {
         return resolveUserId()
                 .map(userId -> ResponseEntity.ok(selfServiceService.uploadAvatar(userId, file)))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<UploadAvatarResponse>build());
     }
 
     @Override
@@ -61,7 +61,7 @@ public class SelfServiceController implements ProfileApi {
                     selfServiceService.removeAvatar(userId);
                     return ResponseEntity.noContent().build();
                 })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build());
     }
 
     @Override
@@ -71,7 +71,7 @@ public class SelfServiceController implements ProfileApi {
                     selfServiceService.changePassword(userId, changePasswordRequest);
                     return ResponseEntity.noContent().build();
                 })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build());
     }
 
     @Override
@@ -81,7 +81,7 @@ public class SelfServiceController implements ProfileApi {
                     selfServiceService.initiateEmailChange(userId, changeMyEmailRequest);
                     return ResponseEntity.noContent().build();
                 })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build());
     }
 
     @Override
@@ -91,7 +91,7 @@ public class SelfServiceController implements ProfileApi {
                     selfServiceService.confirmEmailChange(confirmMyEmailRequest.getToken());
                     return ResponseEntity.noContent().build();
                 })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build());
     }
 
     private Optional<UUID> resolveUserId() {

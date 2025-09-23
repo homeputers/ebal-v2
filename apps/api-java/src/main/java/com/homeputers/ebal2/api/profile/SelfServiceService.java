@@ -114,7 +114,7 @@ public class SelfServiceService {
             OffsetDateTime now = OffsetDateTime.now();
             userMapper.updateAvatar(userId, avatarUrl, now);
             UploadAvatarResponse response = new UploadAvatarResponse();
-            response.setAvatarUrl(avatarUrl);
+            response.setAvatarUrl(URI.create(avatarUrl));
             return response;
         } catch (IOException ex) {
             throw new IllegalStateException("Failed to store avatar", ex);

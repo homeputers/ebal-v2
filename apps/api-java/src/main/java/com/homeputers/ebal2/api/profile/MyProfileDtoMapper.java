@@ -3,6 +3,7 @@ package com.homeputers.ebal2.api.profile;
 import com.homeputers.ebal2.api.generated.model.MyProfile;
 import com.homeputers.ebal2.api.generated.model.Role;
 
+import java.net.URI;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -17,7 +18,11 @@ public final class MyProfileDtoMapper {
         dto.setId(view.id());
         dto.setEmail(view.email());
         dto.setDisplayName(view.displayName());
-        dto.setAvatarUrl(view.avatarUrl());
+        if (view.avatarUrl() != null) {
+            dto.setAvatarUrl(URI.create(view.avatarUrl()));
+        } else {
+            dto.setAvatarUrl(null);
+        }
         dto.setIsActive(view.isActive());
         dto.setCreatedAt(view.createdAt());
         dto.setUpdatedAt(view.updatedAt());
