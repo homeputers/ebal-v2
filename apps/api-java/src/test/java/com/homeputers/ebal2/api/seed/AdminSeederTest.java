@@ -53,10 +53,12 @@ class AdminSeederTest {
         verify(userMapper).findByEmail("admin@example.com");
         ArgumentCaptor<String> emailCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> displayNameCaptor = ArgumentCaptor.forClass(String.class);
-        verify(userMapper).insert(any(UUID.class), emailCaptor.capture(), displayNameCaptor.capture(),
+        ArgumentCaptor<String> avatarCaptor = ArgumentCaptor.forClass(String.class);
+        verify(userMapper).insert(any(UUID.class), emailCaptor.capture(), displayNameCaptor.capture(), avatarCaptor.capture(),
                 eq("encoded-secret"), eq(true), any(), any(), eq(0));
         assertThat(emailCaptor.getValue()).isEqualTo("admin@example.com");
         assertThat(displayNameCaptor.getValue()).isEqualTo("admin@example.com");
+        assertThat(avatarCaptor.getValue()).isNull();
         verify(userRoleMapper).insert(any(UUID.class), eq("ADMIN"), any());
         verify(passwordEncoder).encode("Secret123!");
     }
