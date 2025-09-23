@@ -64,7 +64,7 @@ export default function LoginPage() {
 
   const locationState = location.state as { from?: Location } | undefined;
   const fromLocation = locationState?.from;
-  const fallbackPath = language ? buildLanguagePath(language, 'members') : '/';
+  const fallbackPath = language ? buildLanguagePath(language, 'services') : '/';
   const redirectTo = fromLocation
     ? `${fromLocation.pathname}${fromLocation.search}${fromLocation.hash}`
     : fallbackPath;

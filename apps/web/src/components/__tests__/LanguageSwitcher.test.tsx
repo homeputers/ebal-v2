@@ -87,7 +87,7 @@ describe('LanguageSwitcher', () => {
   }) => {
     await changeLanguage(language);
 
-    renderLanguageSwitcher(language, `/${language}/members`);
+    renderLanguageSwitcher(language, `/${language}/services`);
 
     const button = screen.getByRole('button', { name: ariaLabel });
 
