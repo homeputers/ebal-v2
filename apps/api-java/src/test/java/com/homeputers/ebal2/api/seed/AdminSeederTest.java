@@ -65,7 +65,7 @@ class AdminSeederTest {
     void reactivatesAndAssignsRoleForExistingUser() throws Exception {
         UUID userId = UUID.randomUUID();
         OffsetDateTime createdAt = OffsetDateTime.now().minusDays(1);
-        User existing = new User(userId, "admin@example.com", null, "hash", false, createdAt, createdAt, 0);
+        User existing = new User(userId, "admin@example.com", null, null, "hash", false, createdAt, createdAt, 0);
         when(userMapper.findByEmail("admin@example.com")).thenReturn(existing);
         when(userRoleMapper.findRolesByUserId(userId)).thenReturn(List.of("VIEWER"));
 
@@ -85,7 +85,7 @@ class AdminSeederTest {
     void keepsExistingAdminUntouched() throws Exception {
         UUID userId = UUID.randomUUID();
         OffsetDateTime createdAt = OffsetDateTime.now().minusDays(2);
-        User existing = new User(userId, "admin@example.com", null, "hash", true, createdAt, createdAt, 0);
+        User existing = new User(userId, "admin@example.com", null, null, "hash", true, createdAt, createdAt, 0);
         when(userMapper.findByEmail("admin@example.com")).thenReturn(existing);
         when(userRoleMapper.findRolesByUserId(userId)).thenReturn(List.of("ADMIN", "PLANNER"));
 

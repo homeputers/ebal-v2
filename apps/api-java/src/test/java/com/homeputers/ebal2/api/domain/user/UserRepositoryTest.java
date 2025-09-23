@@ -39,9 +39,9 @@ class UserRepositoryTest extends AbstractIntegrationTest {
     void insertEnforcesCaseInsensitiveUniqueEmail() {
         String password = passwordEncoder.encode("Secret123!");
         UUID userId = UUID.randomUUID();
-        userMapper.insert(userId, "unique@example.com", "Unique", password, true, now, now, 0);
+        userMapper.insert(userId, "unique@example.com", "Unique", null, password, true, now, now, 0);
 
-        assertThatThrownBy(() -> userMapper.insert(UUID.randomUUID(), "UNIQUE@example.com", "Other", password,
+        assertThatThrownBy(() -> userMapper.insert(UUID.randomUUID(), "UNIQUE@example.com", "Other", null, password,
                 true, now, now, 0))
                 .isInstanceOf(DuplicateKeyException.class);
     }
@@ -49,7 +49,7 @@ class UserRepositoryTest extends AbstractIntegrationTest {
     @Test
     void persistsAndLoadsRoles() {
         UUID userId = UUID.randomUUID();
-        userMapper.insert(userId, "roles@example.com", "Roles", passwordEncoder.encode("Secret123!"), true, now, now, 0);
+        userMapper.insert(userId, "roles@example.com", "Roles", null, passwordEncoder.encode("Secret123!"), true, now, now, 0);
 
         userRoleMapper.insert(userId, "ADMIN", now);
         userRoleMapper.insert(userId, "PLANNER", now);
@@ -61,15 +61,15 @@ class UserRepositoryTest extends AbstractIntegrationTest {
     @Test
     void searchAppliesFilters() {
         UUID activeAdminId = UUID.randomUUID();
-        userMapper.insert(activeAdminId, "alice@example.com", "Alice", passwordEncoder.encode("Pass123!"), true, now, now, 0);
+        userMapper.insert(activeAdminId, "alice@example.com", "Alice", null, passwordEncoder.encode("Pass123!"), true, now, now, 0);
         userRoleMapper.insert(activeAdminId, "ADMIN", now);
 
         UUID inactivePlannerId = UUID.randomUUID();
-        userMapper.insert(inactivePlannerId, "bob@example.com", "Bob", passwordEncoder.encode("Pass123!"), false, now, now, 0);
+        userMapper.insert(inactivePlannerId, "bob@example.com", "Bob", null, passwordEncoder.encode("Pass123!"), false, now, now, 0);
         userRoleMapper.insert(inactivePlannerId, "PLANNER", now);
 
         UUID activeViewerId = UUID.randomUUID();
-        userMapper.insert(activeViewerId, "carol@example.com", "Carol", passwordEncoder.encode("Pass123!"), true, now, now, 0);
+        userMapper.insert(activeViewerId, "carol@example.com", "Carol", null, passwordEncoder.encode("Pass123!"), true, now, now, 0);
         userRoleMapper.insert(activeViewerId, "VIEWER", now);
 
         PageRequest pageable = PageRequest.of(0, 10);
@@ -93,7 +93,7 @@ class UserRepositoryTest extends AbstractIntegrationTest {
     @Test
     void updateHonorsOptimisticLocking() {
         UUID userId = UUID.randomUUID();
-        userMapper.insert(userId, "lock@example.com", "Lock", passwordEncoder.encode("Secret123!"), true, now, now, 0);
+        userMapper.insert(userId, "lock@example.com", "Lock", null, passwordEncoder.encode("Secret123!"), true, now, now, 0);
 
         User existing = userMapper.findById(userId);
         int updated = userMapper.updateUser(userId, "New Lock", false, OffsetDateTime.now(), existing.version());

@@ -9,6 +9,7 @@ public record User(
         UUID id,
         String email,
         String displayName,
+        String avatarUrl,
         String passwordHash,
         boolean isActive,
         OffsetDateTime createdAt,
@@ -21,6 +22,7 @@ public record User(
         }
         email = normalizeEmail(email);
         displayName = normalizeDisplayName(displayName, email);
+        avatarUrl = normalizeAvatarUrl(avatarUrl);
         if (createdAt == null) {
             createdAt = OffsetDateTime.now();
         }
@@ -52,6 +54,14 @@ public record User(
 
     private static boolean hasText(String value) {
         return value != null && !value.isBlank();
+    }
+
+    private static String normalizeAvatarUrl(String avatarUrl) {
+        if (avatarUrl == null) {
+            return null;
+        }
+        String value = avatarUrl.trim();
+        return value.isEmpty() ? null : value;
     }
 }
 

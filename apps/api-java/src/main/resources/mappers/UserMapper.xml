@@ -7,6 +7,7 @@
                    typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
             <arg column="email" javaType="java.lang.String"/>
             <arg column="display_name" javaType="java.lang.String"/>
+            <arg column="avatar_url" javaType="java.lang.String"/>
             <arg column="password_hash" javaType="java.lang.String"/>
             <arg column="is_active" javaType="_boolean"/>
             <arg column="created_at" javaType="java.time.OffsetDateTime"/>
@@ -16,23 +17,24 @@
     </resultMap>
 
     <select id="findById" resultMap="userResult">
-        select id, email, display_name, password_hash, is_active, created_at, updated_at, version
+        select id, email, display_name, avatar_url, password_hash, is_active, created_at, updated_at, version
         from users
         where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
     </select>
 
     <select id="findByEmail" resultMap="userResult">
-        select id, email, display_name, password_hash, is_active, created_at, updated_at, version
+        select id, email, display_name, avatar_url, password_hash, is_active, created_at, updated_at, version
         from users
         where email = #{email}
     </select>
 
     <insert id="insert">
-        insert into users (id, email, display_name, password_hash, is_active, created_at, updated_at, version)
+        insert into users (id, email, display_name, avatar_url, password_hash, is_active, created_at, updated_at, version)
         values (
             #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
             #{email},
             #{displayName},
+            #{avatarUrl},
             #{passwordHash},
             #{isActive},
             #{createdAt},
@@ -74,13 +76,37 @@
           and version = #{expectedVersion}
     </update>
 
+    <update id="updateDisplayName">
+        update users
+        set display_name = #{displayName},
+            updated_at = #{updatedAt},
+            version = version + 1
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
+    <update id="updateAvatar">
+        update users
+        set avatar_url = #{avatarUrl},
+            updated_at = #{updatedAt},
+            version = version + 1
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
+    <update id="updateEmail">
+        update users
+        set email = #{email},
+            updated_at = #{updatedAt},
+            version = version + 1
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
     <delete id="delete">
         delete from users
         where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
     </delete>
 
     <select id="search" resultMap="userResult">
-        select id, email, display_name, password_hash, is_active, created_at, updated_at, version
+        select id, email, display_name, avatar_url, password_hash, is_active, created_at, updated_at, version
         from users
         <where>
             <if test="query != null and query != ''">
