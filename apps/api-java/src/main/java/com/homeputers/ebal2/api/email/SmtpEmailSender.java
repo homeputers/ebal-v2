@@ -32,4 +32,20 @@ public class SmtpEmailSender implements EmailSender {
         message.setText(body);
         mailSender.send(message);
     }
+
+    @Override
+    public void sendUserInvitationEmail(String to, String displayName, String temporaryPassword, Locale locale) {
+        String subject = messageSource.getMessage("mail.user-invite.subject", new Object[]{displayName}, locale);
+        String body = messageSource.getMessage(
+                "mail.user-invite.body",
+                new Object[]{displayName, temporaryPassword, mailProperties.getFrontendBaseUrl()},
+                locale);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(mailProperties.getSmtp().getFromAddress());
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
+        mailSender.send(message);
+    }
 }

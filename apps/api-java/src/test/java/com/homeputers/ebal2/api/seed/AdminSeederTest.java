@@ -52,8 +52,11 @@ class AdminSeederTest {
 
         verify(userMapper).findByEmail("admin@example.com");
         ArgumentCaptor<String> emailCaptor = ArgumentCaptor.forClass(String.class);
-        verify(userMapper).insert(any(UUID.class), emailCaptor.capture(), eq("encoded-secret"), eq(true), any(), any());
+        ArgumentCaptor<String> displayNameCaptor = ArgumentCaptor.forClass(String.class);
+        verify(userMapper).insert(any(UUID.class), emailCaptor.capture(), displayNameCaptor.capture(),
+                eq("encoded-secret"), eq(true), any(), any(), eq(0));
         assertThat(emailCaptor.getValue()).isEqualTo("admin@example.com");
+        assertThat(displayNameCaptor.getValue()).isEqualTo("admin@example.com");
         verify(userRoleMapper).insert(any(UUID.class), eq("ADMIN"), any());
         verify(passwordEncoder).encode("Secret123!");
     }
@@ -62,7 +65,7 @@ class AdminSeederTest {
     void reactivatesAndAssignsRoleForExistingUser() throws Exception {
         UUID userId = UUID.randomUUID();
         OffsetDateTime createdAt = OffsetDateTime.now().minusDays(1);
-        User existing = new User(userId, "admin@example.com", "hash", false, createdAt, createdAt);
+        User existing = new User(userId, "admin@example.com", null, "hash", false, createdAt, createdAt, 0);
         when(userMapper.findByEmail("admin@example.com")).thenReturn(existing);
         when(userRoleMapper.findRolesByUserId(userId)).thenReturn(List.of("VIEWER"));
 
@@ -82,7 +85,7 @@ class AdminSeederTest {
     void keepsExistingAdminUntouched() throws Exception {
         UUID userId = UUID.randomUUID();
         OffsetDateTime createdAt = OffsetDateTime.now().minusDays(2);
-        User existing = new User(userId, "admin@example.com", "hash", true, createdAt, createdAt);
+        User existing = new User(userId, "admin@example.com", null, "hash", true, createdAt, createdAt, 0);
         when(userMapper.findByEmail("admin@example.com")).thenReturn(existing);
         when(userRoleMapper.findRolesByUserId(userId)).thenReturn(List.of("ADMIN", "PLANNER"));
 

@@ -1,5 +1,7 @@
 package com.homeputers.ebal2.api;
 
+import com.homeputers.ebal2.api.admin.user.DuplicateEmailException;
+import com.homeputers.ebal2.api.admin.user.LastAdminRemovalException;
 import com.homeputers.ebal2.api.auth.InvalidCredentialsException;
 import com.homeputers.ebal2.api.auth.InvalidPasswordResetTokenException;
 import com.homeputers.ebal2.api.auth.InvalidRefreshTokenException;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
+import org.springframework.dao.OptimisticLockingFailureException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
@@ -42,6 +46,35 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(InvalidPasswordResetTokenException.class)
     public ProblemDetail handleInvalidPasswordResetToken(InvalidPasswordResetTokenException ex) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        pd.setDetail(ex.getMessage());
+        return pd;
+    }
+
+    @ExceptionHandler(DuplicateEmailException.class)
+    public ProblemDetail handleDuplicateEmail(DuplicateEmailException ex) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        pd.setDetail(ex.getMessage());
+        return pd;
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ProblemDetail handleOptimisticLocking(OptimisticLockingFailureException ex) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        pd.setDetail(ex.getMessage());
+        return pd;
+    }
+
+    @ExceptionHandler(LastAdminRemovalException.class)
+    public ProblemDetail handleLastAdmin(LastAdminRemovalException ex) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        pd.setDetail(ex.getMessage());
+        pd.setProperty("code", LastAdminRemovalException.ERROR_CODE);
+        return pd;
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ProblemDetail handleIllegalArgument(IllegalArgumentException ex) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         pd.setDetail(ex.getMessage());
         return pd;

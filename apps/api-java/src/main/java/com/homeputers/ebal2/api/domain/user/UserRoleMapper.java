@@ -17,4 +17,13 @@ public interface UserRoleMapper {
 
     void delete(@Param("userId") UUID userId,
                 @Param("role") String role);
+
+    void deleteByUserId(@Param("userId") UUID userId);
+
+    List<UserRole> findByUserIds(@Param("userIds") List<UUID> userIds);
+
+    int countByRole(@Param("role") String role);
+
+    int countByRoleExcludingUser(@Param("role") String role,
+                                 @Param("userId") UUID userId);
 }

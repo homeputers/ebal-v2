@@ -34,9 +34,10 @@ public class TestAuthenticationHelper {
         User existing = userMapper.findByEmail(normalizedEmail);
         String passwordHash = passwordEncoder.encode(password);
 
+        String displayName = extractDisplayName(email);
         if (existing == null) {
             UUID userId = UUID.randomUUID();
-            userMapper.insert(userId, normalizedEmail, passwordHash, true, now, now);
+            userMapper.insert(userId, normalizedEmail, displayName, passwordHash, true, now, now, 0);
             assignRoles(userId, roles, now);
             return userId;
         }
@@ -76,5 +77,16 @@ public class TestAuthenticationHelper {
 
     private String normalizeRole(String role) {
         return role == null ? null : role.trim().toUpperCase(Locale.ROOT);
+    }
+
+    private String extractDisplayName(String email) {
+        if (email == null) {
+            return "";
+        }
+        int atIndex = email.indexOf('@');
+        if (atIndex > 0) {
+            return email.substring(0, atIndex);
+        }
+        return email;
     }
 }
