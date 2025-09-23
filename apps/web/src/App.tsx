@@ -34,22 +34,22 @@ export default function App() {
         <Routes>
           <Route element={<LanguageGuard />}> 
             <Route path=":lang"> 
-              <Route index element={<Navigate to="members" replace />} /> 
+              <Route index element={<Navigate to="services" replace />} />
               <Route path="login" element={<Login />} /> 
               <Route path="forgot-password" element={<ForgotPassword />} /> 
               <Route path="reset-password" element={<ResetPassword />} /> 
               <Route element={<ProtectedRoute redirectTo="../login" />}> 
                 <Route path="change-password" element={<ChangePassword />} /> 
-                <Route path="members" element={<Members />} /> 
-                <Route path="groups" element={<Groups />} /> 
-                <Route path="groups/:id" element={<GroupDetail />} /> 
-                <Route element={<RequireRole roles={['ADMIN', 'PLANNER']} />}> 
-                  <Route path="songs" element={<Songs />} /> 
-                  <Route path="songs/:id" element={<SongDetail />} /> 
-                  <Route path="song-sets" element={<SongSets />} /> 
-                  <Route path="song-sets/:id" element={<SongSetDetail />} /> 
-                  <Route path="services/:id" element={<ServiceDetail />} /> 
-                </Route> 
+                <Route element={<RequireRole roles={['ADMIN', 'PLANNER']} />}>
+                  <Route path="members" element={<Members />} />
+                  <Route path="groups" element={<Groups />} />
+                  <Route path="groups/:id" element={<GroupDetail />} />
+                  <Route path="songs" element={<Songs />} />
+                  <Route path="songs/:id" element={<SongDetail />} />
+                  <Route path="song-sets" element={<SongSets />} />
+                  <Route path="song-sets/:id" element={<SongSetDetail />} />
+                  <Route path="services/:id" element={<ServiceDetail />} />
+                </Route>
                 <Route path="services" element={<Services />} /> 
                 <Route path="services/:id/print" element={<ServicePrint />} /> 
                 <Route path="services/:id/plan" element={<ServicePlanView />} />
@@ -58,7 +58,7 @@ export default function App() {
                   <Route path="admin/users/new" element={<AdminUserCreate />} />
                   <Route path="admin/users/:id" element={<AdminUserDetail />} />
                 </Route>
-                <Route path="*" element={<Navigate to="members" replace />} />
+                <Route path="*" element={<Navigate to="services" replace />} />
               </Route>
             </Route>
           </Route> 
