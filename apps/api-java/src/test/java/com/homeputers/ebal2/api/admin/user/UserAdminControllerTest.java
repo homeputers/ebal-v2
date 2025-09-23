@@ -27,7 +27,9 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserAdminControllerTest extends AbstractIntegrationTest {
@@ -107,6 +109,35 @@ class UserAdminControllerTest extends AbstractIntegrationTest {
                 ProblemDetail.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    @Test
+    void createUserReturnsCreatedUser() {
+        AuthTokenPair adminTokens = authenticate(ADMIN_EMAIL, ADMIN_PASSWORD);
+        HttpHeaders headers = bearerHeaders(adminTokens.getAccessToken());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        CreateUserRequest request = new CreateUserRequest();
+        request.setEmail("New.User@Example.com");
+        request.setDisplayName("New User");
+        request.setTemporaryPassword("TempPass123!");
+        request.setRoles(List.of(Role.VIEWER));
+
+        ResponseEntity<User> response = restTemplate.exchange(
+                "/api/v1/admin/users",
+                HttpMethod.POST,
+                new HttpEntity<>(request, headers),
+                User.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        User body = response.getBody();
+        assertThat(body).isNotNull();
+        assertThat(body.getId()).isNotNull();
+        assertThat(body.getEmail()).isEqualTo("new.user@example.com");
+        assertThat(body.getDisplayName()).isEqualTo("New User");
+        assertThat(body.getRoles()).containsExactly(Role.VIEWER);
+
+        verify(emailSender).sendUserInvitationEmail(eq("new.user@example.com"), eq("New User"), eq("TempPass123!"), any());
     }
 
     @Test
