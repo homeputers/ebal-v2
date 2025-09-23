@@ -29,6 +29,11 @@ const links: NavLink[] = [
     labelKey: 'nav.services',
     roles: ['ADMIN', 'PLANNER', 'MUSICIAN', 'VIEWER'],
   },
+  {
+    path: 'admin/users',
+    labelKey: 'nav.adminUsers',
+    roles: ['ADMIN'],
+  },
 ];
 
 const makeHref = (language: string, path: string) =>

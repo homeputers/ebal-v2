@@ -115,3 +115,11 @@ The API provides a read-only iCalendar feed of upcoming services at
 to generate and distribute calendar links without granting write
 permissions.
 
+## Admin user management
+
+The web client includes an administrator-only user management console at
+`/:lang/admin/users`. Signed-in admins can filter and paginate the user
+directory, create accounts with optional temporary passwords, send reset
+emails, edit roles or activation state, and delete accounts when they are
+no longer needed.
+

@@ -23,6 +23,9 @@ const Login = lazy(() => import('@/routes/Login'));
 const ForgotPassword = lazy(() => import('@/routes/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/routes/ResetPassword'));
 const ChangePassword = lazy(() => import('@/routes/ChangePassword'));
+const AdminUsersList = lazy(() => import('@/routes/admin/AdminUsersList'));
+const AdminUserDetail = lazy(() => import('@/routes/admin/AdminUserDetail'));
+const AdminUserCreate = lazy(() => import('@/routes/admin/AdminUserCreate'));
 
 export default function App() {
   return (
@@ -49,11 +52,15 @@ export default function App() {
                 </Route> 
                 <Route path="services" element={<Services />} /> 
                 <Route path="services/:id/print" element={<ServicePrint />} /> 
-                <Route path="services/:id/plan" element={<ServicePlanView />} /> 
-                <Route path="admin/*" element={<RequireRole role="ADMIN" />} /> 
-                <Route path="*" element={<Navigate to="members" replace />} /> 
-              </Route> 
-            </Route> 
+                <Route path="services/:id/plan" element={<ServicePlanView />} />
+                <Route element={<RequireRole role="ADMIN" />}>
+                  <Route path="admin/users" element={<AdminUsersList />} />
+                  <Route path="admin/users/new" element={<AdminUserCreate />} />
+                  <Route path="admin/users/:id" element={<AdminUserDetail />} />
+                </Route>
+                <Route path="*" element={<Navigate to="members" replace />} />
+              </Route>
+            </Route>
           </Route> 
           <Route 
             path="*" 
