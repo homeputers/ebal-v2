@@ -38,4 +38,21 @@ class MessageLocalizationTest {
                 .contains("Reset your password")
                 .contains("https://example.com");
     }
+
+    @Test
+    void resolvesUserInviteContent() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:messages");
+        messageSource.setDefaultEncoding("UTF-8");
+
+        String subject = messageSource.getMessage("mail.user-invite.subject", new Object[]{"Taylor"}, Locale.ENGLISH);
+        String body = messageSource.getMessage("mail.user-invite.body",
+                new Object[]{"Taylor", "Temp123!", "https://app.example.com"}, Locale.ENGLISH);
+
+        assertThat(subject).contains("invited");
+        assertThat(body)
+                .contains("Taylor")
+                .contains("Temp123!")
+                .contains("https://app.example.com");
+    }
 }

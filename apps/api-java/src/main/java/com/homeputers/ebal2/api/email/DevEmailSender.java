@@ -29,4 +29,18 @@ public class DevEmailSender implements EmailSender {
         log.info("Password reset email subject: {}", subject);
         log.info("Password reset email body: {}", body);
     }
+
+    @Override
+    public void sendUserInvitationEmail(String to, String displayName, String temporaryPassword, Locale locale) {
+        String subject = messageSource.getMessage("mail.user-invite.subject", new Object[]{displayName}, locale);
+        String body = messageSource.getMessage(
+                "mail.user-invite.body",
+                new Object[]{displayName, temporaryPassword, mailProperties.getFrontendBaseUrl()},
+                locale);
+
+        log.info("Inviting user {} with locale {} via frontend {}.",
+                to, locale, mailProperties.getFrontendBaseUrl());
+        log.info("User invite email subject: {}", subject);
+        log.info("User invite email body: {}", body);
+    }
 }

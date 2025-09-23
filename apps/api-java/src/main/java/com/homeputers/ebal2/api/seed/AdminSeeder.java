@@ -66,7 +66,7 @@ public class AdminSeeder implements ApplicationRunner {
         UUID userId = UUID.randomUUID();
         String passwordHash = passwordEncoder.encode(adminPassword);
 
-        userMapper.insert(userId, normalizedEmail, passwordHash, true, now, now);
+        userMapper.insert(userId, normalizedEmail, normalizedEmail, passwordHash, true, now, now, 0);
         userRoleMapper.insert(userId, ADMIN_ROLE, now);
         log.info("Seeded default admin user {}", normalizedEmail);
     }

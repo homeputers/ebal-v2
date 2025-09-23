@@ -6,54 +6,133 @@
             <idArg column="id" javaType="java.util.UUID"
                    typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
             <arg column="email" javaType="java.lang.String"/>
+            <arg column="display_name" javaType="java.lang.String"/>
             <arg column="password_hash" javaType="java.lang.String"/>
             <arg column="is_active" javaType="_boolean"/>
             <arg column="created_at" javaType="java.time.OffsetDateTime"/>
             <arg column="updated_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="version" javaType="_int"/>
         </constructor>
     </resultMap>
 
     <select id="findById" resultMap="userResult">
-        select id, email, password_hash, is_active, created_at, updated_at
+        select id, email, display_name, password_hash, is_active, created_at, updated_at, version
         from users
         where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
     </select>
 
     <select id="findByEmail" resultMap="userResult">
-        select id, email, password_hash, is_active, created_at, updated_at
+        select id, email, display_name, password_hash, is_active, created_at, updated_at, version
         from users
-        where lower(email) = lower(#{email})
+        where email = #{email}
     </select>
 
     <insert id="insert">
-        insert into users (id, email, password_hash, is_active, created_at, updated_at)
+        insert into users (id, email, display_name, password_hash, is_active, created_at, updated_at, version)
         values (
             #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
             #{email},
+            #{displayName},
             #{passwordHash},
             #{isActive},
             #{createdAt},
-            #{updatedAt}
+            #{updatedAt},
+            #{version}
         )
     </insert>
 
     <update id="updatePassword">
         update users
         set password_hash = #{passwordHash},
-            updated_at = #{updatedAt}
+            updated_at = #{updatedAt},
+            version = version + 1
         where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
     </update>
 
     <update id="updateActive">
         update users
         set is_active = #{isActive},
-            updated_at = #{updatedAt}
+            updated_at = #{updatedAt},
+            version = version + 1
         where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
     </update>
 
     <update id="touch">
         update users
-        set updated_at = #{updatedAt}
+        set updated_at = #{updatedAt},
+            version = version + 1
         where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
     </update>
+
+    <update id="updateUser">
+        update users
+        set display_name = #{displayName},
+            is_active = #{isActive},
+            updated_at = #{updatedAt},
+            version = version + 1
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+          and version = #{expectedVersion}
+    </update>
+
+    <delete id="delete">
+        delete from users
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </delete>
+
+    <select id="search" resultMap="userResult">
+        select id, email, display_name, password_hash, is_active, created_at, updated_at, version
+        from users
+        <where>
+            <if test="query != null and query != ''">
+                (email ilike concat('%', #{query}, '%')
+                    or display_name ilike concat('%', #{query}, '%'))
+            </if>
+            <if test="role != null and role != ''">
+                <if test="query != null and query != ''">
+                    and
+                </if>
+                exists (
+                    select 1 from user_roles ur
+                    where ur.user_id = users.id
+                      and ur.role = #{role}
+                )
+            </if>
+            <if test="isActive != null">
+                <if test="(query != null and query != '') or (role != null and role != '')">
+                    and
+                </if>
+                users.is_active = #{isActive}
+            </if>
+        </where>
+        order by lower(display_name) asc, email asc
+        limit #{limit}
+        offset #{offset}
+    </select>
+
+    <select id="countSearch" resultType="int">
+        select count(*)
+        from users
+        <where>
+            <if test="query != null and query != ''">
+                (email ilike concat('%', #{query}, '%')
+                    or display_name ilike concat('%', #{query}, '%'))
+            </if>
+            <if test="role != null and role != ''">
+                <if test="query != null and query != ''">
+                    and
+                </if>
+                exists (
+                    select 1 from user_roles ur
+                    where ur.user_id = users.id
+                      and ur.role = #{role}
+                )
+            </if>
+            <if test="isActive != null">
+                <if test="(query != null and query != '') or (role != null and role != '')">
+                    and
+                </if>
+                users.is_active = #{isActive}
+            </if>
+        </where>
+    </select>
 </mapper>

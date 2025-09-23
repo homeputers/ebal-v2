@@ -20,6 +20,13 @@
         where token = #{token}
     </select>
 
+    <select id="findByUserId" resultMap="refreshTokenResult">
+        select token, user_id, expires_at, revoked_at, created_at, user_agent, ip_address
+        from refresh_tokens
+        where user_id = #{userId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+        order by created_at desc
+    </select>
+
     <insert id="insert">
         insert into refresh_tokens (token, user_id, expires_at, created_at, user_agent, ip_address)
         values (
