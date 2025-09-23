@@ -6,18 +6,13 @@ import com.homeputers.ebal2.api.auth.InvalidCredentialsException;
 import com.homeputers.ebal2.api.auth.InvalidPasswordResetTokenException;
 import com.homeputers.ebal2.api.auth.InvalidRefreshTokenException;
 import org.springframework.dao.OptimisticLockingFailureException;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -27,83 +22,61 @@ import java.util.stream.Collectors;
 public class ApiExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ProblemDetail> handleValidation(MethodArgumentNotValidException ex) {
+    public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
-        return respond(HttpStatus.BAD_REQUEST, problemDetail -> problemDetail.setProperty("errors", errors));
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setProperty("errors", errors);
+        return problemDetail;
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ProblemDetail> handleNotFound(NoSuchElementException ex) {
-        return respond(HttpStatus.NOT_FOUND, problemDetail -> problemDetail.setDetail(ex.getMessage()));
+    public ProblemDetail handleNotFound(NoSuchElementException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
     }
 
     @ExceptionHandler({InvalidCredentialsException.class, InvalidRefreshTokenException.class})
-    public ResponseEntity<ProblemDetail> handleUnauthorized(RuntimeException ex) {
-        return respond(HttpStatus.UNAUTHORIZED, problemDetail -> problemDetail.setDetail(ex.getMessage()));
+    public ProblemDetail handleUnauthorized(RuntimeException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
     }
 
     @ExceptionHandler(InvalidPasswordResetTokenException.class)
-    public ResponseEntity<ProblemDetail> handleInvalidPasswordResetToken(InvalidPasswordResetTokenException ex) {
-        return respond(HttpStatus.BAD_REQUEST, problemDetail -> problemDetail.setDetail(ex.getMessage()));
+    public ProblemDetail handleInvalidPasswordResetToken(InvalidPasswordResetTokenException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
     }
 
     @ExceptionHandler(DuplicateEmailException.class)
-    public ResponseEntity<ProblemDetail> handleDuplicateEmail(DuplicateEmailException ex) {
-        return respond(HttpStatus.CONFLICT, problemDetail -> problemDetail.setDetail(ex.getMessage()));
+    public ProblemDetail handleDuplicateEmail(DuplicateEmailException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
     }
 
     @ExceptionHandler(OptimisticLockingFailureException.class)
-    public ResponseEntity<ProblemDetail> handleOptimisticLocking(OptimisticLockingFailureException ex) {
-        return respond(HttpStatus.CONFLICT, problemDetail -> problemDetail.setDetail(ex.getMessage()));
+    public ProblemDetail handleOptimisticLocking(OptimisticLockingFailureException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
     }
 
     @ExceptionHandler(LastAdminRemovalException.class)
-    public ResponseEntity<ProblemDetail> handleLastAdmin(LastAdminRemovalException ex) {
-        return respond(HttpStatus.BAD_REQUEST, problemDetail -> {
-            problemDetail.setDetail(ex.getMessage());
-            problemDetail.setProperty("code", LastAdminRemovalException.ERROR_CODE);
-        });
+    public ProblemDetail handleLastAdmin(LastAdminRemovalException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setDetail(ex.getMessage());
+        problemDetail.setProperty("code", LastAdminRemovalException.ERROR_CODE);
+        return problemDetail;
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ProblemDetail> handleIllegalArgument(IllegalArgumentException ex) {
-        return respond(HttpStatus.BAD_REQUEST, problemDetail -> problemDetail.setDetail(ex.getMessage()));
-    }
-
-    private ResponseEntity<ProblemDetail> respond(HttpStatus status, java.util.function.Consumer<ProblemDetail> customizer) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(status);
-        if (customizer != null) {
-            customizer.accept(problemDetail);
-        }
-        return ResponseEntity.status(status)
-                .contentType(negotiateContentType())
-                .body(problemDetail);
-    }
-
-    private MediaType negotiateContentType() {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attributes == null) {
-            return MediaType.APPLICATION_PROBLEM_JSON;
-        }
-
-        HttpServletRequest request = attributes.getRequest();
-        String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
-        if (acceptHeader == null || acceptHeader.isBlank()) {
-            return MediaType.APPLICATION_PROBLEM_JSON;
-        }
-
-        var acceptedTypes = MediaType.parseMediaTypes(acceptHeader);
-        MediaType.sortBySpecificityAndQuality(acceptedTypes);
-        for (MediaType acceptedType : acceptedTypes) {
-            if (acceptedType.isCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON)) {
-                return MediaType.APPLICATION_PROBLEM_JSON;
-            }
-            if (acceptedType.includes(MediaType.APPLICATION_JSON) || acceptedType.isCompatibleWith(MediaType.APPLICATION_JSON)) {
-                return MediaType.APPLICATION_JSON;
-            }
-        }
-
-        return MediaType.APPLICATION_PROBLEM_JSON;
+    public ProblemDetail handleIllegalArgument(IllegalArgumentException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
     }
 }

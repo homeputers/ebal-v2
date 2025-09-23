@@ -21,8 +21,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,11 +61,11 @@ class UserAdminControllerTest extends AbstractIntegrationTest {
         AuthTokenPair viewerTokens = authenticate("viewer-only@example.com", "Viewer123!");
 
         HttpHeaders headers = bearerHeaders(viewerTokens.getAccessToken());
-        ResponseEntity<ProblemDetail> response = restTemplate.exchange(
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 "/api/v1/admin/users",
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
-                ProblemDetail.class);
+                new ParameterizedTypeReference<Map<String, Object>>() {});
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
@@ -102,11 +104,11 @@ class UserAdminControllerTest extends AbstractIntegrationTest {
         request.setDisplayName("Existing");
         request.setRoles(List.of(Role.VIEWER));
 
-        ResponseEntity<ProblemDetail> response = restTemplate.exchange(
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 "/api/v1/admin/users",
                 HttpMethod.POST,
                 new HttpEntity<>(request, headers),
-                ProblemDetail.class);
+                new ParameterizedTypeReference<Map<String, Object>>() {});
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
     }
@@ -145,11 +147,11 @@ class UserAdminControllerTest extends AbstractIntegrationTest {
         AuthTokenPair adminTokens = authenticate(ADMIN_EMAIL, ADMIN_PASSWORD);
         HttpHeaders headers = bearerHeaders(adminTokens.getAccessToken());
 
-        ResponseEntity<ProblemDetail> response = restTemplate.exchange(
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 "/api/v1/admin/users/" + UUID.randomUUID(),
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
-                ProblemDetail.class);
+                new ParameterizedTypeReference<Map<String, Object>>() {});
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
