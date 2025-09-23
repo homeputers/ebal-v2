@@ -32,66 +32,78 @@ public class SelfServiceController implements ProfileApi {
 
     @Override
     public ResponseEntity<MyProfile> getMyProfile() {
-        return resolveUserId()
-                .map(userId -> ResponseEntity.ok(MyProfileDtoMapper.toDto(selfServiceService.getMyProfile(userId))))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<MyProfile>build());
+        Optional<UUID> userId = resolveUserId();
+        if (userId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).<MyProfile>build();
+        }
+
+        MyProfileView view = selfServiceService.getMyProfile(userId.get());
+        return ResponseEntity.ok(MyProfileDtoMapper.toDto(view));
     }
 
     @Override
     public ResponseEntity<MyProfile> updateMyProfile(UpdateMyProfileRequest updateMyProfileRequest) {
-        return resolveUserId()
-                .map(userId -> {
-                    MyProfileView view = selfServiceService.updateMyProfile(userId, updateMyProfileRequest);
-                    return ResponseEntity.ok(MyProfileDtoMapper.toDto(view));
-                })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<MyProfile>build());
+        Optional<UUID> userId = resolveUserId();
+        if (userId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).<MyProfile>build();
+        }
+
+        MyProfileView view = selfServiceService.updateMyProfile(userId.get(), updateMyProfileRequest);
+        return ResponseEntity.ok(MyProfileDtoMapper.toDto(view));
     }
 
     @Override
     public ResponseEntity<UploadAvatarResponse> uploadMyAvatar(MultipartFile file) {
-        return resolveUserId()
-                .map(userId -> ResponseEntity.ok(selfServiceService.uploadAvatar(userId, file)))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<UploadAvatarResponse>build());
+        Optional<UUID> userId = resolveUserId();
+        if (userId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).<UploadAvatarResponse>build();
+        }
+
+        return ResponseEntity.ok(selfServiceService.uploadAvatar(userId.get(), file));
     }
 
     @Override
     public ResponseEntity<Void> deleteMyAvatar() {
-        return resolveUserId()
-                .map(userId -> {
-                    selfServiceService.removeAvatar(userId);
-                    return ResponseEntity.<Void>noContent().build();
-                })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build());
+        Optional<UUID> userId = resolveUserId();
+        if (userId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build();
+        }
+
+        selfServiceService.removeAvatar(userId.get());
+        return ResponseEntity.noContent().build();
     }
 
     @Override
     public ResponseEntity<Void> changeMyPassword(ChangePasswordRequest changePasswordRequest) {
-        return resolveUserId()
-                .map(userId -> {
-                    selfServiceService.changePassword(userId, changePasswordRequest);
-                    return ResponseEntity.<Void>noContent().build();
-                })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build());
+        Optional<UUID> userId = resolveUserId();
+        if (userId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build();
+        }
+
+        selfServiceService.changePassword(userId.get(), changePasswordRequest);
+        return ResponseEntity.noContent().build();
     }
 
     @Override
     public ResponseEntity<Void> requestMyEmailChange(ChangeMyEmailRequest changeMyEmailRequest) {
-        return resolveUserId()
-                .map(userId -> {
-                    selfServiceService.initiateEmailChange(userId, changeMyEmailRequest);
-                    return ResponseEntity.<Void>noContent().build();
-                })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build());
+        Optional<UUID> userId = resolveUserId();
+        if (userId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build();
+        }
+
+        selfServiceService.initiateEmailChange(userId.get(), changeMyEmailRequest);
+        return ResponseEntity.noContent().build();
     }
 
     @Override
     public ResponseEntity<Void> confirmMyEmail(ConfirmMyEmailRequest confirmMyEmailRequest) {
-        return resolveUserId()
-                .map(userId -> {
-                    selfServiceService.confirmEmailChange(confirmMyEmailRequest.getToken());
-                    return ResponseEntity.<Void>noContent().build();
-                })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build());
+        Optional<UUID> userId = resolveUserId();
+        if (userId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build();
+        }
+
+        selfServiceService.confirmEmailChange(confirmMyEmailRequest.getToken());
+        return ResponseEntity.noContent().build();
     }
 
     private Optional<UUID> resolveUserId() {
