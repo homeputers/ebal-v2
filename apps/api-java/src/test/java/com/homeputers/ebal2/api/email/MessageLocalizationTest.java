@@ -40,7 +40,23 @@ class MessageLocalizationTest {
     }
 
     @Test
-    void resolvesUserInviteContent() {
+    void resolvesSpanishContentWhenLocaleIsSpanish() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:messages");
+        messageSource.setDefaultEncoding("UTF-8");
+
+        Locale spanish = Locale.forLanguageTag("es-MX");
+        String subject = messageSource.getMessage("mail.password-reset.subject", null, spanish);
+        String body = messageSource.getMessage("mail.password-reset.body", new Object[]{"https://example.com"}, spanish);
+
+        assertThat(subject).isEqualTo("Restablece tu contraseña");
+        assertThat(body)
+                .contains("Hemos recibido una solicitud")
+                .contains("https://example.com");
+    }
+
+    @Test
+    void resolvesEnglishUserInviteContent() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:messages");
         messageSource.setDefaultEncoding("UTF-8");
@@ -54,5 +70,24 @@ class MessageLocalizationTest {
                 .contains("Taylor")
                 .contains("Temp123!")
                 .contains("https://app.example.com");
+    }
+
+    @Test
+    void resolvesSpanishUserInviteContent() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:messages");
+        messageSource.setDefaultEncoding("UTF-8");
+
+        Locale spanish = Locale.forLanguageTag("es-MX");
+        String subject = messageSource.getMessage("mail.user-invite.subject", new Object[]{"Taylor"}, spanish);
+        String body = messageSource.getMessage("mail.user-invite.body",
+                new Object[]{"Taylor", "Temp123!", "https://app.example.com"}, spanish);
+
+        assertThat(subject).isEqualTo("Te han invitado a Every Breath And Life");
+        assertThat(body)
+                .contains("Hola Taylor")
+                .contains("Temp123!")
+                .contains("https://app.example.com")
+                .contains("cambia tu contraseña");
     }
 }

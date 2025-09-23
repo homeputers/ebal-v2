@@ -11,6 +11,7 @@ import com.homeputers.ebal2.api.generated.model.CreateUserRequest;
 import com.homeputers.ebal2.api.generated.model.UpdateUserRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
@@ -122,7 +123,8 @@ public class UserAdminService {
             userRoleMapper.insert(candidate.id(), role, now);
         }
 
-        emailSender.sendUserInvitationEmail(candidate.email(), candidate.displayName(), temporaryPassword, DEFAULT_LOCALE);
+        Locale invitationLocale = resolveLocale();
+        emailSender.sendUserInvitationEmail(candidate.email(), candidate.displayName(), temporaryPassword, invitationLocale);
 
         logAdminAction("CREATE", candidate.id());
         return new AdminUser(candidate, normalizedRoles);
@@ -317,6 +319,14 @@ public class UserAdminService {
                 throw new LastAdminRemovalException();
             }
         }
+    }
+
+    private Locale resolveLocale() {
+        Locale locale = LocaleContextHolder.getLocale();
+        if (locale == null || !StringUtils.hasText(locale.getLanguage())) {
+            return DEFAULT_LOCALE;
+        }
+        return locale;
     }
 
     private void logAdminAction(String action, UUID targetUserId) {
