@@ -59,7 +59,7 @@ public class SelfServiceController implements ProfileApi {
         return resolveUserId()
                 .map(userId -> {
                     selfServiceService.removeAvatar(userId);
-                    return ResponseEntity.noContent().build();
+                    return ResponseEntity.<Void>noContent().build();
                 })
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build());
     }
@@ -69,7 +69,7 @@ public class SelfServiceController implements ProfileApi {
         return resolveUserId()
                 .map(userId -> {
                     selfServiceService.changePassword(userId, changePasswordRequest);
-                    return ResponseEntity.noContent().build();
+                    return ResponseEntity.<Void>noContent().build();
                 })
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build());
     }
@@ -79,7 +79,7 @@ public class SelfServiceController implements ProfileApi {
         return resolveUserId()
                 .map(userId -> {
                     selfServiceService.initiateEmailChange(userId, changeMyEmailRequest);
-                    return ResponseEntity.noContent().build();
+                    return ResponseEntity.<Void>noContent().build();
                 })
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build());
     }
@@ -89,7 +89,7 @@ public class SelfServiceController implements ProfileApi {
         return resolveUserId()
                 .map(userId -> {
                     selfServiceService.confirmEmailChange(confirmMyEmailRequest.getToken());
-                    return ResponseEntity.noContent().build();
+                    return ResponseEntity.<Void>noContent().build();
                 })
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build());
     }
