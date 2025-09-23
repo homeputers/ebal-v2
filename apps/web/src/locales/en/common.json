@@ -8,6 +8,7 @@
     "members": "Members",
     "groups": "Groups",
     "songSets": "Song Sets",
+    "adminUsers": "User Management",
     "logout": "Log out"
   },
   "actions": {

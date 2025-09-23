@@ -73,11 +73,25 @@ describe('Navbar', () => {
   it.each([
     {
       language: 'en',
-      labels: ['Members', 'Groups', 'Songs', 'Song Sets', 'Services'],
+      labels: [
+        'Members',
+        'Groups',
+        'Songs',
+        'Song Sets',
+        'Services',
+        'User Management',
+      ],
     },
     {
       language: 'es',
-      labels: ['Miembros', 'Grupos', 'Canciones', 'Listas de canciones', 'Servicios'],
+      labels: [
+        'Miembros',
+        'Grupos',
+        'Canciones',
+        'Listas de canciones',
+        'Servicios',
+        'Gestión de usuarios',
+      ],
     },
   ])('renders translated navigation labels for $language', async ({
     language,
@@ -104,6 +118,29 @@ describe('Navbar', () => {
     expect(screen.queryByRole('link', { name: 'Songs' })).not.toBeInTheDocument();
     expect(
       screen.queryByRole('link', { name: 'Song Sets' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: 'User Management' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows admin-only links only for admin role', async () => {
+    setActiveRoles(['ADMIN']);
+    mockUseAuth.mockClear();
+
+    await renderNavbar('en');
+
+    expect(
+      screen.getByRole('link', { name: 'User Management' }),
+    ).toBeInTheDocument();
+
+    setActiveRoles(['PLANNER']);
+    mockUseAuth.mockClear();
+
+    await renderNavbar('en');
+
+    expect(
+      screen.queryByRole('link', { name: 'User Management' }),
     ).not.toBeInTheDocument();
   });
 

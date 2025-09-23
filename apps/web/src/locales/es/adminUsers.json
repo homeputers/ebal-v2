@@ -1,0 +1,76 @@
+{
+  "page": {
+    "title": "Gestión de usuarios",
+    "createTitle": "Crear usuario",
+    "detailTitle": "Editar usuario"
+  },
+  "filters": {
+    "searchPlaceholder": "Buscar por nombre o correo",
+    "role": {
+      "label": "Rol",
+      "any": "Todos los roles"
+    },
+    "status": {
+      "label": "Estado",
+      "any": "Todos los estados",
+      "active": "Activo",
+      "inactive": "Inactivo"
+    }
+  },
+  "list": {
+    "empty": "No se encontraron usuarios.",
+    "count": "{{count}} usuarios",
+    "createButton": "Nuevo usuario"
+  },
+  "table": {
+    "email": "Correo electrónico",
+    "displayName": "Nombre para mostrar",
+    "roles": "Roles",
+    "isActive": "¿Activo?",
+    "createdAt": "Creado",
+    "updatedAt": "Actualizado"
+  },
+  "actions": {
+    "view": "Ver / Editar",
+    "resetPassword": "Restablecer contraseña",
+    "deactivate": "Desactivar",
+    "activate": "Activar",
+    "delete": "Eliminar"
+  },
+  "form": {
+    "email": "Correo electrónico",
+    "displayName": "Nombre para mostrar",
+    "roles": "Roles",
+    "isActive": "Activo",
+    "temporaryPassword": "Contraseña temporal",
+    "temporaryPasswordHelp": "Contraseña temporal opcional para enviar por correo al usuario."
+  },
+  "detail": {
+    "heading": "Usuario",
+    "resetPasswordConfirm": "¿Enviar un correo de restablecimiento de contraseña a {{email}}?",
+    "deleteConfirm": "¿Seguro que quieres eliminar a este usuario? Esta acción no se puede deshacer."
+  },
+  "create": {
+    "heading": "Crear usuario"
+  },
+  "messages": {
+    "resetPasswordSuccess": "Correo de restablecimiento enviado.",
+    "resetPasswordError": "No se pudo enviar el restablecimiento de contraseña.",
+    "updateSuccess": "Usuario actualizado.",
+    "updateError": "No se pudo actualizar el usuario.",
+    "deleteSuccess": "Usuario eliminado.",
+    "deleteError": "No se pudo eliminar el usuario.",
+    "createSuccess": "Usuario creado.",
+    "createError": "No se pudo crear el usuario."
+  },
+  "roles": {
+    "ADMIN": "Administrador",
+    "PLANNER": "Planificador",
+    "MUSICIAN": "Músico",
+    "VIEWER": "Observador"
+  },
+  "status": {
+    "active": "Activo",
+    "inactive": "Inactivo"
+  }
+}

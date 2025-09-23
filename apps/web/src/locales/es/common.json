@@ -8,6 +8,7 @@
     "members": "Miembros",
     "groups": "Grupos",
     "songSets": "Listas de canciones",
+    "adminUsers": "Gestión de usuarios",
     "logout": "Cerrar sesión"
   },
   "actions": {
