@@ -101,6 +101,24 @@ class AuthControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void loginRejectsInvalidCredentials() {
+        authenticationHelper.ensureUser(EMAIL, PASSWORD, List.of("PLANNER"));
+
+        AuthLoginRequest invalidRequest = new AuthLoginRequest();
+        invalidRequest.setEmail(EMAIL);
+        invalidRequest.setPassword("WrongPassword!");
+
+        ResponseEntity<ProblemDetail> response = restTemplate.postForEntity(
+                "/api/v1/auth/login",
+                invalidRequest,
+                ProblemDetail.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getDetail()).isEqualTo("Invalid email or password.");
+    }
+
+    @Test
     void refreshRotatesTokensAndRevokesOldRefreshToken() {
         authenticationHelper.ensureUser(EMAIL, PASSWORD, List.of("PLANNER"));
         AuthTokenPair initialTokens = authenticate(EMAIL, PASSWORD);
@@ -124,6 +142,44 @@ class AuthControllerTest extends AbstractIntegrationTest {
                 ProblemDetail.class);
 
         assertThat(reuseResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void refreshRejectsUnknownToken() {
+        authenticationHelper.ensureUser(EMAIL, PASSWORD, List.of("PLANNER"));
+
+        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest();
+        refreshTokenRequest.setRefreshToken(UUID.randomUUID().toString());
+
+        ResponseEntity<ProblemDetail> response = restTemplate.postForEntity(
+                "/api/v1/auth/refresh",
+                refreshTokenRequest,
+                ProblemDetail.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getDetail()).isEqualTo("Refresh token is invalid or has expired.");
+    }
+
+    @Test
+    void refreshRejectsExpiredToken() {
+        authenticationHelper.ensureUser(EMAIL, PASSWORD, List.of("PLANNER"));
+        AuthTokenPair tokens = authenticate(EMAIL, PASSWORD);
+
+        OffsetDateTime expiredAt = OffsetDateTime.now().minusMinutes(5);
+        jdbcTemplate.update("update refresh_tokens set expires_at = ? where token = ?", expiredAt, tokens.getRefreshToken());
+
+        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest();
+        refreshTokenRequest.setRefreshToken(tokens.getRefreshToken());
+
+        ResponseEntity<ProblemDetail> response = restTemplate.postForEntity(
+                "/api/v1/auth/refresh",
+                refreshTokenRequest,
+                ProblemDetail.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getDetail()).isEqualTo("Refresh token is invalid or has expired.");
     }
 
     @Test
