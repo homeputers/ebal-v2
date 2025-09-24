@@ -201,7 +201,10 @@ const AUTH_RETRY_BYPASS_ENDPOINTS = [
   ...SENSITIVE_AUTH_ENDPOINTS,
 ] as const;
 
+const AUTH_RETRY_LOGOUT_ENDPOINTS = ['/auth/refresh'] as const;
+
 const shouldBypassAuthRetry = createEndpointMatcher(AUTH_RETRY_BYPASS_ENDPOINTS);
+const shouldClearTokensOnBypass = createEndpointMatcher(AUTH_RETRY_LOGOUT_ENDPOINTS);
 
 const attachAuthInterceptors = (instance: AxiosInstance): AxiosInstance => {
   instance.interceptors.request.use((config) => {
@@ -227,8 +230,15 @@ const attachAuthInterceptors = (instance: AxiosInstance): AxiosInstance => {
 
       const originalRequest = config as AuthenticatedRequestConfig;
 
-      if (originalRequest._retry || shouldBypassAuthRetry(originalRequest.url)) {
+      if (originalRequest._retry) {
         clearAuthTokens();
+        return Promise.reject(error);
+      }
+
+      if (shouldBypassAuthRetry(originalRequest.url)) {
+        if (shouldClearTokensOnBypass(originalRequest.url)) {
+          clearAuthTokens();
+        }
         return Promise.reject(error);
       }
 

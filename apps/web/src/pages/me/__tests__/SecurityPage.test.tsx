@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { AxiosError } from 'axios';
 import { I18nextProvider } from 'react-i18next';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -116,5 +117,53 @@ describe('SecurityPage', () => {
     expect(
       await screen.findByText('We sent a confirmation link to new@example.com.'),
     ).toBeInTheDocument();
+  });
+
+  it('surfaces invalid credentials when email change fails with 401', async () => {
+    changeEmailMock.mockRejectedValueOnce(
+      new AxiosError(
+        'Unauthorized',
+        '401',
+        { headers: {} } as never,
+        undefined,
+        {
+          data: { detail: 'Invalid email or password.' },
+          status: 401,
+          statusText: 'Unauthorized',
+          headers: {},
+          config: { headers: {} } as never,
+        },
+      ),
+    );
+
+    renderPage();
+
+    const emailForm = screen
+      .getByRole('heading', { name: 'Change email' })
+      .closest('form');
+    expect(emailForm).not.toBeNull();
+
+    const currentPassword = within(emailForm!).getByLabelText('Current password', {
+      selector: 'input',
+    });
+    const newEmail = within(emailForm!).getByLabelText('New email', { selector: 'input' });
+    const submitButton = within(emailForm!).getByRole('button', { name: 'Request change' });
+
+    fireEvent.change(currentPassword, { target: { value: 'wrong-pass' } });
+    fireEvent.change(newEmail, { target: { value: 'new@example.com' } });
+
+    await act(async () => {
+      submitButton.click();
+    });
+
+    expect(changeEmailMock).toHaveBeenCalledWith({
+      currentPassword: 'wrong-pass',
+      newEmail: 'new@example.com',
+    });
+
+    expect(
+      await within(emailForm!).findByText('Invalid email or password.'),
+    ).toBeInTheDocument();
+    expect(logoutMock).not.toHaveBeenCalled();
   });
 });

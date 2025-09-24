@@ -42,7 +42,8 @@
       },
       "submit": "Actualizar contraseña",
       "success": "Contraseña actualizada. Vuelve a iniciar sesión.",
-      "error": "No se pudo actualizar la contraseña."
+      "error": "No se pudo actualizar la contraseña.",
+      "invalidCredentials": "Correo o contraseña no válidos."
     },
     "email": {
       "title": "Cambiar correo",
@@ -53,7 +54,8 @@
       },
       "submit": "Solicitar cambio",
       "success": "Enviamos un enlace de confirmación a {{email}}.",
-      "error": "No se pudo cambiar el correo."
+      "error": "No se pudo cambiar el correo.",
+      "invalidCredentials": "Correo o contraseña no válidos."
     },
     "toastReauth": "Vuelve a iniciar sesión."
   },

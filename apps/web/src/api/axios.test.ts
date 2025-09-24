@@ -215,6 +215,6 @@ describe('axios auth interceptor', () => {
 
     expect(adapter).toHaveBeenCalledTimes(1);
     expect(postSpy).toHaveBeenCalledTimes(1);
-    expect(auth.getAuthTokens()).toBeNull();
+    expect(auth.getAuthTokens()).toMatchObject({ accessToken: tokenPair.accessToken });
   });
 });

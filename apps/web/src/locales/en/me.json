@@ -42,7 +42,8 @@
       },
       "submit": "Update password",
       "success": "Password updated. Please sign in again.",
-      "error": "Unable to update password."
+      "error": "Unable to update password.",
+      "invalidCredentials": "Invalid email or password."
     },
     "email": {
       "title": "Change email",
@@ -53,7 +54,8 @@
       },
       "submit": "Request change",
       "success": "We sent a confirmation link to {{email}}.",
-      "error": "Unable to change email."
+      "error": "Unable to change email.",
+      "invalidCredentials": "Invalid email or password."
     },
     "toastReauth": "Please sign in again."
   },

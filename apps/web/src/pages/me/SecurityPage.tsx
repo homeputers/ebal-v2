@@ -73,6 +73,7 @@ export default function SecurityPage() {
     register: registerPassword,
     handleSubmit: handlePasswordSubmit,
     formState: { errors: passwordErrors, isSubmitting: isPasswordSubmitting },
+    setError: setPasswordError,
     reset: resetPasswordForm,
   } = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
@@ -86,6 +87,7 @@ export default function SecurityPage() {
     register: registerEmail,
     handleSubmit: handleEmailSubmit,
     formState: { errors: emailErrors, isSubmitting: isEmailSubmitting },
+    setError: setEmailError,
     reset: resetEmailForm,
   } = useForm<EmailFormValues>({
     resolver: zodResolver(emailSchema),
@@ -106,10 +108,24 @@ export default function SecurityPage() {
       logout();
       navigate(`/${language}/login`, { replace: true });
     } catch (error) {
-      const message = isAxiosError(error)
-        ? error.response?.data?.message ?? error.response?.data?.error
-        : null;
-      toast.error(message ?? t('security.password.error'));
+      if (isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          const message = t('security.password.invalidCredentials');
+          setPasswordError('currentPassword', { type: 'server', message });
+          toast.error(message);
+          return;
+        }
+
+        const responseData = error.response?.data as
+          | { detail?: string; message?: string; error?: string }
+          | undefined;
+        const problemDetail = responseData?.detail ?? responseData?.message ?? responseData?.error ?? null;
+
+        toast.error(problemDetail ?? t('security.password.error'));
+        return;
+      }
+
+      toast.error(t('security.password.error'));
     }
   });
 
@@ -123,10 +139,24 @@ export default function SecurityPage() {
       resetEmailForm();
       setEmailNotice(t('security.email.success', { email: values.newEmail }));
     } catch (error) {
-      const message = isAxiosError(error)
-        ? error.response?.data?.message ?? error.response?.data?.error
-        : null;
-      toast.error(message ?? t('security.email.error'));
+      if (isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          const message = t('security.email.invalidCredentials');
+          setEmailError('currentPassword', { type: 'server', message });
+          toast.error(message);
+          return;
+        }
+
+        const responseData = error.response?.data as
+          | { detail?: string; message?: string; error?: string }
+          | undefined;
+        const problemDetail = responseData?.detail ?? responseData?.message ?? responseData?.error ?? null;
+
+        toast.error(problemDetail ?? t('security.email.error'));
+        return;
+      }
+
+      toast.error(t('security.email.error'));
     }
   });
 
