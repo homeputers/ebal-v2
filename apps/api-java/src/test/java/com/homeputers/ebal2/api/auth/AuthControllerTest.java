@@ -101,6 +101,23 @@ class AuthControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void loginRejectsInvalidCredentials() {
+        authenticationHelper.ensureUser(EMAIL, PASSWORD, List.of("PLANNER"));
+
+        AuthLoginRequest invalidRequest = new AuthLoginRequest();
+        invalidRequest.setEmail(EMAIL);
+        invalidRequest.setPassword("WrongPassword!");
+
+        ResponseEntity<ProblemDetail> response = postProblemDetail(
+                "/api/v1/auth/login",
+                invalidRequest);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getDetail()).isEqualTo("Invalid email or password.");
+    }
+
+    @Test
     void refreshRotatesTokensAndRevokesOldRefreshToken() {
         authenticationHelper.ensureUser(EMAIL, PASSWORD, List.of("PLANNER"));
         AuthTokenPair initialTokens = authenticate(EMAIL, PASSWORD);
@@ -118,12 +135,47 @@ class AuthControllerTest extends AbstractIntegrationTest {
         assertThat(rotated.getAccessToken()).isNotBlank();
         assertThat(rotated.getRefreshToken()).isNotEqualTo(initialTokens.getRefreshToken());
 
-        ResponseEntity<ProblemDetail> reuseResponse = restTemplate.postForEntity(
+        ResponseEntity<ProblemDetail> reuseResponse = postProblemDetail(
                 "/api/v1/auth/refresh",
-                refreshTokenRequest,
-                ProblemDetail.class);
+                refreshTokenRequest);
 
         assertThat(reuseResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void refreshRejectsUnknownToken() {
+        authenticationHelper.ensureUser(EMAIL, PASSWORD, List.of("PLANNER"));
+
+        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest();
+        refreshTokenRequest.setRefreshToken(UUID.randomUUID().toString());
+
+        ResponseEntity<ProblemDetail> response = postProblemDetail(
+                "/api/v1/auth/refresh",
+                refreshTokenRequest);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getDetail()).isEqualTo("Refresh token is invalid or has expired.");
+    }
+
+    @Test
+    void refreshRejectsExpiredToken() {
+        authenticationHelper.ensureUser(EMAIL, PASSWORD, List.of("PLANNER"));
+        AuthTokenPair tokens = authenticate(EMAIL, PASSWORD);
+
+        OffsetDateTime expiredAt = OffsetDateTime.now().minusMinutes(5);
+        jdbcTemplate.update("update refresh_tokens set expires_at = ? where token = ?", expiredAt, tokens.getRefreshToken());
+
+        RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest();
+        refreshTokenRequest.setRefreshToken(tokens.getRefreshToken());
+
+        ResponseEntity<ProblemDetail> response = postProblemDetail(
+                "/api/v1/auth/refresh",
+                refreshTokenRequest);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getDetail()).isEqualTo("Refresh token is invalid or has expired.");
     }
 
     @Test
@@ -147,19 +199,17 @@ class AuthControllerTest extends AbstractIntegrationTest {
 
         RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest();
         refreshTokenRequest.setRefreshToken(initialTokens.getRefreshToken());
-        ResponseEntity<ProblemDetail> refreshAfterChange = restTemplate.postForEntity(
+        ResponseEntity<ProblemDetail> refreshAfterChange = postProblemDetail(
                 "/api/v1/auth/refresh",
-                refreshTokenRequest,
-                ProblemDetail.class);
+                refreshTokenRequest);
         assertThat(refreshAfterChange.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
         AuthLoginRequest oldPasswordLogin = new AuthLoginRequest();
         oldPasswordLogin.setEmail(EMAIL);
         oldPasswordLogin.setPassword(PASSWORD);
-        ResponseEntity<ProblemDetail> oldPasswordResponse = restTemplate.postForEntity(
+        ResponseEntity<ProblemDetail> oldPasswordResponse = postProblemDetail(
                 "/api/v1/auth/login",
-                oldPasswordLogin,
-                ProblemDetail.class);
+                oldPasswordLogin);
         assertThat(oldPasswordResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
         AuthTokenPair newTokens = authenticate(EMAIL, "NewSecret123!");
@@ -227,28 +277,25 @@ class AuthControllerTest extends AbstractIntegrationTest {
 
         RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest();
         refreshTokenRequest.setRefreshToken(initialTokens.getRefreshToken());
-        ResponseEntity<ProblemDetail> refreshResponse = restTemplate.postForEntity(
+        ResponseEntity<ProblemDetail> refreshResponse = postProblemDetail(
                 "/api/v1/auth/refresh",
-                refreshTokenRequest,
-                ProblemDetail.class);
+                refreshTokenRequest);
         assertThat(refreshResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
         AuthLoginRequest oldPasswordLogin = new AuthLoginRequest();
         oldPasswordLogin.setEmail(EMAIL);
         oldPasswordLogin.setPassword(PASSWORD);
-        ResponseEntity<ProblemDetail> oldPasswordResponse = restTemplate.postForEntity(
+        ResponseEntity<ProblemDetail> oldPasswordResponse = postProblemDetail(
                 "/api/v1/auth/login",
-                oldPasswordLogin,
-                ProblemDetail.class);
+                oldPasswordLogin);
         assertThat(oldPasswordResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
         AuthTokenPair newTokens = authenticate(EMAIL, "ResetSecret123!");
         assertThat(newTokens.getAccessToken()).isNotBlank();
 
-        ResponseEntity<ProblemDetail> reuseResponse = restTemplate.postForEntity(
+        ResponseEntity<ProblemDetail> reuseResponse = postProblemDetail(
                 "/api/v1/auth/reset-password",
-                resetRequest,
-                ProblemDetail.class);
+                resetRequest);
         assertThat(reuseResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -269,10 +316,9 @@ class AuthControllerTest extends AbstractIntegrationTest {
         resetRequest.setToken(token.token());
         resetRequest.setNewPassword("AnotherSecret123!");
 
-        ResponseEntity<ProblemDetail> response = restTemplate.postForEntity(
+        ResponseEntity<ProblemDetail> response = postProblemDetail(
                 "/api/v1/auth/reset-password",
-                resetRequest,
-                ProblemDetail.class);
+                resetRequest);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
@@ -294,5 +340,16 @@ class AuthControllerTest extends AbstractIntegrationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
         return headers;
+    }
+
+    private ResponseEntity<ProblemDetail> postProblemDetail(String path, Object body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(List.of(MediaType.APPLICATION_PROBLEM_JSON, MediaType.APPLICATION_JSON));
+        return restTemplate.exchange(
+                path,
+                HttpMethod.POST,
+                new HttpEntity<>(body, headers),
+                ProblemDetail.class);
     }
 }
