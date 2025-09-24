@@ -97,11 +97,6 @@ public class SelfServiceController implements ProfileApi {
 
     @Override
     public ResponseEntity<Void> confirmMyEmail(ConfirmMyEmailRequest confirmMyEmailRequest) {
-        Optional<UUID> userId = resolveUserId();
-        if (userId.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).<Void>build();
-        }
-
         selfServiceService.confirmEmailChange(confirmMyEmailRequest.getToken());
         return ResponseEntity.noContent().build();
     }

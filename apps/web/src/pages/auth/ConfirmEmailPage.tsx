@@ -19,7 +19,7 @@ export default function ConfirmEmailPage() {
   const token = searchParams.get('token');
   const timeoutRef = useRef<number | null>(null);
 
-  const confirmEmailMutation = useConfirmEmail();
+  const { mutateAsync: confirmEmail } = useConfirmEmail();
   const { logout } = useAuth();
 
   const [message, setMessage] = useState<string>(t('confirmEmail.loading'));
@@ -46,7 +46,7 @@ export default function ConfirmEmailPage() {
 
     (async () => {
       try {
-        await confirmEmailMutation.mutateAsync({ token });
+        await confirmEmail({ token });
 
         if (cancelled) {
           return;
@@ -75,7 +75,7 @@ export default function ConfirmEmailPage() {
     return () => {
       cancelled = true;
     };
-  }, [confirmEmailMutation, language, logout, navigate, t, token]);
+  }, [confirmEmail, language, logout, navigate, t, token]);
 
   return (
     <AuthPageLayout title={t('confirmEmail.title')}>

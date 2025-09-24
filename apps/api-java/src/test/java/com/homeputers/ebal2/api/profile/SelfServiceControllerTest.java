@@ -4,6 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.homeputers.ebal2.api.AbstractIntegrationTest;
 import com.homeputers.ebal2.api.TestAuthenticationHelper;
 import com.homeputers.ebal2.api.config.SelfServiceProperties;
+import com.homeputers.ebal2.api.domain.user.EmailChangeTokenMapper;
+import com.homeputers.ebal2.api.domain.user.User;
+import com.homeputers.ebal2.api.domain.user.UserMapper;
+import com.homeputers.ebal2.api.generated.model.ConfirmMyEmailRequest;
 import com.homeputers.ebal2.api.security.JwtTokenService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,6 +59,12 @@ class SelfServiceControllerTest extends AbstractIntegrationTest {
 
     @Autowired
     private SelfServiceProperties selfServiceProperties;
+
+    @Autowired
+    private EmailChangeTokenMapper emailChangeTokenMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Test
     void requiresAuthenticationForProfile() throws Exception {
@@ -136,6 +147,27 @@ class SelfServiceControllerTest extends AbstractIntegrationTest {
                         .file(file)
                         .header(HttpHeaders.AUTHORIZATION, bearer(token)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void confirmEmailDoesNotRequireAuthentication() throws Exception {
+        String email = "confirm-controller@example.com";
+        UUID userId = authenticationHelper.ensureUser(email, "Secret123!", List.of("PLANNER"));
+
+        String tokenValue = UUID.randomUUID().toString();
+        OffsetDateTime now = OffsetDateTime.now();
+        emailChangeTokenMapper.insert(UUID.randomUUID(), userId, "confirmed@example.com", tokenValue, now.plusHours(1), now);
+
+        ConfirmMyEmailRequest request = new ConfirmMyEmailRequest();
+        request.setToken(tokenValue);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/me/confirm-email")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isNoContent());
+
+        User updated = userMapper.findById(userId);
+        assertThat(updated.email()).isEqualTo("confirmed@example.com");
     }
 
     private String bearer(String token) {

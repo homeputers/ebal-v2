@@ -73,6 +73,10 @@ public class SecurityConfig {
             "/api/v1/me/**"
     };
 
+    private static final String[] SELF_SERVICE_PUBLIC_POST_ENDPOINTS = {
+            "/api/v1/me/confirm-email"
+    };
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http,
                                             SecurityProperties properties,
@@ -99,6 +103,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, SELF_SERVICE_ENDPOINTS)
                         .hasAnyRole("ADMIN", "PLANNER", "MUSICIAN", "VIEWER")
+                        .requestMatchers(HttpMethod.POST, SELF_SERVICE_PUBLIC_POST_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.POST, SELF_SERVICE_ENDPOINTS)
                         .hasAnyRole("ADMIN", "PLANNER", "MUSICIAN", "VIEWER")
                         .requestMatchers(HttpMethod.PATCH, SELF_SERVICE_ENDPOINTS)
