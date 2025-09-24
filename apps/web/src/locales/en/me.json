@@ -1,0 +1,73 @@
+{
+  "profile": {
+    "title": "My profile",
+    "subtitle": "Manage how others see you in Every Breath and Life.",
+    "fields": {
+      "displayName": "Display name",
+      "email": "Email",
+      "roles": "Roles"
+    },
+    "avatar": {
+      "title": "Avatar",
+      "description": "Upload a square image in PNG, JPG, or WebP format up to 2MB.",
+      "choose": "Choose image",
+      "upload": "Upload",
+      "remove": "Remove avatar",
+      "uploading": "Uploading…",
+      "previewAlt": "Avatar preview",
+      "emptyAlt": "Default avatar",
+      "errors": {
+        "tooLarge": "File is too large. Maximum size is 2MB.",
+        "invalidType": "Unsupported file type. Please upload a PNG, JPG, or WebP image.",
+        "uploadFailed": "Failed to upload avatar."
+      },
+      "success": "Avatar updated."
+    },
+    "notifications": {
+      "updateSuccess": "Profile updated.",
+      "updateError": "Failed to update profile.",
+      "removeAvatarSuccess": "Avatar removed.",
+      "removeAvatarError": "Failed to remove avatar."
+    }
+  },
+  "security": {
+    "title": "Security",
+    "subtitle": "Keep your account information up to date.",
+    "password": {
+      "title": "Change password",
+      "description": "Enter your current password and choose a new one.",
+      "fields": {
+        "currentPassword": "Current password",
+        "newPassword": "New password"
+      },
+      "submit": "Update password",
+      "success": "Password updated. Please sign in again.",
+      "error": "Unable to update password.",
+      "invalidCredentials": "Invalid email or password."
+    },
+    "email": {
+      "title": "Change email",
+      "description": "Use your password to request a new email address.",
+      "fields": {
+        "currentPassword": "Current password",
+        "newEmail": "New email"
+      },
+      "submit": "Request change",
+      "success": "We sent a confirmation link to {{email}}.",
+      "error": "Unable to change email.",
+      "invalidCredentials": "Invalid email or password."
+    },
+    "toastReauth": "Please sign in again."
+  },
+  "confirmEmail": {
+    "title": "Confirm email",
+    "loading": "Confirming your email…",
+    "success": "Email confirmed. Please sign in again.",
+    "error": "We could not confirm your email. The link may have expired.",
+    "missingToken": "This confirmation link is invalid.",
+    "goToLogin": "Go to sign-in"
+  },
+  "links": {
+    "security": "Security settings"
+  }
+}

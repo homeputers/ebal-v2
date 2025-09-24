@@ -23,6 +23,9 @@ const Login = lazy(() => import('@/routes/Login'));
 const ForgotPassword = lazy(() => import('@/routes/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/routes/ResetPassword'));
 const ChangePassword = lazy(() => import('@/routes/ChangePassword'));
+const Profile = lazy(() => import('@/routes/me/Profile'));
+const Security = lazy(() => import('@/routes/me/Security'));
+const ConfirmEmail = lazy(() => import('@/routes/ConfirmEmail'));
 const AdminUsersList = lazy(() => import('@/routes/admin/AdminUsersList'));
 const AdminUserDetail = lazy(() => import('@/routes/admin/AdminUserDetail'));
 const AdminUserCreate = lazy(() => import('@/routes/admin/AdminUserCreate'));
@@ -36,10 +39,13 @@ export default function App() {
             <Route path=":lang"> 
               <Route index element={<Navigate to="services" replace />} />
               <Route path="login" element={<Login />} /> 
-              <Route path="forgot-password" element={<ForgotPassword />} /> 
-              <Route path="reset-password" element={<ResetPassword />} /> 
-              <Route element={<ProtectedRoute redirectTo="../login" />}> 
-                <Route path="change-password" element={<ChangePassword />} /> 
+              <Route path="forgot-password" element={<ForgotPassword />} />
+              <Route path="reset-password" element={<ResetPassword />} />
+              <Route element={<ProtectedRoute redirectTo="../login" />}>
+                <Route path="change-password" element={<ChangePassword />} />
+                <Route path="confirm-email" element={<ConfirmEmail />} />
+                <Route path="me" element={<Profile />} />
+                <Route path="me/security" element={<Security />} />
                 <Route element={<RequireRole roles={['ADMIN', 'PLANNER']} />}>
                   <Route path="members" element={<Members />} />
                   <Route path="groups" element={<Groups />} />

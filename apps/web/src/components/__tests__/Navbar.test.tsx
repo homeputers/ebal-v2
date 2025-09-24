@@ -2,7 +2,7 @@ import { act, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 
-import type { Role } from '@/api/auth';
+import type { CurrentUser, Role } from '@/api/auth';
 import i18n from '@/i18n';
 import { Navbar } from '../Navbar';
 
@@ -23,10 +23,20 @@ let isAuthenticated = true;
 
 const logoutMock = vi.fn();
 
+const buildUser = (): CurrentUser => ({
+  id: 'user-id',
+  displayName: 'Test User',
+  email: 'test@example.com',
+  roles: Array.from(activeRoles),
+  isActive: true,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+});
+
 const mockUseAuth = vi.fn(() => ({
   login: vi.fn(),
   logout: logoutMock,
-  me: null,
+  me: isAuthenticated ? buildUser() : null,
   isAuthenticated,
   roles: Array.from(activeRoles),
   hasRole: (role: Role) => activeRoles.has(role),
@@ -150,6 +160,12 @@ describe('Navbar', () => {
 
     await renderNavbar('en');
 
+    const summary = screen.getByText('Test User').closest('summary');
+    expect(summary).not.toBeNull();
+    await act(async () => {
+      summary?.click();
+    });
+
     expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();
   });
 
@@ -159,9 +175,8 @@ describe('Navbar', () => {
 
     await renderNavbar('en');
 
-    expect(
-      screen.queryByRole('button', { name: 'Log out' }),
-    ).not.toBeInTheDocument();
+    const logoutButton = screen.queryByRole('button', { name: 'Log out' });
+    expect(logoutButton).not.toBeInTheDocument();
   });
 
   it('calls logout handler when logout button clicked', async () => {
@@ -171,11 +186,30 @@ describe('Navbar', () => {
 
     await renderNavbar('en');
 
+    const summary = screen.getByText('Test User').closest('summary');
+    await act(async () => {
+      summary?.click();
+    });
+
     const button = screen.getByRole('button', { name: 'Log out' });
     await act(async () => {
       button.click();
     });
 
     expect(logoutMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders profile link in the user menu', async () => {
+    setIsAuthenticated(true);
+    mockUseAuth.mockClear();
+
+    await renderNavbar('en');
+
+    const summary = screen.getByText('Test User').closest('summary');
+    await act(async () => {
+      summary?.click();
+    });
+
+    expect(screen.getByRole('link', { name: 'Profile' })).toBeInTheDocument();
   });
 });
