@@ -177,28 +177,37 @@ export const logout = () => {
   clearAuthTokens();
 };
 
-const AUTH_ENDPOINTS = [
+const UNAUTHENTICATED_ENDPOINTS = [
   '/auth/login',
   '/auth/refresh',
-  '/me/change-password',
-  '/me/change-email',
   '/me/confirm-email',
-];
+] as const;
 
-const isAuthEndpoint = (url?: string) => {
+const SENSITIVE_AUTH_ENDPOINTS = ['/me/change-password', '/me/change-email'] as const;
+
+const createEndpointMatcher = (endpoints: readonly string[]) => (url?: string) => {
   if (!url) {
     return false;
   }
 
   const normalized = url.split('?')[0] ?? url;
-  return AUTH_ENDPOINTS.some((endpoint) => normalized.endsWith(endpoint));
+  return endpoints.some((endpoint) => normalized.endsWith(endpoint));
 };
+
+const shouldSkipAuthHeader = createEndpointMatcher(UNAUTHENTICATED_ENDPOINTS);
+
+const AUTH_RETRY_BYPASS_ENDPOINTS = [
+  ...UNAUTHENTICATED_ENDPOINTS,
+  ...SENSITIVE_AUTH_ENDPOINTS,
+] as const;
+
+const shouldBypassAuthRetry = createEndpointMatcher(AUTH_RETRY_BYPASS_ENDPOINTS);
 
 const attachAuthInterceptors = (instance: AxiosInstance): AxiosInstance => {
   instance.interceptors.request.use((config) => {
     const token = currentTokens?.accessToken;
 
-    if (token && !isAuthEndpoint(config.url)) {
+    if (token && !shouldSkipAuthHeader(config.url)) {
       const headers = AxiosHeaders.from(config.headers ?? {});
       headers.set('Authorization', `Bearer ${token}`);
       config.headers = headers;
@@ -218,7 +227,7 @@ const attachAuthInterceptors = (instance: AxiosInstance): AxiosInstance => {
 
       const originalRequest = config as AuthenticatedRequestConfig;
 
-      if (originalRequest._retry || isAuthEndpoint(originalRequest.url)) {
+      if (originalRequest._retry || shouldBypassAuthRetry(originalRequest.url)) {
         clearAuthTokens();
         return Promise.reject(error);
       }

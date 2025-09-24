@@ -85,6 +85,32 @@ describe('axios auth interceptor', () => {
     expect(headers.get('Authorization')).toBe(`Bearer ${tokenPair.accessToken}`);
   });
 
+  it('attaches Authorization header for sensitive profile mutations', async () => {
+    const tokenPair = {
+      accessToken: 'access-token',
+      refreshToken: 'refresh-token',
+      expiresIn: 60,
+    };
+
+    vi.spyOn(apiClient, 'post').mockResolvedValue({ data: tokenPair } as never);
+
+    await auth.login({ email: 'user@example.com', password: 'secret' });
+
+    const adapter = vi.fn<Parameters<AxiosAdapter>, ReturnType<AxiosAdapter>>(async (config) =>
+      successAdapterResponse(config),
+    );
+
+    const instance = createAxiosInstance();
+    await instance.post(
+      '/me/change-password',
+      { currentPassword: 'old', newPassword: 'new' },
+      { adapter },
+    );
+
+    const headers = AxiosHeaders.from(adapter.mock.calls[0][0].headers ?? {});
+    expect(headers.get('Authorization')).toBe(`Bearer ${tokenPair.accessToken}`);
+  });
+
   it('refreshes tokens once on 401 responses and retries the original request', async () => {
     const initialTokens = {
       accessToken: 'expired-access',
@@ -146,5 +172,49 @@ describe('axios auth interceptor', () => {
     const retryHeaders = AxiosHeaders.from(adapter.mock.calls[1][0].headers ?? {});
     expect(retryHeaders.get('Authorization')).toBe(`Bearer ${refreshedTokens.accessToken}`);
     expect(auth.getAuthTokens()).toMatchObject({ accessToken: refreshedTokens.accessToken });
+  });
+
+  it('does not refresh tokens when sensitive profile mutations return 401', async () => {
+    const tokenPair = {
+      accessToken: 'expired-access',
+      refreshToken: 'refresh-token',
+      expiresIn: 60,
+    };
+
+    const postSpy = vi.spyOn(apiClient, 'post').mockImplementation(async (url, ...args) => {
+      if (url === '/auth/login') {
+        return { data: tokenPair } as never;
+      }
+
+      throw new Error(`Unexpected POST to ${url} with ${JSON.stringify(args)}`);
+    });
+
+    await auth.login({ email: 'user@example.com', password: 'secret' });
+
+    const adapter = vi.fn<Parameters<AxiosAdapter>, ReturnType<AxiosAdapter>>(async (config) => {
+      throw new AxiosError(
+        'Unauthorized',
+        '401',
+        config,
+        undefined,
+        {
+          data: null,
+          status: 401,
+          statusText: 'Unauthorized',
+          headers: {},
+          config,
+        },
+      );
+    });
+
+    const instance = createAxiosInstance();
+
+    await expect(
+      instance.post('/me/change-password', { currentPassword: 'old', newPassword: 'new' }, { adapter }),
+    ).rejects.toMatchObject({ response: { status: 401 } });
+
+    expect(adapter).toHaveBeenCalledTimes(1);
+    expect(postSpy).toHaveBeenCalledTimes(1);
+    expect(auth.getAuthTokens()).toBeNull();
   });
 });
