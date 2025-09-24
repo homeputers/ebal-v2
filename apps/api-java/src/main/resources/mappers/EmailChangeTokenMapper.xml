@@ -40,9 +40,11 @@
     </update>
 
     <delete id="deleteExpired">
+        <![CDATA[
         delete from email_change_tokens
         where expires_at < #{now}
            or used_at is not null
+        ]]>
     </delete>
 
     <delete id="deleteByUserId">
