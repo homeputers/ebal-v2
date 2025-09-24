@@ -1,7 +1,9 @@
 package com.homeputers.ebal2.api.config;
 
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -17,6 +19,8 @@ public class SecurityProperties {
     private final Cors cors = new Cors();
     private final Jwt jwt = new Jwt();
     private final PasswordReset passwordReset = new PasswordReset();
+    private final RateLimit loginRateLimit = new RateLimit(10, Duration.ofMinutes(1));
+    private final RateLimit forgotPasswordRateLimit = new RateLimit(5, Duration.ofMinutes(15));
 
     public boolean isEnabled() {
         return enabled;
@@ -36,6 +40,14 @@ public class SecurityProperties {
 
     public PasswordReset getPasswordReset() {
         return passwordReset;
+    }
+
+    public RateLimit getLoginRateLimit() {
+        return loginRateLimit;
+    }
+
+    public RateLimit getForgotPasswordRateLimit() {
+        return forgotPasswordRateLimit;
     }
 
     public static class Cors {
@@ -126,6 +138,44 @@ public class SecurityProperties {
         @AssertTrue(message = "Password reset TTL must be positive")
         public boolean isTtlPositive() {
             return ttl != null && !ttl.isNegative() && !ttl.isZero();
+        }
+    }
+
+    public static class RateLimit {
+        @Min(1)
+        private int maxAttempts;
+
+        @NotNull
+        private Duration window;
+
+        public RateLimit() {
+            this(5, Duration.ofMinutes(1));
+        }
+
+        public RateLimit(int maxAttempts, Duration window) {
+            this.maxAttempts = maxAttempts;
+            this.window = window;
+        }
+
+        public int getMaxAttempts() {
+            return maxAttempts;
+        }
+
+        public void setMaxAttempts(int maxAttempts) {
+            this.maxAttempts = maxAttempts;
+        }
+
+        public Duration getWindow() {
+            return window;
+        }
+
+        public void setWindow(Duration window) {
+            this.window = window;
+        }
+
+        @AssertTrue(message = "window must be positive")
+        public boolean isWindowPositive() {
+            return window != null && !window.isNegative() && !window.isZero();
         }
     }
 }

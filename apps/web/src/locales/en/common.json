@@ -10,6 +10,7 @@
     "songSets": "Song Sets",
     "adminUsers": "User Management",
     "profile": "Profile",
+    "changePassword": "Change password",
     "logout": "Log out"
   },
   "actions": {
@@ -43,7 +44,8 @@
     "requiredTitle": "Sign in required",
     "requiredDescription": "Please sign in to continue.",
     "forbiddenTitle": "Access restricted",
-    "forbiddenDescription": "You do not have permission to view this page."
+    "forbiddenDescription": "You do not have permission to view this page.",
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "language": {
     "change": "Change language",

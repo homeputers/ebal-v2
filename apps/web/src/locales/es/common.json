@@ -10,6 +10,7 @@
     "songSets": "Listas de canciones",
     "adminUsers": "Gestión de usuarios",
     "profile": "Perfil",
+    "changePassword": "Cambiar contraseña",
     "logout": "Cerrar sesión"
   },
   "actions": {
@@ -43,7 +44,8 @@
     "requiredTitle": "Inicio de sesión requerido",
     "requiredDescription": "Inicia sesión para continuar.",
     "forbiddenTitle": "Acceso restringido",
-    "forbiddenDescription": "No tienes permiso para ver esta página."
+    "forbiddenDescription": "No tienes permiso para ver esta página.",
+    "sessionExpired": "Tu sesión expiró. Vuelve a iniciar sesión."
   },
   "language": {
     "change": "Cambiar idioma",

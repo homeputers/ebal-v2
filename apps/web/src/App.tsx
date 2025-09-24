@@ -1,4 +1,10 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
 import { lazy } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { LanguageGuard } from '@/components/LanguageGuard';
@@ -29,6 +35,15 @@ const ConfirmEmail = lazy(() => import('@/routes/ConfirmEmail'));
 const AdminUsersList = lazy(() => import('@/routes/admin/AdminUsersList'));
 const AdminUserDetail = lazy(() => import('@/routes/admin/AdminUserDetail'));
 const AdminUserCreate = lazy(() => import('@/routes/admin/AdminUserCreate'));
+
+function ResetPasswordDeepLinkRedirect() {
+  const location = useLocation();
+  const search = location.search ?? '';
+  const hash = location.hash ?? '';
+  const target = `/${DEFAULT_LANGUAGE}/reset-password${search}${hash}`;
+
+  return <Navigate to={target} replace />;
+}
 
 export default function App() {
   return (
@@ -67,11 +82,12 @@ export default function App() {
                 <Route path="*" element={<Navigate to="services" replace />} />
               </Route>
             </Route>
-          </Route> 
-          <Route 
-            path="*" 
-            element={<Navigate to={`/${DEFAULT_LANGUAGE}`} replace />} 
-          /> 
+          </Route>
+          <Route path="reset-password" element={<ResetPasswordDeepLinkRedirect />} />
+          <Route
+            path="*"
+            element={<Navigate to={`/${DEFAULT_LANGUAGE}`} replace />}
+          />
         </Routes>
       </BrowserRouter>
       <Toaster />

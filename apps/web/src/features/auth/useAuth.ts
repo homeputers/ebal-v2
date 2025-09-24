@@ -6,6 +6,7 @@ import {
   getAuthTokens,
   subscribeToAuthTokens,
   getCurrentUser,
+  getStoredCurrentUser,
   logout as logoutRequest,
   type CurrentUser,
   type LoginRequest,
@@ -39,6 +40,13 @@ export function useAuth(): UseAuthResult {
     queryKey: authQueryKeys.me(),
     queryFn: getCurrentUser,
     enabled: hasAccessToken,
+    initialData: () => {
+      if (!hasAccessToken) {
+        return undefined;
+      }
+      return getStoredCurrentUser() ?? undefined;
+    },
+    refetchOnWindowFocus: 'always',
     retry: (failureCount, error) => {
       if (isAxiosError(error) && error.response?.status === 401) {
         return false;

@@ -34,7 +34,15 @@ type AuthenticatedRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
 };
 
+type StoredCurrentUser = Pick<
+  CurrentUser,
+  'id' | 'email' | 'displayName' | 'roles' | 'isActive' | 'createdAt' | 'updatedAt'
+>;
+
+type AuthSessionClearReason = 'logout' | 'session-expired';
+
 const AUTH_STORAGE_KEY = 'ebal.auth.tokens';
+const AUTH_ME_STORAGE_KEY = 'ebal.auth.me';
 
 const loadStoredTokens = (): AuthTokens | null => {
   if (typeof window === 'undefined') {
@@ -84,13 +92,72 @@ const persistTokens = (tokens: AuthTokens | null) => {
   }
 };
 
+const loadStoredCurrentUser = (): StoredCurrentUser | null => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const raw = window.localStorage.getItem(AUTH_ME_STORAGE_KEY);
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as Partial<StoredCurrentUser>;
+    if (
+      typeof parsed?.id === 'string' &&
+      typeof parsed?.email === 'string' &&
+      typeof parsed?.displayName === 'string' &&
+      Array.isArray(parsed?.roles) &&
+      typeof parsed?.isActive === 'boolean' &&
+      typeof parsed?.createdAt === 'string' &&
+      typeof parsed?.updatedAt === 'string'
+    ) {
+      return parsed as StoredCurrentUser;
+    }
+  } catch {
+    // ignore malformed payloads and clean up below
+  }
+
+  try {
+    window.localStorage.removeItem(AUTH_ME_STORAGE_KEY);
+  } catch {
+    // Ignore storage cleanup failures
+  }
+
+  return null;
+};
+
+const persistCurrentUser = (value: StoredCurrentUser | null) => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    if (!value) {
+      window.localStorage.removeItem(AUTH_ME_STORAGE_KEY);
+      return;
+    }
+
+    window.localStorage.setItem(AUTH_ME_STORAGE_KEY, JSON.stringify(value));
+  } catch {
+    // Ignore storage failures (private browsing, quota, etc.)
+  }
+};
+
 const subscribers = new Set<() => void>();
+const sessionExpirationListeners = new Set<() => void>();
 
 let currentTokens: AuthTokens | null = loadStoredTokens();
+let storedCurrentUser: StoredCurrentUser | null = loadStoredCurrentUser();
 let refreshPromise: Promise<AuthTokenPair> | null = null;
 
 const notifySubscribers = () => {
   subscribers.forEach((listener) => listener());
+};
+
+const notifySessionExpired = () => {
+  sessionExpirationListeners.forEach((listener) => listener());
 };
 
 const setCurrentTokens = (tokens: AuthTokenPair) => {
@@ -110,6 +177,14 @@ export const getAuthTokens = () => {
   return currentTokens;
 };
 
+export const getStoredCurrentUser = () => {
+  if (!storedCurrentUser) {
+    storedCurrentUser = loadStoredCurrentUser();
+  }
+
+  return storedCurrentUser;
+};
+
 export const subscribeToAuthTokens = (listener: () => void) => {
   subscribers.add(listener);
   return () => {
@@ -117,10 +192,24 @@ export const subscribeToAuthTokens = (listener: () => void) => {
   };
 };
 
-export const clearAuthTokens = () => {
+export const subscribeToSessionExpiration = (listener: () => void) => {
+  sessionExpirationListeners.add(listener);
+  return () => {
+    sessionExpirationListeners.delete(listener);
+  };
+};
+
+export const clearAuthTokens = (
+  reason: AuthSessionClearReason = 'logout',
+) => {
   currentTokens = null;
   persistTokens(null);
+  storedCurrentUser = null;
+  persistCurrentUser(null);
   notifySubscribers();
+  if (reason === 'session-expired') {
+    notifySessionExpired();
+  }
 };
 
 export const login = async (body: LoginRequest) => {
@@ -168,13 +257,26 @@ const queueTokenRefresh = async () => {
 
 export const refreshTokens = () => queueTokenRefresh();
 
+const toStoredCurrentUser = (value: CurrentUser): StoredCurrentUser => ({
+  id: value.id,
+  email: value.email,
+  displayName: value.displayName,
+  roles: [...value.roles],
+  isActive: value.isActive,
+  createdAt: value.createdAt,
+  updatedAt: value.updatedAt,
+});
+
 export const getCurrentUser = async () => {
   const { data } = await apiClient.get<CurrentUser>('/auth/me');
+  const snapshot = toStoredCurrentUser(data);
+  storedCurrentUser = snapshot;
+  persistCurrentUser(snapshot);
   return data;
 };
 
 export const logout = () => {
-  clearAuthTokens();
+  clearAuthTokens('logout');
 };
 
 const UNAUTHENTICATED_ENDPOINTS = [
@@ -231,19 +333,19 @@ const attachAuthInterceptors = (instance: AxiosInstance): AxiosInstance => {
       const originalRequest = config as AuthenticatedRequestConfig;
 
       if (originalRequest._retry) {
-        clearAuthTokens();
+        clearAuthTokens('session-expired');
         return Promise.reject(error);
       }
 
       if (shouldBypassAuthRetry(originalRequest.url)) {
         if (shouldClearTokensOnBypass(originalRequest.url)) {
-          clearAuthTokens();
+          clearAuthTokens('session-expired');
         }
         return Promise.reject(error);
       }
 
       if (!currentTokens?.refreshToken) {
-        clearAuthTokens();
+        clearAuthTokens('session-expired');
         return Promise.reject(error);
       }
 
@@ -252,7 +354,7 @@ const attachAuthInterceptors = (instance: AxiosInstance): AxiosInstance => {
         await queueTokenRefresh();
         return instance(originalRequest);
       } catch (refreshError) {
-        clearAuthTokens();
+        clearAuthTokens('session-expired');
         return Promise.reject(refreshError);
       }
     },

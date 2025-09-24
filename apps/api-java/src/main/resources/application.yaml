@@ -16,13 +16,19 @@ ebal:
     enabled: ${EBAL_SECURITY_ENABLED:true}
     cors:
       dev-origin: ${EBAL_WEB_ORIGIN_DEV:http://localhost:5173}
-      prod-origin: ${EBAL_WEB_ORIGIN_PROD:}
+      prod-origin: ${EBAL_WEB_ORIGIN_PROD:https://app.ebal.church}
     jwt:
       secret: ${EBAL_JWT_SECRET:ThisIsADefaultJwtSecretForLocalDevOnly_DoNotUseInProduction_ButItIsLongEnough1234}
       access-token-ttl: ${EBAL_JWT_ACCESS_TTL:PT15M}
       refresh-token-ttl: ${EBAL_JWT_REFRESH_TTL:P30D}
     password-reset:
       ttl: ${EBAL_PASSWORD_RESET_TTL:PT1H}
+    login-rate-limit:
+      max-attempts: ${EBAL_SECURITY_LOGIN_RATE_LIMIT_MAX:10}
+      window: ${EBAL_SECURITY_LOGIN_RATE_LIMIT_WINDOW:PT1M}
+    forgot-password-rate-limit:
+      max-attempts: ${EBAL_SECURITY_FORGOT_RATE_LIMIT_MAX:5}
+      window: ${EBAL_SECURITY_FORGOT_RATE_LIMIT_WINDOW:PT15M}
   profile:
     avatar:
       storage-path: ${EBAL_PROFILE_AVATAR_PATH:uploads/avatars}
