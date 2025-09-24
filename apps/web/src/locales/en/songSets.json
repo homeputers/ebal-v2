@@ -39,6 +39,7 @@
     "loadFailed": "Failed to load items.",
     "empty": "No items",
     "dragHandle": "Drag to reorder",
+    "dragHandleIcon": "☰",
     "drag": {
       "grab": "Grab to drag",
       "dragging": "Dragging {{title}}",
@@ -62,7 +63,8 @@
   },
   "controls": {
     "showSharps": "Show sharps (♯)",
-    "showFlats": "Show flats (♭)"
+    "showFlats": "Show flats (♭)",
+    "toggleAccidentals": "♯ / ♭"
   },
   "validation": {
     "nameMin": "Name must be at least 2 characters"

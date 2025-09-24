@@ -87,8 +87,8 @@ export function Navbar({ currentLanguage }: NavbarProps) {
                 className="flex cursor-pointer list-none items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-1 text-sm font-medium text-white hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
               >
                 <span>{menuLabel}</span>
-                <span aria-hidden className="text-xs">
-                  ▾
+                <span aria-hidden="true" className="text-xs">
+                  {t('nav.menuIndicator')}
                 </span>
               </summary>
               <div className="absolute right-0 mt-2 w-48 overflow-hidden rounded-md border border-gray-200 bg-white text-sm text-gray-700 shadow-lg">

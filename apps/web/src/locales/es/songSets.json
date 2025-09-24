@@ -39,6 +39,7 @@
     "loadFailed": "No se pudieron cargar los elementos.",
     "empty": "Sin elementos",
     "dragHandle": "Arrastrar para reordenar",
+    "dragHandleIcon": "☰",
     "drag": {
       "grab": "Sujetar para arrastrar",
       "dragging": "Arrastrando {{title}}",
@@ -62,7 +63,8 @@
   },
   "controls": {
     "showSharps": "Mostrar sostenidos (♯)",
-    "showFlats": "Mostrar bemoles (♭)"
+    "showFlats": "Mostrar bemoles (♭)",
+    "toggleAccidentals": "♯ / ♭"
   },
   "validation": {
     "nameMin": "El nombre debe tener al menos 2 caracteres"

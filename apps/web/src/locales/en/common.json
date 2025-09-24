@@ -11,7 +11,8 @@
     "adminUsers": "User Management",
     "profile": "Profile",
     "changePassword": "Change password",
-    "logout": "Log out"
+    "logout": "Log out",
+    "menuIndicator": "▾"
   },
   "actions": {
     "save": "Save",
@@ -50,9 +51,14 @@
   "language": {
     "change": "Change language",
     "select": "Select language",
+    "dropdownIndicator": "▼",
+    "selectedIndicator": "✓",
     "labels": {
       "en": "English",
       "es": "Español"
     }
+  },
+  "errors": {
+    "generic": "Something went wrong."
   }
 }
