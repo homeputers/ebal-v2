@@ -40,10 +40,6 @@ const currentUser: CurrentUser = {
 
 const tokenSubscribers = new Set<() => void>();
 
-type QueryFn = (
-  options: UseQueryOptions<CurrentUser | undefined, unknown>,
-) => UseQueryResult<CurrentUser | undefined, unknown>;
-
 const getAuthTokensMock = mocks.getAuthTokensMock as ReturnType<typeof vi.fn>;
 const subscribeToAuthTokensMock = mocks.subscribeToAuthTokensMock as ReturnType<typeof vi.fn>;
 const getStoredCurrentUserMock = mocks.getStoredCurrentUserMock as ReturnType<typeof vi.fn>;
