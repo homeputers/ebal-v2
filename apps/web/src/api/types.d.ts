@@ -258,7 +258,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Confirm a pending email change for the signed-in user
+         * Confirm a pending email change using the emailed token
          * @description Consumes the confirmation token, applies the new email, and revokes existing refresh tokens.
          */
         post: operations["confirmMyEmail"];

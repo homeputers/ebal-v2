@@ -328,11 +328,9 @@ paths:
     post:
       tags:
         - Profile
-      summary: Confirm a pending email change for the signed-in user
+      summary: Confirm a pending email change using the emailed token
       description: Consumes the confirmation token, applies the new email, and revokes existing refresh tokens.
       operationId: confirmMyEmail
-      security:
-        - bearerAuth: []
       requestBody:
         required: true
         content:
