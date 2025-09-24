@@ -104,6 +104,7 @@ public class UserAdminService {
                 null,
                 request.getEmail(),
                 request.getDisplayName(),
+                null,
                 passwordHash,
                 isActive,
                 now,
@@ -113,7 +114,7 @@ public class UserAdminService {
         ensureEmailAvailable(candidate.email());
 
         try {
-            userMapper.insert(candidate.id(), candidate.email(), candidate.displayName(), candidate.passwordHash(),
+            userMapper.insert(candidate.id(), candidate.email(), candidate.displayName(), candidate.avatarUrl(), candidate.passwordHash(),
                     candidate.isActive(), candidate.createdAt(), candidate.updatedAt(), candidate.version());
         } catch (DuplicateKeyException ex) {
             throw new DuplicateEmailException(candidate.email());
@@ -323,6 +324,9 @@ public class UserAdminService {
 
     private Locale resolveLocale() {
         Locale locale = LocaleContextHolder.getLocale();
+        if (LocaleContextHolder.getLocaleContext() == null) {
+            return DEFAULT_LOCALE;
+        }
         if (locale == null || !StringUtils.hasText(locale.getLanguage())) {
             return DEFAULT_LOCALE;
         }

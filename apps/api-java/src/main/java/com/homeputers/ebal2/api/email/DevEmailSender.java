@@ -43,4 +43,14 @@ public class DevEmailSender implements EmailSender {
         log.info("User invite email subject: {}", subject);
         log.info("User invite email body: {}", body);
     }
+
+    @Override
+    public void sendEmailChangeConfirmationEmail(String to, String confirmationUrl, Locale locale) {
+        String subject = messageSource.getMessage("mail.email-change.subject", null, locale);
+        String body = messageSource.getMessage("mail.email-change.body", new Object[]{confirmationUrl}, locale);
+
+        log.info("Email change confirmation sent to {} using locale {}.", to, locale);
+        log.info("Email change subject: {}", subject);
+        log.info("Email change body: {}", body);
+    }
 }

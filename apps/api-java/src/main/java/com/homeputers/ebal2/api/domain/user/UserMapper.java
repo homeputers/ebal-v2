@@ -16,6 +16,7 @@ public interface UserMapper {
     void insert(@Param("id") UUID id,
                 @Param("email") String email,
                 @Param("displayName") String displayName,
+                @Param("avatarUrl") String avatarUrl,
                 @Param("passwordHash") String passwordHash,
                 @Param("isActive") boolean isActive,
                 @Param("createdAt") OffsetDateTime createdAt,
@@ -38,6 +39,18 @@ public interface UserMapper {
                    @Param("isActive") boolean isActive,
                    @Param("updatedAt") OffsetDateTime updatedAt,
                    @Param("expectedVersion") int expectedVersion);
+
+    void updateDisplayName(@Param("id") UUID id,
+                           @Param("displayName") String displayName,
+                           @Param("updatedAt") OffsetDateTime updatedAt);
+
+    void updateAvatar(@Param("id") UUID id,
+                      @Param("avatarUrl") String avatarUrl,
+                      @Param("updatedAt") OffsetDateTime updatedAt);
+
+    void updateEmail(@Param("id") UUID id,
+                     @Param("email") String email,
+                     @Param("updatedAt") OffsetDateTime updatedAt);
 
     int delete(@Param("id") UUID id);
 

@@ -48,4 +48,17 @@ public class SmtpEmailSender implements EmailSender {
         message.setText(body);
         mailSender.send(message);
     }
+
+    @Override
+    public void sendEmailChangeConfirmationEmail(String to, String confirmationUrl, Locale locale) {
+        String subject = messageSource.getMessage("mail.email-change.subject", null, locale);
+        String body = messageSource.getMessage("mail.email-change.body", new Object[]{confirmationUrl}, locale);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(mailProperties.getSmtp().getFromAddress());
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
+        mailSender.send(message);
+    }
 }

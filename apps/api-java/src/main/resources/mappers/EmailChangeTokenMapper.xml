@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.homeputers.ebal2.api.domain.user.EmailChangeTokenMapper">
+    <resultMap id="emailChangeTokenResult" type="com.homeputers.ebal2.api.domain.user.EmailChangeToken">
+        <constructor>
+            <idArg column="id" javaType="java.util.UUID"
+                   typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+            <arg column="user_id" javaType="java.util.UUID"
+                 typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler"/>
+            <arg column="new_email" javaType="java.lang.String"/>
+            <arg column="token" javaType="java.lang.String"/>
+            <arg column="expires_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="used_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="created_at" javaType="java.time.OffsetDateTime"/>
+        </constructor>
+    </resultMap>
+
+    <select id="findByToken" resultMap="emailChangeTokenResult">
+        select id, user_id, new_email, token, expires_at, used_at, created_at
+        from email_change_tokens
+        where token = #{token}
+    </select>
+
+    <insert id="insert">
+        insert into email_change_tokens (id, user_id, new_email, token, expires_at, created_at)
+        values (
+            #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{userId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
+            #{newEmail},
+            #{token},
+            #{expiresAt},
+            #{createdAt}
+        )
+    </insert>
+
+    <update id="markUsed">
+        update email_change_tokens
+        set used_at = #{usedAt}
+        where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </update>
+
+    <delete id="deleteExpired">
+        <![CDATA[
+        delete from email_change_tokens
+        where expires_at < #{now}
+           or used_at is not null
+        ]]>
+    </delete>
+
+    <delete id="deleteByUserId">
+        delete from email_change_tokens
+        where user_id = #{userId, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
+    </delete>
+</mapper>

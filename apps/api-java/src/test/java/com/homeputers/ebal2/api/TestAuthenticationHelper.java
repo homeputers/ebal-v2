@@ -37,7 +37,7 @@ public class TestAuthenticationHelper {
         String displayName = extractDisplayName(email);
         if (existing == null) {
             UUID userId = UUID.randomUUID();
-            userMapper.insert(userId, normalizedEmail, displayName, passwordHash, true, now, now, 0);
+            userMapper.insert(userId, normalizedEmail, displayName, null, passwordHash, true, now, now, 0);
             assignRoles(userId, roles, now);
             return userId;
         }

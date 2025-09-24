@@ -23,6 +23,16 @@ ebal:
       refresh-token-ttl: ${EBAL_JWT_REFRESH_TTL:P30D}
     password-reset:
       ttl: ${EBAL_PASSWORD_RESET_TTL:PT1H}
+  profile:
+    avatar:
+      storage-path: ${EBAL_PROFILE_AVATAR_PATH:uploads/avatars}
+      public-base-url: ${EBAL_PROFILE_AVATAR_BASE_URL:/static/avatars/}
+      max-size-bytes: ${EBAL_PROFILE_AVATAR_MAX_SIZE:2097152}
+    email-change:
+      ttl: ${EBAL_PROFILE_EMAIL_CHANGE_TTL:PT1H}
+    rate-limit:
+      max-attempts: ${EBAL_PROFILE_RATE_LIMIT_MAX:5}
+      window: ${EBAL_PROFILE_RATE_LIMIT_WINDOW:PT5M}
   mail:
     frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:5173}
     smtp:

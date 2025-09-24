@@ -5,6 +5,8 @@ import com.homeputers.ebal2.api.admin.user.LastAdminRemovalException;
 import com.homeputers.ebal2.api.auth.InvalidCredentialsException;
 import com.homeputers.ebal2.api.auth.InvalidPasswordResetTokenException;
 import com.homeputers.ebal2.api.auth.InvalidRefreshTokenException;
+import com.homeputers.ebal2.api.profile.support.InvalidEmailChangeTokenException;
+import com.homeputers.ebal2.api.profile.support.RateLimitExceededException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -51,6 +53,13 @@ public class ApiExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(InvalidEmailChangeTokenException.class)
+    public ProblemDetail handleInvalidEmailChangeToken(InvalidEmailChangeTokenException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
+
     @ExceptionHandler(DuplicateEmailException.class)
     public ProblemDetail handleDuplicateEmail(DuplicateEmailException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
@@ -76,6 +85,13 @@ public class ApiExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handleIllegalArgument(IllegalArgumentException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ProblemDetail handleRateLimitExceeded(RateLimitExceededException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.TOO_MANY_REQUESTS);
         problemDetail.setDetail(ex.getMessage());
         return problemDetail;
     }
