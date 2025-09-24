@@ -1,8 +1,9 @@
 package com.homeputers.ebal2.api.config;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -64,8 +65,13 @@ public class SelfServiceProperties {
     }
 
     public static class EmailChange {
-        @Positive
+        @NotNull
         private Duration ttl = Duration.ofMinutes(60);
+
+        @AssertTrue(message = "ttl must be positive")
+        public boolean isTtlPositive() {
+            return ttl != null && !ttl.isNegative() && !ttl.isZero();
+        }
 
         public Duration getTtl() {
             return ttl;
@@ -80,8 +86,13 @@ public class SelfServiceProperties {
         @Min(1)
         private int maxAttempts = 5;
 
-        @Positive
+        @NotNull
         private Duration window = Duration.ofMinutes(5);
+
+        @AssertTrue(message = "window must be positive")
+        public boolean isWindowPositive() {
+            return window != null && !window.isNegative() && !window.isZero();
+        }
 
         public int getMaxAttempts() {
             return maxAttempts;
