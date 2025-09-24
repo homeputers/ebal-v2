@@ -1,3 +1,25 @@
+## [0.3.0](https://github.com/homeputers/ebal-v2/compare/v0.2.0...v0.3.0) (2025-09-24)
+
+### Features
+
+* add stateless jwt authentication ([#92](https://github.com/homeputers/ebal-v2/issues/92)) ([7c61776](https://github.com/homeputers/ebal-v2/commit/7c617761092f75eb213715346589cf71ebcec0b4))
+* add user auth persistence and seeding ([#91](https://github.com/homeputers/ebal-v2/issues/91)) ([1a88d02](https://github.com/homeputers/ebal-v2/commit/1a88d02c4e958fb8bb7309efb03d4ff0c0005867))
+* **api:** implement admin user management ([#98](https://github.com/homeputers/ebal-v2/issues/98)) ([55c8c76](https://github.com/homeputers/ebal-v2/commit/55c8c760b7f76a9dd2d01eb602c5a62848baa001))
+* **api:** implement self-service profile endpoints ([#102](https://github.com/homeputers/ebal-v2/issues/102)) ([46c0a8f](https://github.com/homeputers/ebal-v2/commit/46c0a8fde3210a56e9aa3dfa4d1c6909196edb61))
+* extend OpenAPI for auth and user admin ([#90](https://github.com/homeputers/ebal-v2/issues/90)) ([97bbdc3](https://github.com/homeputers/ebal-v2/commit/97bbdc324e313bf6ed11e4621e3163627f56cedb))
+* implement password reset flows ([#93](https://github.com/homeputers/ebal-v2/issues/93)) ([acafd86](https://github.com/homeputers/ebal-v2/commit/acafd86d5fa852ebba8bf9fe9944c5cdf3e6c175))
+* **openapi:** add self-service profile endpoints ([#101](https://github.com/homeputers/ebal-v2/issues/101)) ([7153c70](https://github.com/homeputers/ebal-v2/commit/7153c7084d0af310b6294f2934f22292a1892018))
+* strengthen auth guards and session handling ([#104](https://github.com/homeputers/ebal-v2/issues/104)) ([4b20727](https://github.com/homeputers/ebal-v2/commit/4b20727e6268c903513ee1f3f0c0762c14eb6988))
+* **web:** add admin user management ui ([#97](https://github.com/homeputers/ebal-v2/issues/97)) ([1dfb27a](https://github.com/homeputers/ebal-v2/commit/1dfb27ad843edabd05de1ceaf6d8d18c65749ba3))
+* **web:** add auth interceptors and hook ([#94](https://github.com/homeputers/ebal-v2/issues/94)) ([fa9504e](https://github.com/homeputers/ebal-v2/commit/fa9504ee62526613ef9dc0186450ec0b4009e4e7))
+* **web:** add profile management area ([#103](https://github.com/homeputers/ebal-v2/issues/103)) ([ec077b3](https://github.com/homeputers/ebal-v2/commit/ec077b3074b8d742e398f526063a702ecf05288c))
+* **web:** add protected routes and role guards ([#95](https://github.com/homeputers/ebal-v2/issues/95)) ([45ff004](https://github.com/homeputers/ebal-v2/commit/45ff00444e6a53f5bb3ed5d825803c7acb432fa5))
+* **web:** implement auth auth flows ([#96](https://github.com/homeputers/ebal-v2/issues/96)) ([728d43f](https://github.com/homeputers/ebal-v2/commit/728d43f011f3b11ee22071f943593cc851a8d5e5))
+
+### Bug Fixes
+
+* **api:** localize user invite emails ([#99](https://github.com/homeputers/ebal-v2/issues/99)) ([e7cf7d9](https://github.com/homeputers/ebal-v2/commit/e7cf7d99dcbf0f94cab6d29de67082f051c38516))
+* **web:** guard members routes for privileged roles ([#100](https://github.com/homeputers/ebal-v2/issues/100)) ([52201bf](https://github.com/homeputers/ebal-v2/commit/52201bfb17b1edd8ddd58ec965160465bde7b2d5))
 ## [0.2.0](https://github.com/homeputers/ebal-v2/compare/v0.1.3...v0.2.0) (2025-09-20)
 
 ### Features
