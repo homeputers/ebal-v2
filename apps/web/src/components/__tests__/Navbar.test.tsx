@@ -166,6 +166,9 @@ describe('Navbar', () => {
       summary?.click();
     });
 
+    expect(
+      screen.getByRole('link', { name: 'Change password' }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();
   });
 

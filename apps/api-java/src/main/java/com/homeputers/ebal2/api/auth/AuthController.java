@@ -24,25 +24,31 @@ public class AuthController implements AuthApi {
     private final CurrentUserFactory currentUserFactory;
     private final AuthService authService;
     private final PasswordResetService passwordResetService;
+    private final AuthRateLimiter authRateLimiter;
     private final HttpServletRequest request;
 
     public AuthController(CurrentUserFactory currentUserFactory,
                          AuthService authService,
                          PasswordResetService passwordResetService,
+                         AuthRateLimiter authRateLimiter,
                          HttpServletRequest request) {
         this.currentUserFactory = currentUserFactory;
         this.authService = authService;
         this.passwordResetService = passwordResetService;
+        this.authRateLimiter = authRateLimiter;
         this.request = request;
     }
 
     @Override
     public ResponseEntity<AuthTokenPair> login(AuthLoginRequest authLoginRequest) {
+        String clientIp = resolveClientIpAddress();
+        authRateLimiter.assertLoginAllowed(clientIp);
         AuthTokenPair tokenPair = authService.login(
                 authLoginRequest.getEmail(),
                 authLoginRequest.getPassword(),
                 request.getHeader("User-Agent"),
-                resolveClientIpAddress());
+                clientIp);
+        authRateLimiter.resetLoginAttempts(clientIp);
         return ResponseEntity.ok(tokenPair);
     }
 
@@ -70,9 +76,12 @@ public class AuthController implements AuthApi {
 
     @Override
     public ResponseEntity<Void> requestPasswordReset(ForgotPasswordRequest forgotPasswordRequest, String acceptLanguage) {
+        String clientIp = resolveClientIpAddress();
+        authRateLimiter.assertForgotPasswordAllowed(clientIp);
         passwordResetService.requestPasswordReset(
                 forgotPasswordRequest.getEmail(),
                 acceptLanguage);
+        authRateLimiter.resetForgotPasswordAttempts(clientIp);
         return ResponseEntity.noContent().build();
     }
 

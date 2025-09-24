@@ -69,6 +69,10 @@ public class SecurityConfig {
             "/api/v1/search"
     };
 
+    private static final String[] SELF_SERVICE_ENDPOINTS = {
+            "/api/v1/me/**"
+    };
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http,
                                             SecurityProperties properties,
@@ -93,6 +97,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
                         .requestMatchers("/api/v1/auth/change-password", "/api/v1/auth/me").authenticated()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, SELF_SERVICE_ENDPOINTS)
+                        .hasAnyRole("ADMIN", "PLANNER", "MUSICIAN", "VIEWER")
+                        .requestMatchers(HttpMethod.POST, SELF_SERVICE_ENDPOINTS)
+                        .hasAnyRole("ADMIN", "PLANNER", "MUSICIAN", "VIEWER")
+                        .requestMatchers(HttpMethod.PATCH, SELF_SERVICE_ENDPOINTS)
+                        .hasAnyRole("ADMIN", "PLANNER", "MUSICIAN", "VIEWER")
+                        .requestMatchers(HttpMethod.DELETE, SELF_SERVICE_ENDPOINTS)
+                        .hasAnyRole("ADMIN", "PLANNER", "MUSICIAN", "VIEWER")
                         .requestMatchers(HttpMethod.GET, DOMAIN_ENDPOINTS)
                         .hasAnyRole("ADMIN", "PLANNER", "MUSICIAN", "VIEWER")
                         .requestMatchers(HttpMethod.POST, DOMAIN_ENDPOINTS)

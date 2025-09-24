@@ -54,6 +54,7 @@ export function Navbar({ currentLanguage }: NavbarProps) {
   });
 
   const profileHref = makeHref(currentLanguage, 'me');
+  const changePasswordHref = makeHref(currentLanguage, 'change-password');
 
   const menuLabel = me?.displayName ?? me?.email ?? t('nav.profile');
 
@@ -101,6 +102,17 @@ export function Navbar({ currentLanguage }: NavbarProps) {
                   }}
                 >
                   {t('nav.profile')}
+                </Link>
+                <Link
+                  to={changePasswordHref}
+                  className="block px-4 py-2 hover:bg-gray-100"
+                  onClick={() => {
+                    if (menuRef.current) {
+                      menuRef.current.open = false;
+                    }
+                  }}
+                >
+                  {t('nav.changePassword')}
                 </Link>
                 <button
                   type="button"

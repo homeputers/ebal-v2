@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Navbar } from '@/components/Navbar';
+import { SessionExpirationHandler } from '@/features/auth/components/SessionExpirationHandler';
 import {
   DEFAULT_LANGUAGE,
   LANGUAGE_STORAGE_KEY,
@@ -111,6 +112,7 @@ export function LanguageGuard() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar currentLanguage={normalizedLang} />
+      <SessionExpirationHandler currentLanguage={normalizedLang} />
       <ErrorBoundary>
         <Suspense fallback={<div>Loading...</div>}>
           <Outlet />
