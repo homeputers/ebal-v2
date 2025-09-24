@@ -1,3 +1,8 @@
+## [0.3.1](https://github.com/homeputers/ebal-v2/compare/v0.3.0...v0.3.1) (2025-09-24)
+
+### Bug Fixes
+
+* allow confirming email without auth ([#109](https://github.com/homeputers/ebal-v2/issues/109)) ([7065c0a](https://github.com/homeputers/ebal-v2/commit/7065c0ad9f9794662c765bf2767a6f4d10638162))
 ## [0.3.0](https://github.com/homeputers/ebal-v2/compare/v0.2.0...v0.3.0) (2025-09-24)
 
 ### Features
