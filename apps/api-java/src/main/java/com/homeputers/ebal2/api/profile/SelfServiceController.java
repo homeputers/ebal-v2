@@ -112,7 +112,11 @@ public class SelfServiceController implements ProfileApi {
             return Optional.empty();
         }
         try {
-            return Optional.of(UUID.fromString(jwt.getName()));
+            String subject = jwt.getToken().getSubject();
+            if (subject == null || subject.isBlank()) {
+                return Optional.empty();
+            }
+            return Optional.of(UUID.fromString(subject));
         } catch (IllegalArgumentException ex) {
             return Optional.empty();
         }
