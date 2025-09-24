@@ -146,7 +146,7 @@ function SortableSetItem({
           {...attributes}
           {...listeners}
         >
-          ☰
+          <span aria-hidden="true">{t('items.dragHandleIcon')}</span>
         </button>
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-4">
@@ -406,7 +406,7 @@ export default function SongSetDetailPage() {
             aria-pressed={useFlats}
             title={useFlats ? t('controls.showSharps') : t('controls.showFlats')}
           >
-            ♯ / ♭
+            {t('controls.toggleAccidentals')}
           </button>
           <button
             type="button"

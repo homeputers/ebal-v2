@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { listSongs } from '@/api/songs';
 import type { components } from '@/api/types';
 import { withLangKey } from '@/lib/queryClient';
@@ -20,6 +21,8 @@ interface Props {
 }
 
 export function SongPicker({ value, onChange, placeholder }: Props) {
+  const { t } = useTranslation('songs');
+  const { t: tCommon } = useTranslation('common');
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -87,10 +90,14 @@ export function SongPicker({ value, onChange, placeholder }: Props) {
           className="absolute z-10 mt-1 bg-white border rounded max-h-60 overflow-auto w-full"
           role="listbox"
         >
-          {isLoading && <li className="p-2 text-sm">Loading…</li>}
-          {isError && <li className="p-2 text-sm text-red-500">Failed to load</li>}
+          {isLoading && (
+            <li className="p-2 text-sm">{tCommon('status.loading')}</li>
+          )}
+          {isError && (
+            <li className="p-2 text-sm text-red-500">{tCommon('status.loadFailed')}</li>
+          )}
           {!isLoading && !isError && options.length === 0 && (
-            <li className="p-2 text-sm">No songs</li>
+            <li className="p-2 text-sm">{t('pickers.empty')}</li>
           )}
           {options.map((song, idx) => (
             <li

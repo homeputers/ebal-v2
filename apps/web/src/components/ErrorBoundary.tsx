@@ -1,5 +1,7 @@
 import { Component, ReactNode } from 'react';
 
+import i18n from '@/i18n';
+
 interface Props {
   children: ReactNode;
 }
@@ -21,7 +23,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      return <div>Something went wrong.</div>;
+      return <div>{i18n.t('common:errors.generic')}</div>;
     }
     return this.props.children;
   }

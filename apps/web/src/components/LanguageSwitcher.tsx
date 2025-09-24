@@ -148,7 +148,7 @@ export function LanguageSwitcher({
           {getLanguageLabel(currentLanguage)}
         </span>
         <span aria-hidden="true" className="text-xs">
-          ▼
+          {t('language.dropdownIndicator')}
         </span>
       </button>
       {isOpen ? (
@@ -172,7 +172,7 @@ export function LanguageSwitcher({
               >
                 <span>{getLanguageLabel(language)}</span>
                 {language === currentLanguage ? (
-                  <span aria-hidden="true">✓</span>
+                  <span aria-hidden="true">{t('language.selectedIndicator')}</span>
                 ) : null}
               </button>
             </li>

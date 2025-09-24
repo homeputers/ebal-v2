@@ -11,7 +11,8 @@
     "adminUsers": "Gestión de usuarios",
     "profile": "Perfil",
     "changePassword": "Cambiar contraseña",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "menuIndicator": "▾"
   },
   "actions": {
     "save": "Guardar",
@@ -50,9 +51,14 @@
   "language": {
     "change": "Cambiar idioma",
     "select": "Seleccionar idioma",
+    "dropdownIndicator": "▼",
+    "selectedIndicator": "✓",
     "labels": {
       "en": "Inglés",
       "es": "Español"
     }
+  },
+  "errors": {
+    "generic": "Algo salió mal."
   }
 }

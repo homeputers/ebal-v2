@@ -64,6 +64,7 @@
   },
   "lastUpdated": "Last updated {{date}}",
   "pickers": {
-    "searchPlaceholder": "Search songs..."
+    "searchPlaceholder": "Search songs...",
+    "empty": "No songs"
   }
 }

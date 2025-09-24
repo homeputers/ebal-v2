@@ -64,6 +64,7 @@
   },
   "lastUpdated": "Última actualización {{date}}",
   "pickers": {
-    "searchPlaceholder": "Buscar canciones..."
+    "searchPlaceholder": "Buscar canciones...",
+    "empty": "Sin canciones"
   }
 }
