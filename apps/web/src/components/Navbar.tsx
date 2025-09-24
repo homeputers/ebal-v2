@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -41,7 +42,8 @@ const makeHref = (language: string, path: string) =>
 
 export function Navbar({ currentLanguage }: NavbarProps) {
   const { t } = useTranslation('common');
-  const { hasRole, isAuthenticated, logout } = useAuth();
+  const { hasRole, isAuthenticated, logout, me } = useAuth();
+  const menuRef = useRef<HTMLDetailsElement | null>(null);
 
   const visibleLinks = links.filter((link) => {
     if (!link.roles || link.roles.length === 0) {
@@ -50,6 +52,17 @@ export function Navbar({ currentLanguage }: NavbarProps) {
 
     return link.roles.some((role) => hasRole(role));
   });
+
+  const profileHref = makeHref(currentLanguage, 'me');
+
+  const menuLabel = me?.displayName ?? me?.email ?? t('nav.profile');
+
+  const handleLogout = () => {
+    logout();
+    if (menuRef.current) {
+      menuRef.current.open = false;
+    }
+  };
 
   return (
     <nav className="bg-gray-800 text-white p-4 print:hidden">
@@ -68,13 +81,36 @@ export function Navbar({ currentLanguage }: NavbarProps) {
         </ul>
         <div className="flex items-center gap-2">
           {isAuthenticated ? (
-            <button
-              type="button"
-              onClick={logout}
-              className="rounded-md border border-white/30 bg-white/10 px-3 py-1 text-sm font-medium text-white hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-            >
-              {t('nav.logout')}
-            </button>
+            <details ref={menuRef} className="relative">
+              <summary
+                className="flex cursor-pointer list-none items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-1 text-sm font-medium text-white hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+              >
+                <span>{menuLabel}</span>
+                <span aria-hidden className="text-xs">
+                  ▾
+                </span>
+              </summary>
+              <div className="absolute right-0 mt-2 w-48 overflow-hidden rounded-md border border-gray-200 bg-white text-sm text-gray-700 shadow-lg">
+                <Link
+                  to={profileHref}
+                  className="block px-4 py-2 hover:bg-gray-100"
+                  onClick={() => {
+                    if (menuRef.current) {
+                      menuRef.current.open = false;
+                    }
+                  }}
+                >
+                  {t('nav.profile')}
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="block w-full px-4 py-2 text-left text-red-600 hover:bg-red-50"
+                >
+                  {t('nav.logout')}
+                </button>
+              </div>
+            </details>
           ) : null}
           <LanguageSwitcher currentLanguage={currentLanguage} />
         </div>

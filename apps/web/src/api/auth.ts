@@ -177,7 +177,13 @@ export const logout = () => {
   clearAuthTokens();
 };
 
-const AUTH_ENDPOINTS = ['/auth/login', '/auth/refresh'];
+const AUTH_ENDPOINTS = [
+  '/auth/login',
+  '/auth/refresh',
+  '/me/change-password',
+  '/me/change-email',
+  '/me/confirm-email',
+];
 
 const isAuthEndpoint = (url?: string) => {
   if (!url) {

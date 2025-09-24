@@ -1,0 +1,71 @@
+{
+  "profile": {
+    "title": "Mi perfil",
+    "subtitle": "Administra cómo te ven otras personas en Every Breath and Life.",
+    "fields": {
+      "displayName": "Nombre para mostrar",
+      "email": "Correo electrónico",
+      "roles": "Roles"
+    },
+    "avatar": {
+      "title": "Avatar",
+      "description": "Sube una imagen cuadrada en formato PNG, JPG o WebP de hasta 2 MB.",
+      "choose": "Elegir imagen",
+      "upload": "Subir",
+      "remove": "Quitar avatar",
+      "uploading": "Subiendo…",
+      "previewAlt": "Vista previa del avatar",
+      "emptyAlt": "Avatar predeterminado",
+      "errors": {
+        "tooLarge": "El archivo es demasiado grande. El tamaño máximo es 2 MB.",
+        "invalidType": "Tipo de archivo no compatible. Sube una imagen PNG, JPG o WebP.",
+        "uploadFailed": "No se pudo subir el avatar."
+      },
+      "success": "Avatar actualizado."
+    },
+    "notifications": {
+      "updateSuccess": "Perfil actualizado.",
+      "updateError": "No se pudo actualizar el perfil.",
+      "removeAvatarSuccess": "Avatar eliminado.",
+      "removeAvatarError": "No se pudo eliminar el avatar."
+    }
+  },
+  "security": {
+    "title": "Seguridad",
+    "subtitle": "Mantén la información de tu cuenta al día.",
+    "password": {
+      "title": "Cambiar contraseña",
+      "description": "Ingresa tu contraseña actual y elige una nueva.",
+      "fields": {
+        "currentPassword": "Contraseña actual",
+        "newPassword": "Nueva contraseña"
+      },
+      "submit": "Actualizar contraseña",
+      "success": "Contraseña actualizada. Vuelve a iniciar sesión.",
+      "error": "No se pudo actualizar la contraseña."
+    },
+    "email": {
+      "title": "Cambiar correo",
+      "description": "Usa tu contraseña para solicitar un nuevo correo electrónico.",
+      "fields": {
+        "currentPassword": "Contraseña actual",
+        "newEmail": "Nuevo correo"
+      },
+      "submit": "Solicitar cambio",
+      "success": "Enviamos un enlace de confirmación a {{email}}.",
+      "error": "No se pudo cambiar el correo."
+    },
+    "toastReauth": "Vuelve a iniciar sesión."
+  },
+  "confirmEmail": {
+    "title": "Confirmar correo",
+    "loading": "Confirmando tu correo…",
+    "success": "Correo confirmado. Vuelve a iniciar sesión.",
+    "error": "No pudimos confirmar tu correo. El enlace puede haber expirado.",
+    "missingToken": "Este enlace de confirmación no es válido.",
+    "goToLogin": "Ir a iniciar sesión"
+  },
+  "links": {
+    "security": "Configuración de seguridad"
+  }
+}
