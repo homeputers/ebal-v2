@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { AxiosError } from 'axios';
+import { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import type { CurrentUser, LoginRequest } from '@/api/auth';
@@ -152,10 +152,17 @@ describe('useAuth', () => {
     renderHook(() => useAuth());
 
     expect(lastQueryOptions?.retry).toBeDefined();
-    expect(lastQueryOptions?.initialData?.()).toEqual(storedUser);
+
+    const initialData = lastQueryOptions?.initialData;
+    expect(initialData).toBeDefined();
+    if (typeof initialData === 'function') {
+      expect(initialData()).toEqual(storedUser);
+    } else {
+      expect(initialData).toEqual(storedUser);
+    }
 
     const retry = lastQueryOptions?.retry;
-    if (!retry) {
+    if (typeof retry !== 'function') {
       throw new Error('retry handler not set');
     }
 
@@ -163,7 +170,7 @@ describe('useAuth', () => {
       status: 401,
       statusText: 'Unauthorized',
       headers: {},
-      config: {},
+      config: { headers: {} } as InternalAxiosRequestConfig,
       data: null,
     });
 
