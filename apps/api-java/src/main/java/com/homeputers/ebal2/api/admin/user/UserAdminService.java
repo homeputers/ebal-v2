@@ -324,6 +324,9 @@ public class UserAdminService {
 
     private Locale resolveLocale() {
         Locale locale = LocaleContextHolder.getLocale();
+        if (LocaleContextHolder.getLocaleContext() == null) {
+            return DEFAULT_LOCALE;
+        }
         if (locale == null || !StringUtils.hasText(locale.getLanguage())) {
             return DEFAULT_LOCALE;
         }
