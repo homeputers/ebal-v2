@@ -9,10 +9,7 @@ import {
   useAddMemberToGroup,
   useRemoveMemberFromGroup,
 } from '../../features/groups/hooks';
-import { useMembersList } from '../../features/members/hooks';
-import type { components } from '../../api/types';
-
-type Member = components['schemas']['MemberResponse'];
+import MemberPicker from '../../components/pickers/MemberPicker';
 
 export default function GroupDetailPage() {
   const { id = '' } = useParams<{ id: string }>();
@@ -24,24 +21,20 @@ export default function GroupDetailPage() {
   const addMember = useAddMemberToGroup(id);
   const removeMember = useRemoveMemberFromGroup(id);
 
-  const [memberSearch, setMemberSearch] = useState('');
-  const memberParams = useMemo(
-    () => ({ q: memberSearch || undefined, page: 0, size: 20 }),
-    [memberSearch],
-  );
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: allMembers } = useMembersList(memberParams as any);
-
-  const availableMembers: Member[] = (allMembers?.content || []).filter(
-    (m) => !membersQuery.data?.some((gm) => gm.id === m.id),
+  const memberIdsInGroup = useMemo(
+    () =>
+      (membersQuery.data ?? [])
+        .map((member) => member.id)
+        .filter((id): id is string => typeof id === 'string'),
+    [membersQuery.data],
   );
 
-  const [selectedMemberId, setSelectedMemberId] = useState('');
+  const [selectedMemberId, setSelectedMemberId] = useState<string | undefined>(undefined);
 
   const handleAdd = () => {
     if (!selectedMemberId) return;
     addMember.mutate(selectedMemberId, {
-      onSuccess: () => setSelectedMemberId(''),
+      onSuccess: () => setSelectedMemberId(undefined),
     });
   };
 
@@ -65,24 +58,12 @@ export default function GroupDetailPage() {
       <div className="md:w-1/2">
         <h2 className="text-xl font-semibold mb-4">{t('detail.membersTitle')}</h2>
         <div className="flex flex-col gap-2 mb-2 md:flex-row">
-          <input
-            value={memberSearch}
-            onChange={(e) => setMemberSearch(e.target.value)}
-            placeholder={t('detail.searchPlaceholder')}
-            className="border p-2 rounded flex-1"
-          />
-          <select
+          <MemberPicker
             value={selectedMemberId}
-            onChange={(e) => setSelectedMemberId(e.target.value)}
-            className="border p-2 rounded flex-1"
-          >
-            <option value="">{t('detail.selectMember')}</option>
-            {availableMembers.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.displayName}
-              </option>
-            ))}
-          </select>
+            onChange={setSelectedMemberId}
+            placeholder={t('detail.searchPlaceholder')}
+            excludeIds={memberIdsInGroup}
+          />
           <button
             onClick={handleAdd}
             disabled={!selectedMemberId}
