@@ -49,7 +49,8 @@ public class SecurityConfig {
     private static final String[] PUBLIC_GET_ENDPOINTS = {
             "/api/v1/health",
             "/api/v1/storage/health",
-            "/api/v1/services/ical"
+            "/api/v1/services/ical",
+            "/api/v1/meta/git"
     };
 
     private static final String[] SWAGGER_ENDPOINTS = {
