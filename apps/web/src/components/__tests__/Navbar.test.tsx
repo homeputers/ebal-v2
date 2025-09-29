@@ -65,7 +65,7 @@ const renderNavbar = async (language: string) => {
 
   return render(
     <I18nextProvider i18n={i18n}>
-      <MemoryRouter initialEntries={[`/${language}`]}>
+      <MemoryRouter initialEntries={[`/${language}/services`]}>
         <Navbar currentLanguage={language} />
       </MemoryRouter>
     </I18nextProvider>,
@@ -214,5 +214,25 @@ describe('Navbar', () => {
     });
 
     expect(screen.getByRole('link', { name: 'Profile' })).toBeInTheDocument();
+  });
+
+  it('marks the active navigation link for the current route', async () => {
+    mockUseAuth.mockClear();
+
+    await renderNavbar('en');
+
+    const servicesLink = screen.getByRole('link', { name: 'Services' });
+    expect(servicesLink).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('shows the account descriptor text when an email is available', async () => {
+    setIsAuthenticated(true);
+    mockUseAuth.mockClear();
+
+    await renderNavbar('en');
+
+    expect(
+      screen.getByText('Signed in as test@example.com'),
+    ).toBeInTheDocument();
   });
 });

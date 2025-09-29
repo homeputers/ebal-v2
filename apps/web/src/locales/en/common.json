@@ -12,7 +12,11 @@
     "profile": "Profile",
     "changePassword": "Change password",
     "logout": "Log out",
-    "menuIndicator": "▾"
+    "menuIndicator": "▾",
+    "primaryLabel": "Primary navigation",
+    "openMenu": "Open navigation menu",
+    "closeMenu": "Close navigation menu",
+    "accountLabel": "Signed in as {{value}}"
   },
   "actions": {
     "save": "Save",
