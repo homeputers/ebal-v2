@@ -95,7 +95,9 @@ class AuthControllerTest extends AbstractIntegrationTest {
         assertThat(meResponse.getBody()).isNotNull();
         assertThat(meResponse.getBody().getEmail()).isEqualTo(EMAIL);
         assertThat(meResponse.getBody().getDisplayName()).isEqualTo("planner");
-        assertThat(meResponse.getBody().getAvatarUrl()).hasToString("https://cdn.example.com/avatar.png");
+        assertThat(meResponse.getBody().getAvatarUrl()).isNotNull();
+        assertThat(meResponse.getBody().getAvatarUrl().isPresent()).isTrue();
+        assertThat(meResponse.getBody().getAvatarUrl().get()).hasToString("https://cdn.example.com/avatar.png");
     }
 
     @Test
