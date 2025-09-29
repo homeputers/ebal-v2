@@ -171,16 +171,20 @@ describe('AppShell', () => {
 
     await renderAppShell('en');
 
-    const summary = screen.getByText('Test User').closest('summary');
-    expect(summary).not.toBeNull();
+    const accountButton = screen.getByRole('button', {
+      name: 'Account options for Test User',
+    });
+    expect(accountButton).toBeInTheDocument();
     await act(async () => {
-      summary?.click();
+      accountButton.click();
     });
 
     expect(
-      screen.getByRole('link', { name: 'Change password' }),
+      await screen.findByRole('menuitem', { name: 'Change password' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('menuitem', { name: 'Log out' }),
+    ).toBeInTheDocument();
   });
 
   it('hides logout control when unauthenticated', async () => {
@@ -189,7 +193,7 @@ describe('AppShell', () => {
 
     await renderAppShell('en');
 
-    const logoutButton = screen.queryByRole('button', { name: 'Log out' });
+    const logoutButton = screen.queryByRole('menuitem', { name: 'Log out' });
     expect(logoutButton).not.toBeInTheDocument();
   });
 
@@ -200,12 +204,14 @@ describe('AppShell', () => {
 
     await renderAppShell('en');
 
-    const summary = screen.getByText('Test User').closest('summary');
+    const accountButton = screen.getByRole('button', {
+      name: 'Account options for Test User',
+    });
     await act(async () => {
-      summary?.click();
+      accountButton.click();
     });
 
-    const button = screen.getByRole('button', { name: 'Log out' });
+    const button = await screen.findByRole('menuitem', { name: 'Log out' });
     await act(async () => {
       button.click();
     });

@@ -1,10 +1,11 @@
-import { useMemo, useRef } from 'react';
+import { useId, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useAuth } from '@/features/auth/useAuth';
 import { buildLanguagePath, type AppNavigationLink } from '@/components/navigation/links';
+import { useHeaderPopover } from '@/hooks/useHeaderPopover';
 
 type AppHeaderProps = {
   currentLanguage: string;
@@ -21,7 +22,8 @@ export function AppHeader({
 }: AppHeaderProps) {
   const { t } = useTranslation('common');
   const { logout, me, isAuthenticated } = useAuth();
-  const menuRef = useRef<HTMLDetailsElement | null>(null);
+  const accountMenu = useHeaderPopover<HTMLDivElement>();
+  const accountMenuButtonId = useId();
 
   const profileHref = useMemo(
     () => buildLanguagePath(currentLanguage, 'me'),
@@ -45,9 +47,7 @@ export function AppHeader({
 
   const handleLogout = () => {
     logout();
-    if (menuRef.current) {
-      menuRef.current.open = false;
-    }
+    accountMenu.close({ focusTrigger: true });
   };
 
   const hasNavigation = navigationLinks.length > 0;
@@ -112,45 +112,63 @@ export function AppHeader({
           ) : null}
           <LanguageSwitcher currentLanguage={currentLanguage} />
           {isAuthenticated ? (
-            <details ref={menuRef} className="relative">
-              <summary className="flex cursor-pointer list-none items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-1 text-sm font-medium text-white hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
-                <span>{menuLabel}</span>
+            <div className="relative">
+              <button
+                ref={accountMenu.triggerRef}
+                id={accountMenuButtonId}
+                type="button"
+                aria-haspopup="menu"
+                aria-expanded={accountMenu.isOpen}
+                aria-controls={`${accountMenuButtonId}-menu`}
+                aria-label={t('nav.accountMenuLabel', {
+                  value: menuLabel,
+                  defaultValue: menuLabel,
+                })}
+                className="flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-1 text-sm font-medium text-white hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                onClick={accountMenu.toggle}
+              >
+                <span className="max-w-[10rem] truncate" title={menuLabel}>
+                  {menuLabel}
+                </span>
                 <span aria-hidden="true" className="text-xs">
                   {t('nav.menuIndicator')}
                 </span>
-              </summary>
-              <div className="absolute right-0 mt-2 w-48 overflow-hidden rounded-md border border-gray-200 bg-white text-sm text-gray-700 shadow-lg">
-                <Link
-                  to={profileHref}
-                  className="block px-4 py-2 hover:bg-gray-100"
-                  onClick={() => {
-                    if (menuRef.current) {
-                      menuRef.current.open = false;
-                    }
-                  }}
+              </button>
+              {accountMenu.isOpen ? (
+                <div
+                  ref={accountMenu.popoverRef}
+                  role="menu"
+                  id={`${accountMenuButtonId}-menu`}
+                  aria-labelledby={accountMenuButtonId}
+                  className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-md border border-gray-200 bg-white text-sm text-gray-700 shadow-lg"
                 >
-                  {t('nav.profile')}
-                </Link>
-                <Link
-                  to={changePasswordHref}
-                  className="block px-4 py-2 hover:bg-gray-100"
-                  onClick={() => {
-                    if (menuRef.current) {
-                      menuRef.current.open = false;
-                    }
-                  }}
-                >
-                  {t('nav.changePassword')}
-                </Link>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="block w-full px-4 py-2 text-left text-red-600 hover:bg-red-50"
-                >
-                  {t('nav.logout')}
-                </button>
-              </div>
-            </details>
+                  <Link
+                    to={profileHref}
+                    role="menuitem"
+                    className="block px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                    onClick={() => accountMenu.close()}
+                  >
+                    {t('nav.profile')}
+                  </Link>
+                  <Link
+                    to={changePasswordHref}
+                    role="menuitem"
+                    className="block px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                    onClick={() => accountMenu.close()}
+                  >
+                    {t('nav.changePassword')}
+                  </Link>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={handleLogout}
+                    className="block w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 focus:bg-red-50 focus:outline-none"
+                  >
+                    {t('nav.logout')}
+                  </button>
+                </div>
+              ) : null}
+            </div>
           ) : null}
         </div>
       </div>

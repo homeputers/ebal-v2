@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -7,6 +7,7 @@ import {
   SUPPORTED_LANGUAGES,
   setAppLanguage,
 } from '@/i18n';
+import { useHeaderPopover } from '@/hooks/useHeaderPopover';
 
 type LanguageSwitcherProps = {
   currentLanguage: string;
@@ -25,11 +26,10 @@ export function LanguageSwitcher({
   currentLanguage,
 }: LanguageSwitcherProps) {
   const { t } = useTranslation('common');
-  const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const { close, isOpen, toggle, triggerRef, popoverRef } =
+    useHeaderPopover<HTMLUListElement>();
 
   const languages = useMemo(
     () => Array.from(new Set(SUPPORTED_LANGUAGES)),
@@ -44,33 +44,6 @@ export function LanguageSwitcher({
       }),
     [t],
   );
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-        buttonRef.current?.focus();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscape);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [isOpen]);
 
   const persistLanguage = useCallback((language: string) => {
     if (!isBrowser) {
@@ -102,7 +75,7 @@ export function LanguageSwitcher({
 
   const handleSelect = useCallback(
     (nextLanguage: string) => {
-      setIsOpen(false);
+      close();
 
       if (nextLanguage === currentLanguage) {
         return;
@@ -127,22 +100,20 @@ export function LanguageSwitcher({
       location.search,
       navigate,
       persistLanguage,
+      close,
     ],
   );
 
   return (
-    <div
-      ref={containerRef}
-      className={`relative inline-block text-left ${className ?? ''}`.trim()}
-    >
+    <div className={`relative inline-block text-left ${className ?? ''}`.trim()}>
       <button
-        ref={buttonRef}
+        ref={triggerRef}
         type="button"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-label={t('language.change')}
         className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-1 text-sm font-medium text-white hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-        onClick={() => setIsOpen((value) => !value)}
+        onClick={toggle}
       >
         <span className="uppercase tracking-wide">
           {getLanguageLabel(currentLanguage)}
@@ -153,6 +124,7 @@ export function LanguageSwitcher({
       </button>
       {isOpen ? (
         <ul
+          ref={popoverRef}
           role="listbox"
           aria-label={t('language.select')}
           className="absolute right-0 z-50 mt-2 w-40 overflow-hidden rounded-md border border-gray-200 bg-white py-1 shadow-lg focus:outline-none"

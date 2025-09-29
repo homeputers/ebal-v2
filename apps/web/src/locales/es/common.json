@@ -16,7 +16,8 @@
     "primaryLabel": "Navegación principal",
     "openMenu": "Abrir menú de navegación",
     "closeMenu": "Cerrar menú de navegación",
-    "accountLabel": "Sesión iniciada como {{value}}"
+    "accountLabel": "Sesión iniciada como {{value}}",
+    "accountMenuLabel": "Opciones de cuenta para {{value}}"
   },
   "actions": {
     "save": "Guardar",
