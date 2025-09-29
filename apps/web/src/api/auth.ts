@@ -15,7 +15,7 @@ type RefreshPath = keyof paths & '/auth/refresh';
 type ForgotPasswordPath = keyof paths & '/auth/forgot-password';
 type ResetPasswordPath = keyof paths & '/auth/reset-password';
 type ChangePasswordPath = keyof paths & '/auth/change-password';
-type MePath = keyof paths & '/auth/me';
+type MePath = keyof paths & '/me';
 
 type AuthTokenPair = ResponseOf<LoginPath, 'post', 200>;
 type RefreshResponse = ResponseOf<RefreshPath, 'post', 200>;
@@ -270,7 +270,7 @@ const toStoredCurrentUser = (value: CurrentUser): StoredCurrentUser => ({
 });
 
 export const getCurrentUser = async () => {
-  const { data } = await apiClient.get<CurrentUser>('/auth/me');
+  const { data } = await apiClient.get<CurrentUser>('/me');
   const snapshot = toStoredCurrentUser(data);
   storedCurrentUser = snapshot;
   persistCurrentUser(snapshot);

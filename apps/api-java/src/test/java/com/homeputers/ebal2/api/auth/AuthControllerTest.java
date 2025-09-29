@@ -10,9 +10,9 @@ import com.homeputers.ebal2.api.generated.model.AuthLoginRequest;
 import com.homeputers.ebal2.api.generated.model.AuthTokenPair;
 import com.homeputers.ebal2.api.generated.model.ChangePasswordRequest;
 import com.homeputers.ebal2.api.generated.model.ForgotPasswordRequest;
+import com.homeputers.ebal2.api.generated.model.MyProfile;
 import com.homeputers.ebal2.api.generated.model.RefreshTokenRequest;
 import com.homeputers.ebal2.api.generated.model.ResetPasswordRequest;
-import com.homeputers.ebal2.api.generated.model.User;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,16 +71,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
-    void returnsUnauthorizedWhenAnonymous() {
-        ResponseEntity<ProblemDetail> response = restTemplate.getForEntity("/api/v1/auth/me", ProblemDetail.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getDetail()).isEqualTo("Authentication is required to access this resource.");
-    }
-
-    @Test
-    void loginIssuesTokenPairAndAllowsCurrentUserLookup() {
+    void loginIssuesTokenPairAndAllowsProfileLookup() {
         UUID userId = authenticationHelper.ensureUser(EMAIL, PASSWORD, List.of("PLANNER"));
         OffsetDateTime now = OffsetDateTime.now();
         userMapper.updateAvatar(userId, "https://cdn.example.com/avatar.png", now);
@@ -94,11 +85,11 @@ class AuthControllerTest extends AbstractIntegrationTest {
         assertThat(jwt.getClaimAsStringList("roles")).contains("PLANNER");
         assertThat(jwt.getClaimAsString("email")).isEqualTo(EMAIL);
 
-        ResponseEntity<User> meResponse = restTemplate.exchange(
-                "/api/v1/auth/me",
+        ResponseEntity<MyProfile> meResponse = restTemplate.exchange(
+                "/api/v1/me",
                 HttpMethod.GET,
                 new HttpEntity<>(bearerHeaders(tokens.getAccessToken())),
-                User.class);
+                MyProfile.class);
 
         assertThat(meResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(meResponse.getBody()).isNotNull();

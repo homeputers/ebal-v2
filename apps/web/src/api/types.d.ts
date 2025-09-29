@@ -40,6 +40,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/meta/git": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve git build metadata
+         * @description Provides information about the git revision used to build the service for debugging and triage.
+         */
+        get: operations["getGitInformation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/login": {
         parameters: {
             query?: never;
@@ -134,26 +154,6 @@ export interface paths {
          * @description Allows an authenticated user to change their password using the current password for verification.
          */
         post: operations["changePassword"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/auth/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Retrieve the current authenticated user
-         * @description Returns information about the authenticated principal for the current request.
-         */
-        get: operations["getCurrentUser"];
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -709,6 +709,27 @@ export interface components {
         Health: {
             status?: string;
         };
+        GitInfo: {
+            /** @description Current branch used for the build. */
+            branch?: string;
+            /** @description Full git commit SHA for the build. */
+            commitId?: string;
+            /** @description Abbreviated git commit SHA. */
+            abbreviatedCommitId?: string;
+            /**
+             * Format: date-time
+             * @description Commit timestamp in ISO-8601 format.
+             */
+            commitTime?: string;
+            /** @description Indicates if the working tree had uncommitted changes when built. */
+            dirty?: boolean;
+            /** @description Tags that point to the current commit. */
+            tags?: string[];
+            /** @description Closest annotated tag in the commit history. */
+            closestTag?: string;
+            /** @description Output of `git describe --always --dirty` if available. */
+            describe?: string;
+        };
         /** @example {
          *       "status": "enabled"
          *     } */
@@ -743,7 +764,7 @@ export interface components {
             email: string;
             displayName: string;
             /** Format: uri */
-            avatarUrl?: string;
+            avatarUrl?: string | null;
             roles: components["schemas"]["Role"][];
             isActive: boolean;
             /** Format: date-time */
@@ -760,7 +781,7 @@ export interface components {
             roles: components["schemas"]["Role"][];
             isActive: boolean;
             /** Format: uri */
-            avatarUrl?: string;
+            avatarUrl?: string | null;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
@@ -1033,6 +1054,26 @@ export interface operations {
             };
         };
     };
+    getGitInformation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Git metadata for the running service */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GitInfo"];
+                };
+            };
+        };
+    };
     login: {
         parameters: {
             query?: never;
@@ -1143,33 +1184,6 @@ export interface operations {
         responses: {
             /** @description Password updated successfully */
             204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getCurrentUser: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Current user information */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["User"];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
                 headers: {
                     [name: string]: unknown;
                 };

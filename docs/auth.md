@@ -37,7 +37,7 @@ Access control is enforced in `SecurityConfig`. The matrix below summarizes whic
 | Endpoint group | Admin | Planner | Musician | Viewer |
 | --- | --- | --- | --- | --- |
 | `/api/v1/admin/**` (all methods) | ✅ | ❌ | ❌ | ❌ |
-| `/api/v1/auth/change-password`, `/api/v1/auth/me` | ✅ | ✅ | ✅ | ✅ |
+| `/api/v1/auth/change-password` | ✅ | ✅ | ✅ | ✅ |
 | `/api/v1/me/**` (self-service) | ✅ | ✅ | ✅ | ✅ |
 | Domain reads (`GET` on members, groups, songs, services, song sets, plan items, search) | ✅ | ✅ | ✅ | ✅ |
 | Domain mutations (`POST`, `PUT`, `PATCH`, `DELETE` on the endpoints above) | ✅ | ✅ | ❌ | ❌ |
