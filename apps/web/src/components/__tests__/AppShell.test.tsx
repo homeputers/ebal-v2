@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 
@@ -185,6 +185,65 @@ describe('AppShell', () => {
     expect(
       await screen.findByRole('menuitem', { name: 'Log out' }),
     ).toBeInTheDocument();
+  });
+
+  it('closes the account menu on Escape and restores focus to the trigger', async () => {
+    setIsAuthenticated(true);
+    mockUseAuth.mockClear();
+
+    await renderAppShell('en');
+
+    const accountButton = screen.getByRole('button', {
+      name: 'Account options for Test User',
+    });
+
+    accountButton.focus();
+
+    await act(async () => {
+      accountButton.click();
+    });
+
+    expect(
+      await screen.findByRole('menuitem', { name: 'Change password' }),
+    ).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.keyDown(document, { key: 'Escape' });
+    });
+
+    expect(
+      screen.queryByRole('menuitem', { name: 'Change password' }),
+    ).not.toBeInTheDocument();
+    expect(accountButton).toHaveFocus();
+  });
+
+  it('closes the account menu when clicking outside', async () => {
+    setIsAuthenticated(true);
+    mockUseAuth.mockClear();
+
+    await renderAppShell('en');
+
+    const accountButton = screen.getByRole('button', {
+      name: 'Account options for Test User',
+    });
+
+    await act(async () => {
+      accountButton.click();
+    });
+
+    expect(
+      await screen.findByRole('menuitem', { name: 'Change password' }),
+    ).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.mouseDown(document.body);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('menuitem', { name: 'Change password' }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('hides logout control when unauthenticated', async () => {

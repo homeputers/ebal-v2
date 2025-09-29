@@ -33,14 +33,30 @@ export function useHeaderPopover<T extends HTMLElement = HTMLDivElement>() {
       return;
     }
 
-    const handlePointerDown = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (
-        triggerRef.current?.contains(target) ||
-        popoverRef.current?.contains(target)
-      ) {
+    const isEventInside = (node: EventTarget | null) => {
+      if (!(node instanceof Node)) {
+        return false;
+      }
+
+      return (
+        !!triggerRef.current?.contains(node) ||
+        !!popoverRef.current?.contains(node)
+      );
+    };
+
+    const handlePointerDown = (event: Event) => {
+      if (isEventInside(event.target)) {
         return;
       }
+
+      close();
+    };
+
+    const handleFocusIn = (event: FocusEvent) => {
+      if (isEventInside(event.target)) {
+        return;
+      }
+
       close();
     };
 
@@ -51,11 +67,18 @@ export function useHeaderPopover<T extends HTMLElement = HTMLDivElement>() {
       }
     };
 
-    document.addEventListener('mousedown', handlePointerDown);
+    const pointerEventName =
+      typeof window !== 'undefined' && 'PointerEvent' in window
+        ? 'pointerdown'
+        : 'mousedown';
+
+    document.addEventListener(pointerEventName, handlePointerDown);
+    document.addEventListener('focusin', handleFocusIn);
     document.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener(pointerEventName, handlePointerDown);
+      document.removeEventListener('focusin', handleFocusIn);
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [close, isOpen]);
