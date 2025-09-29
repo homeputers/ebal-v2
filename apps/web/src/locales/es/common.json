@@ -16,7 +16,10 @@
     "primaryLabel": "Navegación principal",
     "openMenu": "Abrir menú de navegación",
     "closeMenu": "Cerrar menú de navegación",
-    "accountMenuLabel": "Opciones de cuenta para {{value}}"
+    "accountMenuLabel": "Opciones de cuenta para {{value}}",
+    "organizationSectionLabel": "Organización",
+    "languageSectionLabel": "Idioma",
+    "accountSectionLabel": "Cuenta"
   },
   "actions": {
     "save": "Guardar",
