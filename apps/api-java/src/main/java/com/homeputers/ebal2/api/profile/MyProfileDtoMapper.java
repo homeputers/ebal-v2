@@ -2,6 +2,7 @@ package com.homeputers.ebal2.api.profile;
 
 import com.homeputers.ebal2.api.generated.model.MyProfile;
 import com.homeputers.ebal2.api.generated.model.Role;
+import org.openapitools.jackson.nullable.JsonNullable;
 
 import java.net.URI;
 import java.util.Objects;
@@ -19,9 +20,9 @@ public final class MyProfileDtoMapper {
         dto.setEmail(view.email());
         dto.setDisplayName(view.displayName());
         if (view.avatarUrl() != null) {
-            dto.setAvatarUrl(URI.create(view.avatarUrl()));
+            dto.setAvatarUrl(JsonNullable.of(URI.create(view.avatarUrl())));
         } else {
-            dto.setAvatarUrl(null);
+            dto.setAvatarUrl(JsonNullable.undefined());
         }
         dto.setIsActive(view.isActive());
         dto.setCreatedAt(view.createdAt());
