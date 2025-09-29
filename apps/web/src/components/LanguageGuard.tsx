@@ -2,7 +2,7 @@ import { Suspense, useEffect, useMemo } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { Navbar } from '@/components/Navbar';
+import { AppShell } from '@/components/layout/AppShell';
 import { SessionExpirationHandler } from '@/features/auth/components/SessionExpirationHandler';
 import {
   DEFAULT_LANGUAGE,
@@ -110,15 +110,14 @@ export function LanguageGuard() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar currentLanguage={normalizedLang} />
+    <AppShell currentLanguage={normalizedLang}>
       <SessionExpirationHandler currentLanguage={normalizedLang} />
       <ErrorBoundary>
         <Suspense fallback={<div>Loading...</div>}>
           <Outlet />
         </Suspense>
       </ErrorBoundary>
-    </div>
+    </AppShell>
   );
 }
 
