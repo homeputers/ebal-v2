@@ -116,16 +116,16 @@ describe('Navbar', () => {
     }
   });
 
-  it('hides planner-only navigation links when role missing', async () => {
+  it('shows musician read-only navigation links when applicable', async () => {
     setActiveRoles(['MUSICIAN']);
     mockUseAuth.mockClear();
 
     await renderNavbar('en');
 
     expect(screen.getByRole('link', { name: 'Services' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Songs' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Members' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Groups' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Songs' })).not.toBeInTheDocument();
     expect(
       screen.queryByRole('link', { name: 'Song Sets' }),
     ).not.toBeInTheDocument();

@@ -9,6 +9,7 @@ import {
   useDeleteSong,
 } from '../../features/songs/hooks';
 import SongForm from '../../features/songs/SongForm';
+import { useAuth } from '../../features/auth/useAuth';
 
 function Modal({
   open,
@@ -41,6 +42,7 @@ type SongRequest = components['schemas']['SongRequest'];
 export default function SongsPage() {
   const { t } = useTranslation('songs');
   const { t: tCommon } = useTranslation('common');
+  const { hasRole } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const titleParam = searchParams.get('title') ?? '';
   const tagParam = searchParams.get('tag') ?? '';
@@ -81,6 +83,8 @@ export default function SongsPage() {
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<Song | null>(null);
 
+  const canManageSongs = hasRole('ADMIN') || hasRole('PLANNER');
+
   const handleCreate = (vals: SongRequest) => {
     createMut.mutate(vals, { onSuccess: () => setCreating(false) });
   };
@@ -111,12 +115,14 @@ export default function SongsPage() {
           placeholder={t('list.searchPlaceholder')}
           className="border p-2 rounded w-full max-w-sm"
         />
-        <button
-          onClick={() => setCreating(true)}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          {t('actions.new')}
-        </button>
+        {canManageSongs && (
+          <button
+            onClick={() => setCreating(true)}
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            {t('actions.new')}
+          </button>
+        )}
       </div>
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">
@@ -151,7 +157,11 @@ export default function SongsPage() {
                     <th className="text-left p-2">{t('fields.title')}</th>
                     <th className="text-left p-2">{t('fields.defaultKey')}</th>
                     <th className="text-left p-2">{t('fields.tags')}</th>
-                    <th className="p-2 text-right">{tCommon('table.actions')}</th>
+                    {canManageSongs && (
+                      <th className="p-2 text-right">
+                        {tCommon('table.actions')}
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -167,22 +177,24 @@ export default function SongsPage() {
                       </td>
                       <td className="p-2">{s.defaultKey}</td>
                       <td className="p-2">{s.tags?.join(', ')}</td>
-                      <td className="p-2 text-right">
-                        <div className="flex gap-2 justify-end">
-                          <button
-                            className="px-2 py-1 text-sm bg-gray-200 rounded"
-                            onClick={() => setEditing(s)}
-                          >
-                            {tCommon('actions.edit')}
-                          </button>
-                          <button
-                            className="px-2 py-1 text-sm bg-red-500 text-white rounded"
-                            onClick={() => s.id && deleteMut.mutate(s.id)}
-                          >
-                            {tCommon('actions.delete')}
-                          </button>
-                        </div>
-                      </td>
+                      {canManageSongs && (
+                        <td className="p-2 text-right">
+                          <div className="flex gap-2 justify-end">
+                            <button
+                              className="px-2 py-1 text-sm bg-gray-200 rounded"
+                              onClick={() => setEditing(s)}
+                            >
+                              {tCommon('actions.edit')}
+                            </button>
+                            <button
+                              className="px-2 py-1 text-sm bg-red-500 text-white rounded"
+                              onClick={() => s.id && deleteMut.mutate(s.id)}
+                            >
+                              {tCommon('actions.delete')}
+                            </button>
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -219,26 +231,37 @@ export default function SongsPage() {
           )}
         </div>
       ) : null}
-      <Modal open={creating} onClose={() => setCreating(false)}>
-        <h2 className="text-lg font-semibold mb-2">{t('modals.createTitle')}</h2>
-        <SongForm onSubmit={handleCreate} onCancel={() => setCreating(false)} />
-      </Modal>
-      <Modal open={!!editing} onClose={() => setEditing(null)}>
-        <h2 className="text-lg font-semibold mb-2">{t('modals.editTitle')}</h2>
-        {editing && (
-          <SongForm
-            defaultValues={{
-              title: editing.title || '',
-              ccli: editing.ccli || '',
-              author: editing.author || '',
-              defaultKey: editing.defaultKey || '',
-              tags: editing.tags?.join(', ') || '',
-            }}
-            onSubmit={(vals) => handleUpdate(editing.id!, vals)}
-            onCancel={() => setEditing(null)}
-          />
-        )}
-      </Modal>
+      {canManageSongs && (
+        <>
+          <Modal open={creating} onClose={() => setCreating(false)}>
+            <h2 className="text-lg font-semibold mb-2">
+              {t('modals.createTitle')}
+            </h2>
+            <SongForm
+              onSubmit={handleCreate}
+              onCancel={() => setCreating(false)}
+            />
+          </Modal>
+          <Modal open={!!editing} onClose={() => setEditing(null)}>
+            <h2 className="text-lg font-semibold mb-2">
+              {t('modals.editTitle')}
+            </h2>
+            {editing && (
+              <SongForm
+                defaultValues={{
+                  title: editing.title || '',
+                  ccli: editing.ccli || '',
+                  author: editing.author || '',
+                  defaultKey: editing.defaultKey || '',
+                  tags: editing.tags?.join(', ') || '',
+                }}
+                onSubmit={(vals) => handleUpdate(editing.id!, vals)}
+                onCancel={() => setEditing(null)}
+              />
+            )}
+          </Modal>
+        </>
+      )}
     </div>
   );
 }

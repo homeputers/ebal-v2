@@ -19,7 +19,11 @@ type NavLink = {
 const links: NavLink[] = [
   { path: 'members', labelKey: 'nav.members', roles: ['ADMIN', 'PLANNER'] },
   { path: 'groups', labelKey: 'nav.groups', roles: ['ADMIN', 'PLANNER'] },
-  { path: 'songs', labelKey: 'nav.songs', roles: ['ADMIN', 'PLANNER'] },
+  {
+    path: 'songs',
+    labelKey: 'nav.songs',
+    roles: ['ADMIN', 'PLANNER', 'MUSICIAN'],
+  },
   {
     path: 'song-sets',
     labelKey: 'nav.songSets',
