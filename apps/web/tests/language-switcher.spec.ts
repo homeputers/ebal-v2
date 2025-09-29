@@ -12,11 +12,15 @@ const ES_NAV_LABELS = [
 const LANGUAGE_BUTTON_NAME = /Change language|Cambiar idioma/;
 const AUTH_STORAGE_KEY = 'ebal.auth.tokens';
 
-const stubAuthMeResponse = {
+const stubMeResponse = {
   id: 'e2e-user',
   email: 'e2e@example.com',
   displayName: 'E2E User',
+  avatarUrl: 'https://example.com/avatar.png',
   roles: ['ADMIN'],
+  isActive: true,
+  createdAt: '2023-01-01T00:00:00.000Z',
+  updatedAt: '2023-01-01T00:00:00.000Z',
 };
 
 const emptyServicesPage = {
@@ -49,11 +53,11 @@ const createAuthTokens = () => ({
 test('language switcher smoke: switches navigation language and persists after reload', async ({
   page,
 }) => {
-  await page.route('**/api/v1/auth/me', async (route) => {
+  await page.route('**/api/v1/me', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(stubAuthMeResponse),
+      body: JSON.stringify(stubMeResponse),
     });
   });
 

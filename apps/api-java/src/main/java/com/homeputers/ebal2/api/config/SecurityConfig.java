@@ -8,8 +8,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationTrustResolver;
-import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -100,7 +98,7 @@ public class SecurityConfig {
                         .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
                         .requestMatchers(AUTH_PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
-                        .requestMatchers("/api/v1/auth/change-password", "/api/v1/auth/me").authenticated()
+                        .requestMatchers("/api/v1/auth/change-password").authenticated()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, SELF_SERVICE_ENDPOINTS)
                         .hasAnyRole("ADMIN", "PLANNER", "MUSICIAN", "VIEWER")
@@ -165,11 +163,6 @@ public class SecurityConfig {
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         return new JwtAuthenticationConverter();
-    }
-
-    @Bean
-    AuthenticationTrustResolver authenticationTrustResolver() {
-        return new AuthenticationTrustResolverImpl();
     }
 
     @Bean

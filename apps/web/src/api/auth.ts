@@ -15,7 +15,7 @@ type RefreshPath = keyof paths & '/auth/refresh';
 type ForgotPasswordPath = keyof paths & '/auth/forgot-password';
 type ResetPasswordPath = keyof paths & '/auth/reset-password';
 type ChangePasswordPath = keyof paths & '/auth/change-password';
-type MePath = keyof paths & '/auth/me';
+type MePath = keyof paths & '/me';
 
 type AuthTokenPair = ResponseOf<LoginPath, 'post', 200>;
 type RefreshResponse = ResponseOf<RefreshPath, 'post', 200>;
@@ -36,7 +36,7 @@ type AuthenticatedRequestConfig = InternalAxiosRequestConfig & {
 
 type StoredCurrentUser = Pick<
   CurrentUser,
-  'id' | 'email' | 'displayName' | 'roles' | 'isActive' | 'createdAt' | 'updatedAt'
+  'id' | 'email' | 'displayName' | 'avatarUrl' | 'roles' | 'isActive' | 'createdAt' | 'updatedAt'
 >;
 
 type AuthSessionClearReason = 'logout' | 'session-expired';
@@ -108,6 +108,7 @@ const loadStoredCurrentUser = (): StoredCurrentUser | null => {
       typeof parsed?.id === 'string' &&
       typeof parsed?.email === 'string' &&
       typeof parsed?.displayName === 'string' &&
+      (typeof parsed?.avatarUrl === 'string' || parsed?.avatarUrl === null || typeof parsed?.avatarUrl === 'undefined') &&
       Array.isArray(parsed?.roles) &&
       typeof parsed?.isActive === 'boolean' &&
       typeof parsed?.createdAt === 'string' &&
@@ -261,6 +262,7 @@ const toStoredCurrentUser = (value: CurrentUser): StoredCurrentUser => ({
   id: value.id,
   email: value.email,
   displayName: value.displayName,
+  avatarUrl: value.avatarUrl ?? undefined,
   roles: [...value.roles],
   isActive: value.isActive,
   createdAt: value.createdAt,
@@ -268,7 +270,7 @@ const toStoredCurrentUser = (value: CurrentUser): StoredCurrentUser => ({
 });
 
 export const getCurrentUser = async () => {
-  const { data } = await apiClient.get<CurrentUser>('/auth/me');
+  const { data } = await apiClient.get<CurrentUser>('/me');
   const snapshot = toStoredCurrentUser(data);
   storedCurrentUser = snapshot;
   persistCurrentUser(snapshot);

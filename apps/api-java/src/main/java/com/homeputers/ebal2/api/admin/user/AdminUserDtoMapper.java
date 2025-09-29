@@ -3,8 +3,10 @@ package com.homeputers.ebal2.api.admin.user;
 import com.homeputers.ebal2.api.generated.model.PageUserResponse;
 import com.homeputers.ebal2.api.generated.model.Role;
 import com.homeputers.ebal2.api.generated.model.User;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.data.domain.Page;
 
+import java.net.URI;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -19,6 +21,11 @@ public final class AdminUserDtoMapper {
         dto.setId(adminUser.user().id());
         dto.setEmail(adminUser.user().email());
         dto.setDisplayName(adminUser.user().displayName());
+        if (adminUser.user().avatarUrl() != null) {
+            dto.setAvatarUrl(JsonNullable.of(URI.create(adminUser.user().avatarUrl())));
+        } else {
+            dto.setAvatarUrl(JsonNullable.undefined());
+        }
         dto.setIsActive(adminUser.user().isActive());
         dto.setCreatedAt(adminUser.user().createdAt());
         dto.setUpdatedAt(adminUser.user().updatedAt());

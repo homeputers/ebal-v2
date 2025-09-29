@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 
@@ -171,16 +171,79 @@ describe('AppShell', () => {
 
     await renderAppShell('en');
 
-    const summary = screen.getByText('Test User').closest('summary');
-    expect(summary).not.toBeNull();
+    const accountButton = screen.getByRole('button', {
+      name: 'Account options for Test User',
+    });
+    expect(accountButton).toBeInTheDocument();
     await act(async () => {
-      summary?.click();
+      accountButton.click();
     });
 
     expect(
-      screen.getByRole('link', { name: 'Change password' }),
+      await screen.findByRole('menuitem', { name: 'Change password' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('menuitem', { name: 'Log out' }),
+    ).toBeInTheDocument();
+  });
+
+  it('closes the account menu on Escape and restores focus to the trigger', async () => {
+    setIsAuthenticated(true);
+    mockUseAuth.mockClear();
+
+    await renderAppShell('en');
+
+    const accountButton = screen.getByRole('button', {
+      name: 'Account options for Test User',
+    });
+
+    accountButton.focus();
+
+    await act(async () => {
+      accountButton.click();
+    });
+
+    expect(
+      await screen.findByRole('menuitem', { name: 'Change password' }),
+    ).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.keyDown(document, { key: 'Escape' });
+    });
+
+    expect(
+      screen.queryByRole('menuitem', { name: 'Change password' }),
+    ).not.toBeInTheDocument();
+    expect(accountButton).toHaveFocus();
+  });
+
+  it('closes the account menu when clicking outside', async () => {
+    setIsAuthenticated(true);
+    mockUseAuth.mockClear();
+
+    await renderAppShell('en');
+
+    const accountButton = screen.getByRole('button', {
+      name: 'Account options for Test User',
+    });
+
+    await act(async () => {
+      accountButton.click();
+    });
+
+    expect(
+      await screen.findByRole('menuitem', { name: 'Change password' }),
+    ).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.mouseDown(document.body);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('menuitem', { name: 'Change password' }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('hides logout control when unauthenticated', async () => {
@@ -189,7 +252,7 @@ describe('AppShell', () => {
 
     await renderAppShell('en');
 
-    const logoutButton = screen.queryByRole('button', { name: 'Log out' });
+    const logoutButton = screen.queryByRole('menuitem', { name: 'Log out' });
     expect(logoutButton).not.toBeInTheDocument();
   });
 
@@ -200,12 +263,14 @@ describe('AppShell', () => {
 
     await renderAppShell('en');
 
-    const summary = screen.getByText('Test User').closest('summary');
+    const accountButton = screen.getByRole('button', {
+      name: 'Account options for Test User',
+    });
     await act(async () => {
-      summary?.click();
+      accountButton.click();
     });
 
-    const button = screen.getByRole('button', { name: 'Log out' });
+    const button = await screen.findByRole('menuitem', { name: 'Log out' });
     await act(async () => {
       button.click();
     });

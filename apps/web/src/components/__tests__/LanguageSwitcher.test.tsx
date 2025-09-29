@@ -54,7 +54,7 @@ describe('LanguageSwitcher', () => {
     renderLanguageSwitcher('en');
 
     await user.click(screen.getByRole('button', { name: 'Change language' }));
-    await user.click(screen.getByRole('option', { name: 'Español' }));
+    await user.click(screen.getByRole('option', { name: 'Spanish' }));
 
     await waitFor(() => expect(i18n.language).toBe('es'));
     expect(window.localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBe('es');
@@ -66,7 +66,7 @@ describe('LanguageSwitcher', () => {
     renderLanguageSwitcher('en', '/en/song-sets/42?foo=bar#details');
 
     await user.click(screen.getByRole('button', { name: 'Change language' }));
-    await user.click(screen.getByRole('option', { name: 'Español' }));
+    await user.click(screen.getByRole('option', { name: 'Spanish' }));
 
     await waitFor(() => expect(i18n.language).toBe('es'));
 

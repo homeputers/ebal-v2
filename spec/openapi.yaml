@@ -142,24 +142,6 @@ paths:
       responses:
         '204':
           description: Password updated successfully
-  /auth/me:
-    get:
-      tags:
-        - Auth
-      summary: Retrieve the current authenticated user
-      description: Returns information about the authenticated principal for the current request.
-      operationId: getCurrentUser
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Current user information
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '401':
-          description: Unauthorized
   /me:
     get:
       tags:
@@ -1404,6 +1386,10 @@ components:
           format: email
         displayName:
           type: string
+        avatarUrl:
+          type: string
+          format: uri
+          nullable: true
         roles:
           type: array
           items:
@@ -1437,6 +1423,7 @@ components:
         avatarUrl:
           type: string
           format: uri
+          nullable: true
         createdAt:
           type: string
           format: date-time

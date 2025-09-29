@@ -7,7 +7,6 @@ import com.homeputers.ebal2.api.generated.model.ChangePasswordRequest;
 import com.homeputers.ebal2.api.generated.model.ForgotPasswordRequest;
 import com.homeputers.ebal2.api.generated.model.RefreshTokenRequest;
 import com.homeputers.ebal2.api.generated.model.ResetPasswordRequest;
-import com.homeputers.ebal2.api.generated.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,18 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class AuthController implements AuthApi {
 
-    private final CurrentUserFactory currentUserFactory;
     private final AuthService authService;
     private final PasswordResetService passwordResetService;
     private final AuthRateLimiter authRateLimiter;
     private final HttpServletRequest request;
 
-    public AuthController(CurrentUserFactory currentUserFactory,
-                         AuthService authService,
+    public AuthController(AuthService authService,
                          PasswordResetService passwordResetService,
                          AuthRateLimiter authRateLimiter,
                          HttpServletRequest request) {
-        this.currentUserFactory = currentUserFactory;
         this.authService = authService;
         this.passwordResetService = passwordResetService;
         this.authRateLimiter = authRateLimiter;
@@ -91,14 +87,6 @@ public class AuthController implements AuthApi {
                 resetPasswordRequest.getToken(),
                 resetPasswordRequest.getNewPassword());
         return ResponseEntity.noContent().build();
-    }
-
-    @Override
-    public ResponseEntity<User> getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return currentUserFactory.create(authentication)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 
     private String resolveClientIpAddress() {
