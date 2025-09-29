@@ -2,6 +2,7 @@ package com.homeputers.ebal2.api.auth;
 
 import com.homeputers.ebal2.api.generated.model.Role;
 import com.homeputers.ebal2.api.generated.model.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
@@ -11,14 +12,32 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
+import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 class CurrentUserFactoryTest {
 
-    private final CurrentUserFactory factory = new CurrentUserFactory(new AuthenticationTrustResolverImpl());
+    private final AuthenticationTrustResolverImpl trustResolver = new AuthenticationTrustResolverImpl();
+    private final com.homeputers.ebal2.api.domain.user.UserMapper userMapper =
+            mock(com.homeputers.ebal2.api.domain.user.UserMapper.class);
+    private final com.homeputers.ebal2.api.domain.user.UserRoleMapper userRoleMapper =
+            mock(com.homeputers.ebal2.api.domain.user.UserRoleMapper.class);
+
+    private CurrentUserFactory factory;
+
+    @BeforeEach
+    void setUp() {
+        reset(userMapper, userRoleMapper);
+        factory = new CurrentUserFactory(trustResolver, userMapper, userRoleMapper);
+    }
 
     @Test
     void returnsEmptyWhenAuthenticationMissing() {
@@ -45,17 +64,34 @@ class CurrentUserFactoryTest {
                         new SimpleGrantedAuthority("ROLE_IGNORED")));
         authentication.setAuthenticated(true);
 
+        UUID userId = UUID.nameUUIDFromBytes("alice@example.com".getBytes(StandardCharsets.UTF_8));
+        OffsetDateTime createdAt = OffsetDateTime.now().minusDays(5);
+        OffsetDateTime updatedAt = OffsetDateTime.now();
+        com.homeputers.ebal2.api.domain.user.User domainUser = new com.homeputers.ebal2.api.domain.user.User(
+                userId,
+                "alice@example.com",
+                "Alice",
+                "https://example.com/avatar.png",
+                "$2a$hash",
+                true,
+                createdAt,
+                updatedAt,
+                0);
+        when(userMapper.findById(userId)).thenReturn(domainUser);
+        when(userRoleMapper.findRolesByUserId(userId)).thenReturn(List.of("ADMIN"));
+
         Optional<User> currentUser = factory.create(authentication);
 
         assertThat(currentUser).isPresent();
         User user = currentUser.get();
         assertThat(user.getId()).isNotNull();
         assertThat(user.getEmail()).isEqualTo("alice@example.com");
-        assertThat(user.getDisplayName()).isEqualTo("alice@example.com");
+        assertThat(user.getDisplayName()).isEqualTo("Alice");
+        assertThat(user.getAvatarUrl()).hasToString("https://example.com/avatar.png");
         assertThat(user.getRoles()).containsExactly(Role.ADMIN);
         assertThat(user.getIsActive()).isTrue();
-        assertThat(user.getCreatedAt()).isNotNull();
-        assertThat(user.getUpdatedAt()).isNotNull();
+        assertThat(user.getCreatedAt()).isEqualTo(createdAt);
+        assertThat(user.getUpdatedAt()).isEqualTo(updatedAt);
     }
 
     @Test
@@ -67,6 +103,9 @@ class CurrentUserFactoryTest {
                 .claim("roles", List.of("PLANNER"))
                 .build();
         JwtAuthenticationToken authentication = new JwtAuthenticationToken(jwt, AuthorityUtils.createAuthorityList("ROLE_PLANNER"));
+
+        UUID userId = UUID.fromString("3fa85f64-5717-4562-b3fc-2c963f66afa6");
+        when(userMapper.findById(userId)).thenReturn(null);
 
         Optional<User> currentUser = factory.create(authentication);
 

@@ -36,7 +36,7 @@ type AuthenticatedRequestConfig = InternalAxiosRequestConfig & {
 
 type StoredCurrentUser = Pick<
   CurrentUser,
-  'id' | 'email' | 'displayName' | 'roles' | 'isActive' | 'createdAt' | 'updatedAt'
+  'id' | 'email' | 'displayName' | 'avatarUrl' | 'roles' | 'isActive' | 'createdAt' | 'updatedAt'
 >;
 
 type AuthSessionClearReason = 'logout' | 'session-expired';
@@ -108,6 +108,7 @@ const loadStoredCurrentUser = (): StoredCurrentUser | null => {
       typeof parsed?.id === 'string' &&
       typeof parsed?.email === 'string' &&
       typeof parsed?.displayName === 'string' &&
+      (typeof parsed?.avatarUrl === 'string' || parsed?.avatarUrl === null || typeof parsed?.avatarUrl === 'undefined') &&
       Array.isArray(parsed?.roles) &&
       typeof parsed?.isActive === 'boolean' &&
       typeof parsed?.createdAt === 'string' &&
@@ -261,6 +262,7 @@ const toStoredCurrentUser = (value: CurrentUser): StoredCurrentUser => ({
   id: value.id,
   email: value.email,
   displayName: value.displayName,
+  avatarUrl: value.avatarUrl ?? null,
   roles: [...value.roles],
   isActive: value.isActive,
   createdAt: value.createdAt,

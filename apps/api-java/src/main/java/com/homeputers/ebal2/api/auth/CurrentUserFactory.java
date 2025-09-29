@@ -1,5 +1,7 @@
 package com.homeputers.ebal2.api.auth;
 
+import com.homeputers.ebal2.api.domain.user.UserMapper;
+import com.homeputers.ebal2.api.domain.user.UserRoleMapper;
 import com.homeputers.ebal2.api.generated.model.Role;
 import com.homeputers.ebal2.api.generated.model.User;
 import org.springframework.lang.Nullable;
@@ -9,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -17,6 +20,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+
+import static java.util.stream.Collectors.toCollection;
 
 /**
  * Builds {@link User} payloads from the Spring Security context.
@@ -27,9 +32,15 @@ public class CurrentUserFactory {
     static final String ANONYMOUS_SUBJECT = "anonymous";
 
     private final AuthenticationTrustResolver trustResolver;
+    private final UserMapper userMapper;
+    private final UserRoleMapper userRoleMapper;
 
-    public CurrentUserFactory(AuthenticationTrustResolver trustResolver) {
+    public CurrentUserFactory(AuthenticationTrustResolver trustResolver,
+                              UserMapper userMapper,
+                              UserRoleMapper userRoleMapper) {
         this.trustResolver = trustResolver;
+        this.userMapper = userMapper;
+        this.userRoleMapper = userRoleMapper;
     }
 
     public Optional<User> create(@Nullable Authentication authentication) {
@@ -37,15 +48,26 @@ public class CurrentUserFactory {
             return Optional.empty();
         }
 
+        UUID userId = resolveId(authentication);
+        com.homeputers.ebal2.api.domain.user.User domainUser = userMapper.findById(userId);
+
         User user = new User();
-        user.setId(resolveId(authentication));
-        user.setEmail(resolveEmail(authentication));
-        user.setDisplayName(resolveDisplayName(authentication));
-        user.setRoles(resolveRoles(authentication));
-        user.setIsActive(Boolean.TRUE);
-        OffsetDateTime now = OffsetDateTime.now();
-        user.setCreatedAt(now);
-        user.setUpdatedAt(now);
+        user.setId(userId);
+        user.setEmail(resolveEmail(authentication, domainUser));
+        user.setDisplayName(resolveDisplayName(authentication, domainUser));
+        user.setAvatarUrl(domainUser != null && domainUser.avatarUrl() != null
+                ? URI.create(domainUser.avatarUrl())
+                : null);
+        user.setRoles(resolveRoles(authentication, userId, domainUser));
+        user.setIsActive(domainUser != null ? domainUser.isActive() : Boolean.TRUE);
+        if (domainUser != null) {
+            user.setCreatedAt(domainUser.createdAt());
+            user.setUpdatedAt(domainUser.updatedAt());
+        } else {
+            OffsetDateTime now = OffsetDateTime.now();
+            user.setCreatedAt(now);
+            user.setUpdatedAt(now);
+        }
         return Optional.of(user);
     }
 
@@ -70,7 +92,41 @@ public class CurrentUserFactory {
         return UUID.nameUUIDFromBytes(identifier.getBytes(StandardCharsets.UTF_8));
     }
 
-    private List<Role> resolveRoles(Authentication authentication) {
+    private String resolveEmail(Authentication authentication,
+                                @Nullable com.homeputers.ebal2.api.domain.user.User domainUser) {
+        if (domainUser != null && domainUser.email() != null) {
+            return domainUser.email();
+        }
+        return resolveEmail(authentication);
+    }
+
+    private String resolveDisplayName(Authentication authentication,
+                                      @Nullable com.homeputers.ebal2.api.domain.user.User domainUser) {
+        if (domainUser != null && domainUser.displayName() != null && !domainUser.displayName().isBlank()) {
+            return domainUser.displayName();
+        }
+        return resolveDisplayName(authentication);
+    }
+
+    private List<Role> resolveRoles(Authentication authentication,
+                                    UUID userId,
+                                    @Nullable com.homeputers.ebal2.api.domain.user.User domainUser) {
+        if (domainUser != null) {
+            List<String> assignedRoles = userRoleMapper.findRolesByUserId(userId);
+            if (assignedRoles != null && !assignedRoles.isEmpty()) {
+                List<Role> mapped = assignedRoles.stream()
+                        .map(this::mapStringToRole)
+                        .filter(Objects::nonNull)
+                        .collect(toCollection(ArrayList::new));
+                if (!mapped.isEmpty()) {
+                    return mapped;
+                }
+            }
+        }
+        return resolveRolesFromAuthorities(authentication);
+    }
+
+    private List<Role> resolveRolesFromAuthorities(Authentication authentication) {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         if (authorities == null) {
             return List.of();
@@ -81,6 +137,17 @@ public class CurrentUserFactory {
             role.ifPresent(roles::add);
         }
         return roles;
+    }
+
+    private Role mapStringToRole(String value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return Role.fromValue(value);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 
     private String resolveDisplayName(Authentication authentication) {

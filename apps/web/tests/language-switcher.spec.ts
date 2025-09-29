@@ -16,7 +16,11 @@ const stubAuthMeResponse = {
   id: 'e2e-user',
   email: 'e2e@example.com',
   displayName: 'E2E User',
+  avatarUrl: 'https://example.com/avatar.png',
   roles: ['ADMIN'],
+  isActive: true,
+  createdAt: '2023-01-01T00:00:00.000Z',
+  updatedAt: '2023-01-01T00:00:00.000Z',
 };
 
 const emptyServicesPage = {

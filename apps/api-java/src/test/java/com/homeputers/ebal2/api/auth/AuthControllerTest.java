@@ -61,6 +61,9 @@ class AuthControllerTest extends AbstractIntegrationTest {
     @Autowired
     private SecurityProperties securityProperties;
 
+    @Autowired
+    private com.homeputers.ebal2.api.domain.user.UserMapper userMapper;
+
     @MockBean
     private EmailSender emailSender;
 
@@ -78,7 +81,9 @@ class AuthControllerTest extends AbstractIntegrationTest {
 
     @Test
     void loginIssuesTokenPairAndAllowsCurrentUserLookup() {
-        authenticationHelper.ensureUser(EMAIL, PASSWORD, List.of("PLANNER"));
+        UUID userId = authenticationHelper.ensureUser(EMAIL, PASSWORD, List.of("PLANNER"));
+        OffsetDateTime now = OffsetDateTime.now();
+        userMapper.updateAvatar(userId, "https://cdn.example.com/avatar.png", now);
 
         AuthTokenPair tokens = authenticate(EMAIL, PASSWORD);
         assertThat(tokens.getAccessToken()).isNotBlank();
@@ -98,6 +103,8 @@ class AuthControllerTest extends AbstractIntegrationTest {
         assertThat(meResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(meResponse.getBody()).isNotNull();
         assertThat(meResponse.getBody().getEmail()).isEqualTo(EMAIL);
+        assertThat(meResponse.getBody().getDisplayName()).isEqualTo("planner");
+        assertThat(meResponse.getBody().getAvatarUrl()).hasToString("https://cdn.example.com/avatar.png");
     }
 
     @Test

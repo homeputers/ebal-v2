@@ -742,6 +742,8 @@ export interface components {
             /** Format: email */
             email: string;
             displayName: string;
+            /** Format: uri */
+            avatarUrl?: string;
             roles: components["schemas"]["Role"][];
             isActive: boolean;
             /** Format: date-time */
