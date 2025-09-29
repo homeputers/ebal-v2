@@ -16,7 +16,6 @@
     "primaryLabel": "Primary navigation",
     "openMenu": "Open navigation menu",
     "closeMenu": "Close navigation menu",
-    "accountLabel": "Signed in as {{value}}",
     "accountMenuLabel": "Account options for {{value}}"
   },
   "actions": {
@@ -60,7 +59,7 @@
     "selectedIndicator": "✓",
     "labels": {
       "en": "English",
-      "es": "Español"
+      "es": "Spanish"
     }
   },
   "errors": {

@@ -41,9 +41,6 @@ export function AppHeader({
   );
 
   const menuLabel = me?.displayName ?? me?.email ?? t('nav.profile');
-  const accountDescriptor = me?.email
-    ? t('nav.accountLabel', { value: me.email })
-    : null;
 
   const handleLogout = () => {
     logout();
@@ -102,14 +99,6 @@ export function AppHeader({
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-end gap-3">
-          {accountDescriptor ? (
-            <p
-              className="hidden max-w-[12rem] truncate text-xs font-medium text-white/80 sm:block"
-              title={accountDescriptor}
-            >
-              {accountDescriptor}
-            </p>
-          ) : null}
           <LanguageSwitcher currentLanguage={currentLanguage} />
           {isAuthenticated ? (
             <div className="relative">
