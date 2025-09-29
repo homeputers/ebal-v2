@@ -182,7 +182,8 @@ export function Navbar({ currentLanguage }: NavbarProps) {
             to={brandHref}
             className="text-lg font-semibold tracking-tight hover:text-white/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
           >
-            {t('app.title')}
+            <span aria-hidden="true">EBaL</span>
+            <span className="sr-only">{t('app.title')}</span>
           </Link>
         </div>
         <nav
