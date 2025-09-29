@@ -14,8 +14,10 @@ type AppSideNavProps = {
 
 const navLinkClassName = ({ isActive }: { isActive: boolean }) =>
   [
-    'block rounded-md px-3 py-2 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60',
-    isActive ? 'bg-white/15 text-white' : 'text-white/80 hover:bg-white/10 hover:text-white',
+    'flex w-full items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    isActive
+      ? 'bg-primary text-primary-foreground shadow-sm'
+      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
   ].join(' ');
 
 export function AppSideNav({
@@ -51,32 +53,32 @@ export function AppSideNav({
 
   return (
     <Fragment>
-      <aside className="hidden w-64 shrink-0 bg-gray-950 px-4 py-6 text-white shadow-lg lg:flex lg:flex-col">
+      <aside className="hidden w-64 shrink-0 border-r border-border bg-card px-4 py-6 text-foreground shadow-sm lg:flex lg:flex-col">
         {navContent}
       </aside>
       {isOpen ? (
         <div className="lg:hidden">
           <div
-            className="fixed inset-0 z-40 bg-black/50"
+            className="fixed inset-0 z-40 bg-foreground/30"
             role="presentation"
             onClick={onClose}
           />
           <div
-            className="fixed inset-y-0 left-0 z-50 w-full max-w-xs overflow-y-auto bg-gray-950 px-4 py-6 text-white shadow-xl"
+            className="fixed inset-y-0 left-0 z-50 w-full max-w-xs overflow-y-auto border-r border-border bg-card px-4 py-6 text-foreground shadow-xl"
             role="dialog"
             aria-modal="true"
           >
             <div className="flex items-center justify-between">
               <Link
                 to={brandHref}
-                className="text-base font-semibold tracking-tight text-white hover:text-white/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                className="text-base font-semibold tracking-tight text-foreground transition-colors hover:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 onClick={onClose}
               >
                 {t('app.title')}
               </Link>
               <button
                 type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/20 bg-white/10 text-white transition hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border/60 bg-muted text-foreground transition hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 aria-label={t('nav.closeMenu')}
                 onClick={onClose}
               >

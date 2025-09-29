@@ -52,13 +52,13 @@ export function AppHeader({
   const hasNavigation = navigationLinks.length > 0;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-gray-800 bg-gray-900 text-white shadow-sm print:hidden">
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/95 text-foreground shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/80 print:hidden">
       <div className="mx-auto flex w-full max-w-6xl items-center gap-4 px-4 py-3">
         <div className="flex flex-1 items-center gap-3">
           {hasNavigation ? (
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-white/20 bg-white/10 text-white transition hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 lg:hidden"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border/60 bg-muted text-foreground transition hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background lg:hidden"
               aria-controls="app-navigation"
               aria-expanded={isNavigationOpen}
               aria-label={
@@ -94,7 +94,7 @@ export function AppHeader({
           ) : null}
           <Link
             to={brandHref}
-            className="text-lg font-semibold tracking-tight hover:text-white/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+            className="text-lg font-semibold tracking-tight text-foreground transition-colors hover:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <span aria-hidden="true">EBaL</span>
             <span className="sr-only">{t('app.title')}</span>
@@ -115,7 +115,7 @@ export function AppHeader({
                   value: accountLabelValue,
                   defaultValue: accountLabelValue,
                 })}
-                className="flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-1 text-sm font-medium text-white hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                className="flex items-center gap-2 rounded-md border border-border/60 bg-muted px-3 py-1 text-sm font-medium text-foreground transition-colors hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 onClick={accountMenu.toggle}
               >
                 <span className="max-w-[10rem] truncate" title={menuLabel}>
@@ -131,12 +131,12 @@ export function AppHeader({
                   role="menu"
                   id={`${accountMenuButtonId}-menu`}
                   aria-labelledby={accountMenuButtonId}
-                  className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-md border border-gray-200 bg-white text-sm text-gray-700 shadow-lg"
+                  className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-md border border-border bg-card text-sm text-foreground shadow-lg"
                 >
                   <Link
                     to={profileHref}
                     role="menuitem"
-                    className="block px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                    className="block px-4 py-2 transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
                     onClick={() => accountMenu.close()}
                   >
                     {t('nav.profile')}
@@ -144,7 +144,7 @@ export function AppHeader({
                   <Link
                     to={changePasswordHref}
                     role="menuitem"
-                    className="block px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                    className="block px-4 py-2 transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
                     onClick={() => accountMenu.close()}
                   >
                     {t('nav.changePassword')}
@@ -153,7 +153,7 @@ export function AppHeader({
                     type="button"
                     role="menuitem"
                     onClick={handleLogout}
-                    className="block w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 focus:bg-red-50 focus:outline-none"
+                    className="block w-full px-4 py-2 text-left text-destructive transition-colors hover:bg-destructive/10 focus:bg-destructive/10 focus:outline-none"
                   >
                     {t('nav.logout')}
                   </button>

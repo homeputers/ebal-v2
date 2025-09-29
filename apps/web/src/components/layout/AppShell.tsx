@@ -51,7 +51,7 @@ export function AppShell({ currentLanguage, children }: AppShellProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-background">
       <div className="flex min-h-screen">
         <AppSideNav
           currentLanguage={currentLanguage}
