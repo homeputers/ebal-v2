@@ -31,6 +31,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StorageHealth'
+  /meta/git:
+    get:
+      tags:
+        - Meta
+      summary: Retrieve git build metadata
+      description: Provides information about the git revision used to build the service for debugging and triage.
+      operationId: getGitInformation
+      responses:
+        '200':
+          description: Git metadata for the running service
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GitInfo'
   /auth/login:
     post:
       tags:
@@ -1312,6 +1326,36 @@ components:
       properties:
         status:
           type: string
+    GitInfo:
+      type: object
+      properties:
+        branch:
+          type: string
+          description: Current branch used for the build.
+        commitId:
+          type: string
+          description: Full git commit SHA for the build.
+        abbreviatedCommitId:
+          type: string
+          description: Abbreviated git commit SHA.
+        commitTime:
+          type: string
+          format: date-time
+          description: Commit timestamp in ISO-8601 format.
+        dirty:
+          type: boolean
+          description: Indicates if the working tree had uncommitted changes when built.
+        tags:
+          type: array
+          description: Tags that point to the current commit.
+          items:
+            type: string
+        closestTag:
+          type: string
+          description: Closest annotated tag in the commit history.
+        describe:
+          type: string
+          description: Output of `git describe --always --dirty` if available.
     StorageHealth:
       type: object
       required: [status]
