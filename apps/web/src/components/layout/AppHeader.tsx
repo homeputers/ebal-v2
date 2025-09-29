@@ -40,7 +40,9 @@ export function AppHeader({
     [currentLanguage],
   );
 
-  const menuLabel = me?.displayName ?? me?.email ?? t('nav.profile');
+  const displayName = me?.displayName?.trim();
+  const menuLabel = displayName || t('nav.profile');
+  const accountLabelValue = displayName || me?.email || t('nav.profile');
 
   const handleLogout = () => {
     logout();
@@ -110,8 +112,8 @@ export function AppHeader({
                 aria-expanded={accountMenu.isOpen}
                 aria-controls={`${accountMenuButtonId}-menu`}
                 aria-label={t('nav.accountMenuLabel', {
-                  value: menuLabel,
-                  defaultValue: menuLabel,
+                  value: accountLabelValue,
+                  defaultValue: accountLabelValue,
                 })}
                 className="flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-1 text-sm font-medium text-white hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
                 onClick={accountMenu.toggle}
