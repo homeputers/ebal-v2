@@ -112,7 +112,7 @@ export function LanguageSwitcher({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-label={t('language.change')}
-        className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-1 text-sm font-medium text-white hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+        className="inline-flex items-center gap-2 rounded-md border border-border/60 bg-muted px-3 py-1 text-sm font-medium text-foreground transition-colors hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         onClick={toggle}
       >
         <span className="uppercase tracking-wide">
@@ -127,7 +127,7 @@ export function LanguageSwitcher({
           ref={popoverRef}
           role="listbox"
           aria-label={t('language.select')}
-          className="absolute right-0 z-50 mt-2 w-40 overflow-hidden rounded-md border border-gray-200 bg-white py-1 shadow-lg focus:outline-none"
+          className="absolute right-0 z-50 mt-2 w-40 overflow-hidden rounded-md border border-border bg-card py-1 shadow-lg focus:outline-none"
         >
           {languages.map((language) => (
             <li key={language} className="px-1">
@@ -138,8 +138,8 @@ export function LanguageSwitcher({
                 onClick={() => handleSelect(language)}
                 className={`flex w-full items-center justify-between rounded px-2 py-2 text-left text-sm ${
                   language === currentLanguage
-                    ? 'bg-gray-100 font-semibold text-gray-900'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-muted font-medium text-foreground'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
               >
                 <span>{getLanguageLabel(language)}</span>
