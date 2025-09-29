@@ -12,7 +12,11 @@
     "profile": "Perfil",
     "changePassword": "Cambiar contraseña",
     "logout": "Cerrar sesión",
-    "menuIndicator": "▾"
+    "menuIndicator": "▾",
+    "primaryLabel": "Navegación principal",
+    "openMenu": "Abrir menú de navegación",
+    "closeMenu": "Cerrar menú de navegación",
+    "accountLabel": "Sesión iniciada como {{value}}"
   },
   "actions": {
     "save": "Guardar",
