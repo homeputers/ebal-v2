@@ -262,7 +262,7 @@ const toStoredCurrentUser = (value: CurrentUser): StoredCurrentUser => ({
   id: value.id,
   email: value.email,
   displayName: value.displayName,
-  avatarUrl: value.avatarUrl ?? null,
+  avatarUrl: value.avatarUrl ?? undefined,
   roles: [...value.roles],
   isActive: value.isActive,
   createdAt: value.createdAt,
