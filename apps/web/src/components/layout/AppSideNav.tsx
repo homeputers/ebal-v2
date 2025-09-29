@@ -52,13 +52,6 @@ export function AppSideNav({
   return (
     <Fragment>
       <aside className="hidden w-64 shrink-0 bg-gray-950 px-4 py-6 text-white shadow-lg lg:flex lg:flex-col">
-        <Link
-          to={brandHref}
-          className="mb-6 text-base font-semibold tracking-tight text-white hover:text-white/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-        >
-          <span aria-hidden="true">EBaL</span>
-          <span className="sr-only">{t('app.title')}</span>
-        </Link>
         {navContent}
       </aside>
       {isOpen ? (
