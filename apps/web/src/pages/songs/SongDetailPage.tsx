@@ -13,6 +13,7 @@ import {
 import SongForm from '../../features/songs/SongForm';
 import ArrangementForm from '../../features/songs/ArrangementForm';
 import { formatBpm, formatDate } from '@/i18n/intl';
+import { useAuth } from '../../features/auth/useAuth';
 
 function Modal({
   open,
@@ -51,6 +52,7 @@ export default function SongDetailPage() {
   const { t, i18n } = useTranslation('songs');
   const { t: tArrangements } = useTranslation('arrangements');
   const { t: tCommon } = useTranslation('common');
+  const { hasRole } = useAuth();
   const { data: song, isLoading, isError } = useSong(id);
   const { data: arrangements } = useArrangements(id);
 
@@ -62,6 +64,8 @@ export default function SongDetailPage() {
   const [editingSong, setEditingSong] = useState(false);
   const [creatingArr, setCreatingArr] = useState(false);
   const [editingArr, setEditingArr] = useState<Arrangement | null>(null);
+
+  const canManageSongs = hasRole('ADMIN') || hasRole('PLANNER');
 
   if (isLoading) return <div className="p-4">{tCommon('status.loading')}</div>;
   if (isError || !song) return <div className="p-4">{tCommon('status.loadFailed')}</div>;
@@ -94,12 +98,14 @@ export default function SongDetailPage() {
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-semibold">{song.title}</h1>
-        <button
-          className="px-2 py-1 text-sm bg-gray-200 rounded"
-          onClick={() => setEditingSong(true)}
-        >
-          {tCommon('actions.edit')}
-        </button>
+        {canManageSongs && (
+          <button
+            className="px-2 py-1 text-sm bg-gray-200 rounded"
+            onClick={() => setEditingSong(true)}
+          >
+            {tCommon('actions.edit')}
+          </button>
+        )}
       </div>
       <div className="mb-6 space-y-1">
         {song.author && (
@@ -130,12 +136,14 @@ export default function SongDetailPage() {
       </div>
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-lg font-semibold">{tArrangements('page.title')}</h2>
-        <button
-          className="px-2 py-1 text-sm bg-blue-500 text-white rounded"
-          onClick={() => setCreatingArr(true)}
-        >
-          {tArrangements('actions.new')}
-        </button>
+        {canManageSongs && (
+          <button
+            className="px-2 py-1 text-sm bg-blue-500 text-white rounded"
+            onClick={() => setCreatingArr(true)}
+          >
+            {tArrangements('actions.new')}
+          </button>
+        )}
       </div>
       {arrangements && arrangements.length > 0 ? (
         <table className="w-full border">
@@ -144,7 +152,9 @@ export default function SongDetailPage() {
               <th className="text-left p-2">{tArrangements('table.key')}</th>
               <th className="text-left p-2">{tArrangements('table.bpm')}</th>
               <th className="text-left p-2">{tArrangements('table.meter')}</th>
-              <th className="p-2 text-right">{tCommon('table.actions')}</th>
+              {canManageSongs && (
+                <th className="p-2 text-right">{tCommon('table.actions')}</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -153,22 +163,24 @@ export default function SongDetailPage() {
                 <td className="p-2">{a.key}</td>
                 <td className="p-2">{a.bpm != null ? formatBpm(a.bpm, i18n.language) : ''}</td>
                 <td className="p-2">{a.meter}</td>
-                <td className="p-2 text-right">
-                  <div className="flex gap-2 justify-end">
-                    <button
-                      className="px-2 py-1 text-sm bg-gray-200 rounded"
-                      onClick={() => setEditingArr(a)}
-                    >
-                      {tCommon('actions.edit')}
-                    </button>
-                    <button
-                      className="px-2 py-1 text-sm bg-red-500 text-white rounded"
-                      onClick={() => a.id && handleDeleteArr(a.id)}
-                    >
-                      {tCommon('actions.delete')}
-                    </button>
-                  </div>
-                </td>
+                {canManageSongs && (
+                  <td className="p-2 text-right">
+                    <div className="flex gap-2 justify-end">
+                      <button
+                        className="px-2 py-1 text-sm bg-gray-200 rounded"
+                        onClick={() => setEditingArr(a)}
+                      >
+                        {tCommon('actions.edit')}
+                      </button>
+                      <button
+                        className="px-2 py-1 text-sm bg-red-500 text-white rounded"
+                        onClick={() => a.id && handleDeleteArr(a.id)}
+                      >
+                        {tCommon('actions.delete')}
+                      </button>
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -176,42 +188,52 @@ export default function SongDetailPage() {
       ) : (
         <div>{tArrangements('list.empty')}</div>
       )}
-      <Modal open={editingSong} onClose={() => setEditingSong(false)}>
-        <h2 className="text-lg font-semibold mb-2">{t('modals.editTitle')}</h2>
-        <SongForm
-          defaultValues={{
-            title: song.title || '',
-            ccli: song.ccli || '',
-            author: song.author || '',
-            defaultKey: song.defaultKey || '',
-            tags: song.tags?.join(', ') || '',
-          }}
-          onSubmit={handleSongUpdate}
-          onCancel={() => setEditingSong(false)}
-        />
-      </Modal>
-      <Modal open={creatingArr} onClose={() => setCreatingArr(false)}>
-        <h2 className="text-lg font-semibold mb-2">{tArrangements('modals.createTitle')}</h2>
-        <ArrangementForm
-          onSubmit={handleCreateArr}
-          onCancel={() => setCreatingArr(false)}
-        />
-      </Modal>
-      <Modal open={!!editingArr} onClose={() => setEditingArr(null)}>
-        <h2 className="text-lg font-semibold mb-2">{tArrangements('modals.editTitle')}</h2>
-        {editingArr && (
-          <ArrangementForm
-            defaultValues={{
-              key: editingArr.key || '',
-              bpm: editingArr.bpm,
-              meter: editingArr.meter || '',
-              lyricsChordpro: editingArr.lyricsChordpro || '',
-            }}
-            onSubmit={(vals) => handleUpdateArr(editingArr.id!, vals)}
-            onCancel={() => setEditingArr(null)}
-          />
-        )}
-      </Modal>
+      {canManageSongs && (
+        <>
+          <Modal open={editingSong} onClose={() => setEditingSong(false)}>
+            <h2 className="text-lg font-semibold mb-2">
+              {t('modals.editTitle')}
+            </h2>
+            <SongForm
+              defaultValues={{
+                title: song.title || '',
+                ccli: song.ccli || '',
+                author: song.author || '',
+                defaultKey: song.defaultKey || '',
+                tags: song.tags?.join(', ') || '',
+              }}
+              onSubmit={handleSongUpdate}
+              onCancel={() => setEditingSong(false)}
+            />
+          </Modal>
+          <Modal open={creatingArr} onClose={() => setCreatingArr(false)}>
+            <h2 className="text-lg font-semibold mb-2">
+              {tArrangements('modals.createTitle')}
+            </h2>
+            <ArrangementForm
+              onSubmit={handleCreateArr}
+              onCancel={() => setCreatingArr(false)}
+            />
+          </Modal>
+          <Modal open={!!editingArr} onClose={() => setEditingArr(null)}>
+            <h2 className="text-lg font-semibold mb-2">
+              {tArrangements('modals.editTitle')}
+            </h2>
+            {editingArr && (
+              <ArrangementForm
+                defaultValues={{
+                  key: editingArr.key || '',
+                  bpm: editingArr.bpm,
+                  meter: editingArr.meter || '',
+                  lyricsChordpro: editingArr.lyricsChordpro || '',
+                }}
+                onSubmit={(vals) => handleUpdateArr(editingArr.id!, vals)}
+                onCancel={() => setEditingArr(null)}
+              />
+            )}
+          </Modal>
+        </>
+      )}
     </div>
   );
 }

@@ -65,11 +65,17 @@ export default function App() {
                   <Route path="members" element={<Members />} />
                   <Route path="groups" element={<Groups />} />
                   <Route path="groups/:id" element={<GroupDetail />} />
-                  <Route path="songs" element={<Songs />} />
-                  <Route path="songs/:id" element={<SongDetail />} />
                   <Route path="song-sets" element={<SongSets />} />
                   <Route path="song-sets/:id" element={<SongSetDetail />} />
                   <Route path="services/:id" element={<ServiceDetail />} />
+                </Route>
+                <Route
+                  element={
+                    <RequireRole roles={['ADMIN', 'PLANNER', 'MUSICIAN']} />
+                  }
+                >
+                  <Route path="songs" element={<Songs />} />
+                  <Route path="songs/:id" element={<SongDetail />} />
                 </Route>
                 <Route path="services" element={<Services />} /> 
                 <Route path="services/:id/print" element={<ServicePrint />} /> 
