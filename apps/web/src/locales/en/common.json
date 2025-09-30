@@ -57,9 +57,11 @@
   },
   "language": {
     "change": "Change language",
+    "changeLabel": "Change language (current: {{language}})",
     "select": "Select language",
     "dropdownIndicator": "▼",
     "selectedIndicator": "✓",
+    "triggerFlagAlt": "{{language}} language",
     "labels": {
       "en": "English",
       "es": "Spanish"

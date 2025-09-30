@@ -53,7 +53,9 @@ describe('LanguageSwitcher', () => {
 
     renderLanguageSwitcher('en');
 
-    await user.click(screen.getByRole('button', { name: 'Change language' }));
+    await user.click(
+      screen.getByRole('button', { name: /Change language/i }),
+    );
     await user.click(screen.getByRole('option', { name: 'Spanish' }));
 
     await waitFor(() => expect(i18n.language).toBe('es'));
@@ -65,7 +67,9 @@ describe('LanguageSwitcher', () => {
 
     renderLanguageSwitcher('en', '/en/song-sets/42?foo=bar#details');
 
-    await user.click(screen.getByRole('button', { name: 'Change language' }));
+    await user.click(
+      screen.getByRole('button', { name: /Change language/i }),
+    );
     await user.click(screen.getByRole('option', { name: 'Spanish' }));
 
     await waitFor(() => expect(i18n.language).toBe('es'));
@@ -78,8 +82,16 @@ describe('LanguageSwitcher', () => {
   });
 
   it.each([
-    { language: 'en', label: 'English', ariaLabel: 'Change language' },
-    { language: 'es', label: 'Español', ariaLabel: 'Cambiar idioma' },
+    {
+      language: 'en',
+      label: 'English',
+      ariaLabel: /Change language/i,
+    },
+    {
+      language: 'es',
+      label: 'Español',
+      ariaLabel: /Cambiar idioma/i,
+    },
   ])('shows translated labels for $language', async ({
     language,
     label,

@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "Cada Aliento y Vida"
+    "title": "Every Breath and Life"
   },
   "nav": {
     "songs": "Canciones",
@@ -57,9 +57,11 @@
   },
   "language": {
     "change": "Cambiar idioma",
+    "changeLabel": "Cambiar idioma (actual: {{language}})",
     "select": "Seleccionar idioma",
     "dropdownIndicator": "▼",
     "selectedIndicator": "✓",
+    "triggerFlagAlt": "Idioma {{language}}",
     "labels": {
       "en": "Inglés",
       "es": "Español"

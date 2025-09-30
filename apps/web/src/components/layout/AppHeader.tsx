@@ -26,6 +26,11 @@ export function AppHeader({
   const accountMenu = useHeaderPopover<HTMLDivElement>();
   const accountMenuButtonId = useId();
 
+  const brandHref = useMemo(
+    () => buildLanguagePath(currentLanguage, 'services'),
+    [currentLanguage],
+  );
+
   const profileHref = useMemo(
     () => buildLanguagePath(currentLanguage, 'me'),
     [currentLanguage],
@@ -36,25 +41,18 @@ export function AppHeader({
     [currentLanguage],
   );
 
-  const brandHref = useMemo(
-    () => buildLanguagePath(currentLanguage, 'services'),
-    [currentLanguage],
-  );
-
-  const displayName = me?.displayName?.trim();
-  const menuLabel = displayName || t('nav.profile');
-  const accountLabelValue = displayName || me?.email || t('nav.profile');
+  const hasNavigation = navigationLinks.length > 0;
+  const accountName = me?.displayName?.trim() ?? me?.email ?? '';
+  const accountLabelValue = accountName || t('nav.profile');
 
   const handleLogout = () => {
     logout();
     accountMenu.close({ focusTrigger: true });
   };
 
-  const hasNavigation = navigationLinks.length > 0;
-
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/95 text-foreground shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/80 print:hidden">
-      <div className="mx-auto flex w-full max-w-6xl items-center gap-4 px-4 py-3">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <div className="flex flex-1 items-center gap-3">
           {hasNavigation ? (
             <button
@@ -101,69 +99,85 @@ export function AppHeader({
             <span className="sr-only">{t('app.title')}</span>
           </Link>
         </div>
-        <div className="flex flex-1 justify-end">
-          <div className="hidden items-center gap-3 lg:flex">
-            <LanguageSwitcher currentLanguage={currentLanguage} />
-            {isAuthenticated ? (
-              <div className="relative">
-                <button
-                  ref={accountMenu.triggerRef}
-                  id={accountMenuButtonId}
-                  type="button"
-                  aria-haspopup="menu"
-                  aria-expanded={accountMenu.isOpen}
-                  aria-controls={`${accountMenuButtonId}-menu`}
-                  aria-label={t('nav.accountMenuLabel', {
-                    value: accountLabelValue,
-                    defaultValue: accountLabelValue,
-                  })}
-                  className="flex items-center gap-2 rounded-md border border-border/60 bg-muted px-3 py-1 text-sm font-medium text-foreground transition-colors hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                  onClick={accountMenu.toggle}
-                >
-                  <span className="max-w-[10rem] truncate" title={menuLabel}>
-                    {menuLabel}
-                  </span>
-                  <span aria-hidden="true" className="text-xs">
-                    {t('nav.menuIndicator')}
-                  </span>
-                </button>
-                {accountMenu.isOpen ? (
-                  <div
-                    ref={accountMenu.popoverRef}
-                    role="menu"
-                    id={`${accountMenuButtonId}-menu`}
-                    aria-labelledby={accountMenuButtonId}
-                    className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-md border border-border bg-card text-sm text-foreground shadow-lg"
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher currentLanguage={currentLanguage} variant="compact" />
+          {isAuthenticated ? (
+            <div className="relative">
+              <button
+                ref={accountMenu.triggerRef}
+                id={accountMenuButtonId}
+                type="button"
+                aria-haspopup="menu"
+                aria-expanded={accountMenu.isOpen}
+                aria-controls={`${accountMenuButtonId}-menu`}
+                aria-label={t('nav.accountMenuLabel', {
+                  value: accountLabelValue,
+                  defaultValue: accountLabelValue,
+                })}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border/60 bg-muted text-foreground transition hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                onClick={accountMenu.toggle}
+              >
+                <span className="sr-only">{accountLabelValue}</span>
+                <span aria-hidden="true" className="block h-5 w-5">
+                  <svg
+                    className="h-full w-full"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <Link
-                      to={profileHref}
-                      role="menuitem"
-                      className="block px-4 py-2 transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
-                      onClick={() => accountMenu.close()}
-                    >
-                      {t('nav.profile')}
-                    </Link>
-                    <Link
-                      to={changePasswordHref}
-                      role="menuitem"
-                      className="block px-4 py-2 transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
-                      onClick={() => accountMenu.close()}
-                    >
-                      {t('nav.changePassword')}
-                    </Link>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={handleLogout}
-                      className="block w-full px-4 py-2 text-left text-destructive transition-colors hover:bg-destructive/10 focus:bg-destructive/10 focus:outline-none"
-                    >
-                      {t('nav.logout')}
-                    </button>
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
-          </div>
+                    <path
+                      d="M12 12c2.485 0 4.5-2.015 4.5-4.5S14.485 3 12 3 7.5 5.015 7.5 7.5 9.515 12 12 12Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M5 19.25a7 7 0 0 1 14 0"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </button>
+              {accountMenu.isOpen ? (
+                <div
+                  ref={accountMenu.popoverRef}
+                  role="menu"
+                  id={`${accountMenuButtonId}-menu`}
+                  aria-labelledby={accountMenuButtonId}
+                  className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-md border border-border bg-card text-sm text-foreground shadow-lg"
+                >
+                  <Link
+                    to={profileHref}
+                    role="menuitem"
+                    className="block px-4 py-2 transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
+                    onClick={() => accountMenu.close()}
+                  >
+                    {t('nav.profile')}
+                  </Link>
+                  <Link
+                    to={changePasswordHref}
+                    role="menuitem"
+                    className="block px-4 py-2 transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
+                    onClick={() => accountMenu.close()}
+                  >
+                    {t('nav.changePassword')}
+                  </Link>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={handleLogout}
+                    className="block w-full px-4 py-2 text-left text-destructive transition-colors hover:bg-destructive/10 focus:bg-destructive/10 focus:outline-none"
+                  >
+                    {t('nav.logout')}
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </div>
     </header>
