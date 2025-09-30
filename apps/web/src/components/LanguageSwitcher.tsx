@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useId } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -38,7 +38,8 @@ export function LanguageSwitcher({
   const location = useLocation();
   const navigate = useNavigate();
   const { close, isOpen, toggle, triggerRef, popoverRef } =
-    useHeaderPopover<HTMLUListElement>();
+    useHeaderPopover<HTMLDivElement>();
+  const switcherName = useId();
 
   const languages = useMemo(
     () => Array.from(new Set(SUPPORTED_LANGUAGES)),
@@ -65,6 +66,22 @@ export function LanguageSwitcher({
       // Ignore storage access issues (e.g., quota errors or disabled storage).
     }
   }, []);
+
+  const sanitizedSearch = useMemo(() => {
+    if (!location.search) {
+      return '';
+    }
+
+    const params = new URLSearchParams(location.search);
+
+    if (params.get('page') === '0') {
+      params.delete('page');
+    }
+
+    const nextSearch = params.toString();
+
+    return nextSearch ? `?${nextSearch}` : '';
+  }, [location.search]);
 
   const buildNextPathname = useCallback(
     (nextLanguage: string) => {
@@ -94,7 +111,7 @@ export function LanguageSwitcher({
       persistLanguage(nextLanguage);
 
       const nextPathname = buildNextPathname(nextLanguage);
-      const nextLocation = `${nextPathname}${location.search}${location.hash}`;
+      const nextLocation = `${nextPathname}${sanitizedSearch}${location.hash}`;
       const currentLocation = `${location.pathname}${location.search}${location.hash}`;
 
       if (nextLocation !== currentLocation) {
@@ -109,6 +126,7 @@ export function LanguageSwitcher({
       location.search,
       navigate,
       persistLanguage,
+      sanitizedSearch,
       close,
     ],
   );
@@ -167,33 +185,41 @@ export function LanguageSwitcher({
         )}
       </button>
       {isOpen ? (
-        <ul
+        <div
           ref={popoverRef}
           role="listbox"
           aria-label={t('language.select')}
+          aria-activedescendant={`${switcherName}-${currentLanguage}`}
           className="absolute right-0 z-50 mt-2 w-40 overflow-hidden rounded-md border border-border bg-card py-1 shadow-lg focus:outline-none"
+          tabIndex={-1}
         >
-          {languages.map((language) => (
-            <li key={language} className="px-1">
-              <button
-                type="button"
-                role="option"
-                aria-selected={language === currentLanguage}
-                onClick={() => handleSelect(language)}
-                className={`flex w-full items-center justify-between rounded px-2 py-2 text-left text-sm ${
-                  language === currentLanguage
-                    ? 'bg-muted font-medium text-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`}
-              >
-                <span>{getLanguageLabel(language)}</span>
-                {language === currentLanguage ? (
-                  <span aria-hidden="true">{t('language.selectedIndicator')}</span>
-                ) : null}
-              </button>
-            </li>
-          ))}
-        </ul>
+          {languages.map((language) => {
+            const isSelected = language === currentLanguage;
+            const optionId = `${switcherName}-${language}`;
+
+            return (
+              <div key={language} role="none" className="px-1">
+                <button
+                  type="button"
+                  id={optionId}
+                  role="option"
+                  aria-selected={isSelected}
+                  className={`flex w-full items-center justify-between rounded px-2 py-2 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                    isSelected
+                      ? 'bg-muted font-medium text-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                  onClick={() => handleSelect(language)}
+                >
+                  <span>{getLanguageLabel(language)}</span>
+                  {isSelected ? (
+                    <span aria-hidden="true">{t('language.selectedIndicator')}</span>
+                  ) : null}
+                </button>
+              </div>
+            );
+          })}
+        </div>
       ) : null}
     </div>
   );

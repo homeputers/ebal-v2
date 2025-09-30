@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -9,32 +9,12 @@ import {
 } from '../../features/sets/hooks';
 import SetForm, { SetFormValues } from '../../features/sets/SetForm';
 import type { ListSetsParams, ListSetsResponse } from '../../api/sets';
+import Modal from '../../components/Modal';
 
 type SongSetsQueryParams = ListSetsParams & { query?: string };
 type SongSetRow =
   NonNullable<ListSetsResponse['content']>[number] & { itemsCount?: number | null };
 
-function Modal({
-  open,
-  onClose,
-  children,
-}: {
-  open: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center" onClick={onClose}>
-      <div
-        className="bg-white p-4 rounded shadow max-w-md w-full"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {children}
-      </div>
-    </div>
-  );
-}
 
 const PAGE_SIZE = 20;
 
@@ -87,6 +67,8 @@ export default function SongSetsPage() {
 
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<{ id: string; name: string } | null>(null);
+  const createTitleId = useId();
+  const editTitleId = useId();
 
   const handleCreate = (values: SetFormValues) => {
     createMut.mutate(values, {
@@ -223,13 +205,27 @@ export default function SongSetsPage() {
         </div>
       ) : null}
 
-      <Modal open={creating} onClose={() => setCreating(false)}>
-        <h2 className="text-lg font-semibold mb-2">{t('modals.createTitle')}</h2>
+      <Modal
+        open={creating}
+        onClose={() => setCreating(false)}
+        closeLabel={tCommon('actions.close', { defaultValue: 'Close dialog' })}
+        titleId={createTitleId}
+      >
+        <h2 id={createTitleId} className="text-lg font-semibold mb-2">
+          {t('modals.createTitle')}
+        </h2>
         <SetForm onSubmit={handleCreate} onCancel={() => setCreating(false)} />
       </Modal>
 
-      <Modal open={!!editing} onClose={() => setEditing(null)}>
-        <h2 className="text-lg font-semibold mb-2">{t('modals.editTitle')}</h2>
+      <Modal
+        open={!!editing}
+        onClose={() => setEditing(null)}
+        closeLabel={tCommon('actions.close', { defaultValue: 'Close dialog' })}
+        titleId={editTitleId}
+      >
+        <h2 id={editTitleId} className="text-lg font-semibold mb-2">
+          {t('modals.editTitle')}
+        </h2>
         {editing && (
           <SetForm
             defaultValues={{ name: editing.name }}

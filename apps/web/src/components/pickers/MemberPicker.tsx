@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useId } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { listMembers } from '@/api/members';
@@ -31,6 +31,7 @@ export function MemberPicker({ value, onChange, placeholder, excludeIds }: Props
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
+  const listboxId = useId();
   const debounced = useDebounce(search, 300);
 
   const queryParams = useMemo(
@@ -112,34 +113,48 @@ export function MemberPicker({ value, onChange, placeholder, excludeIds }: Props
         className="border p-2 rounded w-full"
         aria-autocomplete="list"
         aria-expanded={open}
+        aria-controls={open ? listboxId : undefined}
+        role="combobox"
       />
       {open && (
-        <ul
-          className="absolute z-10 mt-1 bg-white border rounded max-h-60 overflow-auto w-full"
+        <div
+          className="absolute z-10 mt-1 w-full max-h-60 overflow-auto rounded border bg-white"
           role="listbox"
+          id={listboxId}
+          tabIndex={0}
         >
-          {isLoading && <li className="p-2 text-sm">{tCommon('status.loading')}</li>}
+          {isLoading && <div className="p-2 text-sm">{tCommon('status.loading')}</div>}
           {isError && (
-            <li className="p-2 text-sm text-red-500">{tCommon('status.loadFailed')}</li>
+            <div className="p-2 text-sm text-red-500">{tCommon('status.loadFailed')}</div>
           )}
           {!isLoading && !isError && options.length === 0 && (
-            <li className="p-2 text-sm">{t('list.empty')}</li>
+            <div className="p-2 text-sm">{t('list.empty')}</div>
           )}
           {options.map((member, idx) => (
-            <li
-              key={member.id}
-              role="option"
-              aria-selected={value === member.id}
-              className={`p-2 cursor-pointer ${idx === active ? 'bg-blue-500 text-white' : ''}`}
-              onMouseDown={() => handleSelect(member)}
-            >
-              <div>{member.displayName}</div>
-              {member.instruments && member.instruments.length > 0 && (
-                <div className="text-xs text-gray-500">{member.instruments.join(', ')}</div>
-              )}
-            </li>
+            <div key={member.id}>
+              <button
+                type="button"
+                role="option"
+                aria-selected={value === member.id}
+                className={`flex w-full cursor-pointer flex-col items-start rounded px-2 py-2 text-left ${
+                  idx === active ? 'bg-blue-500 text-white' : ''
+                }`}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  handleSelect(member);
+                }}
+                onClick={() => handleSelect(member)}
+              >
+                <span>{member.displayName}</span>
+                {member.instruments && member.instruments.length > 0 && (
+                  <span className="text-xs text-gray-500">
+                    {member.instruments.join(', ')}
+                  </span>
+                )}
+              </button>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

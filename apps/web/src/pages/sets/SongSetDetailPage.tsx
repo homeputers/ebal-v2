@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import type { CSSProperties, FormEvent, ReactNode } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
+import type { CSSProperties, FormEvent } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -36,28 +36,7 @@ import { useArrangementLabels } from '@/hooks/useArrangementLabels';
 import type { ArrangementLabel } from '@/lib/arrangements-cache';
 import { formatArrangementLine, formatKeyTransform } from '@/lib/arrangement-labels';
 import { computeKeys } from '@/lib/keys';
-
-function Modal({
-  open,
-  onClose,
-  children,
-}: {
-  open: boolean;
-  onClose: () => void;
-  children: ReactNode;
-}) {
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center" onClick={onClose}>
-      <div
-        className="bg-white p-4 rounded shadow max-w-md w-full"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {children}
-      </div>
-    </div>
-  );
-}
+import Modal from '../../components/Modal';
 
 type SongSetItem = ListSetItemsResponse extends Array<infer Item> ? Item : never;
 type SongSetItemWithId = SongSetItem & { id: string };
@@ -226,6 +205,7 @@ export default function SongSetDetailPage() {
   const arrangementLabels = arrangementLabelsQuery.data ?? {};
 
   const [editingSet, setEditingSet] = useState(false);
+  const editTitleId = useId();
   const [songId, setSongId] = useState<string | undefined>();
   const [arrangementId, setArrangementId] = useState<string | undefined>();
   const [transpose, setTranspose] = useState(0);
@@ -519,8 +499,15 @@ export default function SongSetDetailPage() {
           )}
         </div>
       </div>
-      <Modal open={editingSet} onClose={() => setEditingSet(false)}>
-        <h2 className="text-lg font-semibold mb-2">{t('modals.editTitle')}</h2>
+      <Modal
+        open={editingSet}
+        onClose={() => setEditingSet(false)}
+        closeLabel={tCommon('actions.close', { defaultValue: 'Close dialog' })}
+        titleId={editTitleId}
+      >
+        <h2 id={editTitleId} className="text-lg font-semibold mb-2">
+          {t('modals.editTitle')}
+        </h2>
         <SetForm
           defaultValues={{ name: songSet.name ?? '' }}
           onSubmit={handleSetUpdate}

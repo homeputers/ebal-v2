@@ -33,6 +33,9 @@ jobs:
       - name: Lint
         run: yarn lint
 
+      - name: Accessibility lint
+        run: yarn lint:a11y
+
       - name: Typecheck
         run: yarn typecheck
 
