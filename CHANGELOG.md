@@ -1,3 +1,8 @@
+## [0.4.1](https://github.com/homeputers/ebal-v2/compare/v0.4.0...v0.4.1) (2025-09-30)
+
+### Bug Fixes
+
+* **ci:** unblock release pipelines ([#141](https://github.com/homeputers/ebal-v2/issues/141)) ([7124407](https://github.com/homeputers/ebal-v2/commit/7124407163f232be9d7ac2e12c083f1858ed08c8))
 ## [0.4.0](https://github.com/homeputers/ebal-v2/compare/v0.3.1...v0.4.0) (2025-09-30)
 
 ### Features
