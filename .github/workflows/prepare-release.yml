@@ -135,14 +135,42 @@ jobs:
             const repo = context.repo.repo;
             const head = `${owner}:${process.env.RELEASE_BRANCH}`;
             const base = process.env.BASE_BRANCH;
+            const releaseLabel = 'release';
+
+            async function ensureLabelExists() {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name: releaseLabel });
+              } catch (error) {
+                if (error.status !== 404) {
+                  throw error;
+                }
+                await github.rest.issues.createLabel({
+                  owner,
+                  repo,
+                  name: releaseLabel,
+                  color: '0e8a16',
+                  description: 'Automated release preparation'
+                });
+                core.info(`Created label '${releaseLabel}'`);
+              }
+            }
+
             const { data: prs } = await github.rest.pulls.list({
               owner,
               repo,
               head,
               state: 'open'
             });
+            await ensureLabelExists();
             if (prs.length > 0) {
               core.info(`Pull request already exists: ${prs[0].html_url}`);
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: prs[0].number,
+                labels: [releaseLabel]
+              });
+              core.info(`Ensured label '${releaseLabel}' is applied to PR #${prs[0].number}`);
               return;
             }
             const { data: pr } = await github.rest.pulls.create({
@@ -154,3 +182,10 @@ jobs:
               body: `Automated release preparation for v${process.env.RELEASE_VERSION}.`
             });
             core.info(`Created PR: ${pr.html_url}`);
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: pr.number,
+              labels: [releaseLabel]
+            });
+            core.info(`Applied label '${releaseLabel}' to PR #${pr.number}`);
