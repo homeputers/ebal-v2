@@ -1,0 +1,72 @@
+name: Release Complete
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  tag-release:
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Determine tag name
+        id: tag
+        env:
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+          BRANCH="${PR_HEAD_REF}"
+          if [[ -z "${BRANCH}" ]]; then
+            echo "Pull request head ref is empty" >&2
+            exit 1
+          fi
+          if [[ "${BRANCH}" != release/* ]]; then
+            echo "Pull request head ref '${BRANCH}' does not follow expected pattern 'release/v*'" >&2
+            exit 1
+          fi
+          VERSION_PART="${BRANCH#release/}"
+          VERSION_PART="${VERSION_PART#v}"
+          if [[ -z "${VERSION_PART}" ]]; then
+            echo "Unable to extract version from branch '${BRANCH}'" >&2
+            exit 1
+          fi
+          if ! [[ "${VERSION_PART}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z]+)*$ ]]; then
+            echo "Extracted version '${VERSION_PART}' does not look like semver" >&2
+            exit 1
+          fi
+          TAG_NAME="v${VERSION_PART}"
+          echo "tag_name=${TAG_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch merge commit
+        env:
+          MERGE_COMMIT: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${MERGE_COMMIT}" ]]; then
+            echo "Merge commit SHA is not available" >&2
+            exit 1
+          fi
+          git fetch origin "${MERGE_COMMIT}"
+
+      - name: Create and push tag
+        env:
+          TAG_NAME: ${{ steps.tag.outputs.tag_name }}
+          MERGE_COMMIT: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+          if git rev-parse "refs/tags/${TAG_NAME}" >/dev/null 2>&1; then
+            echo "Tag ${TAG_NAME} already exists. Skipping creation."
+            exit 0
+          fi
+          git tag -a "${TAG_NAME}" "${MERGE_COMMIT}" -m "Release ${TAG_NAME}"
+          git push origin "${TAG_NAME}"
