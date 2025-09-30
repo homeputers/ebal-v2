@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useId } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -39,6 +39,7 @@ export function LanguageSwitcher({
   const navigate = useNavigate();
   const { close, isOpen, toggle, triggerRef, popoverRef } =
     useHeaderPopover<HTMLUListElement>();
+  const switcherName = useId();
 
   const languages = useMemo(
     () => Array.from(new Set(SUPPORTED_LANGUAGES)),
@@ -169,31 +170,41 @@ export function LanguageSwitcher({
       {isOpen ? (
         <ul
           ref={popoverRef}
-          role="listbox"
           aria-label={t('language.select')}
           className="absolute right-0 z-50 mt-2 w-40 overflow-hidden rounded-md border border-border bg-card py-1 shadow-lg focus:outline-none"
           tabIndex={-1}
         >
-          {languages.map((language) => (
-            <li key={language} className="px-1">
-              <button
-                type="button"
-                role="option"
-                aria-selected={language === currentLanguage}
-                onClick={() => handleSelect(language)}
-                className={`flex w-full items-center justify-between rounded px-2 py-2 text-left text-sm ${
-                  language === currentLanguage
-                    ? 'bg-muted font-medium text-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`}
-              >
-                <span>{getLanguageLabel(language)}</span>
-                {language === currentLanguage ? (
-                  <span aria-hidden="true">{t('language.selectedIndicator')}</span>
-                ) : null}
-              </button>
-            </li>
-          ))}
+          {languages.map((language) => {
+            const isSelected = language === currentLanguage;
+            const optionId = `${switcherName}-${language}`;
+
+            return (
+              <li key={language} role="none" className="px-1">
+                <label htmlFor={optionId} className="block">
+                  <input
+                    id={optionId}
+                    className="peer sr-only"
+                    type="radio"
+                    name={switcherName}
+                    checked={isSelected}
+                    onChange={() => handleSelect(language)}
+                  />
+                  <span
+                    className={`flex w-full cursor-pointer items-center justify-between rounded px-2 py-2 text-left text-sm transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background ${
+                      isSelected
+                        ? 'bg-muted font-medium text-foreground'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    }`}
+                  >
+                    <span>{getLanguageLabel(language)}</span>
+                    {isSelected ? (
+                      <span aria-hidden="true">{t('language.selectedIndicator')}</span>
+                    ) : null}
+                  </span>
+                </label>
+              </li>
+            );
+          })}
         </ul>
       ) : null}
     </div>
