@@ -167,7 +167,7 @@ export function LanguageSwitcher({
         )}
       </button>
       {isOpen ? (
-        <div
+        <ul
           ref={popoverRef}
           role="listbox"
           aria-label={t('language.select')}
@@ -175,7 +175,7 @@ export function LanguageSwitcher({
           tabIndex={-1}
         >
           {languages.map((language) => (
-            <div key={language} className="px-1">
+            <li key={language} className="px-1">
               <button
                 type="button"
                 role="option"
@@ -192,9 +192,9 @@ export function LanguageSwitcher({
                   <span aria-hidden="true">{t('language.selectedIndicator')}</span>
                 ) : null}
               </button>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : null}
     </div>
   );
