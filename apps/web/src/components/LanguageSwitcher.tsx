@@ -170,6 +170,7 @@ export function LanguageSwitcher({
       {isOpen ? (
         <ul
           ref={popoverRef}
+          role="listbox"
           aria-label={t('language.select')}
           className="absolute right-0 z-50 mt-2 w-40 overflow-hidden rounded-md border border-border bg-card py-1 shadow-lg focus:outline-none"
           tabIndex={-1}
@@ -180,7 +181,13 @@ export function LanguageSwitcher({
 
             return (
               <li key={language} role="none" className="px-1">
-                <label htmlFor={optionId} className="block">
+                <label
+                  htmlFor={optionId}
+                  role="option"
+                  aria-selected={isSelected}
+                  tabIndex={isSelected ? 0 : -1}
+                  className="block"
+                >
                   <input
                     id={optionId}
                     className="peer sr-only"
