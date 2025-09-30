@@ -7,6 +7,7 @@ import { useAuth } from '@/features/auth/useAuth';
 import { buildLanguagePath, type AppNavigationLink } from '@/components/navigation/links';
 import { useHeaderPopover } from '@/hooks/useHeaderPopover';
 import { MOBILE_NAVIGATION_ID } from '@/components/layout/constants';
+import { AppBrandLink } from '@/components/layout/AppBrandLink';
 
 type AppHeaderProps = {
   currentLanguage: string;
@@ -25,11 +26,6 @@ export function AppHeader({
   const { logout, me, isAuthenticated } = useAuth();
   const accountMenu = useHeaderPopover<HTMLDivElement>();
   const accountMenuButtonId = useId();
-
-  const brandHref = useMemo(
-    () => buildLanguagePath(currentLanguage, 'services'),
-    [currentLanguage],
-  );
 
   const profileHref = useMemo(
     () => buildLanguagePath(currentLanguage, 'me'),
@@ -91,13 +87,7 @@ export function AppHeader({
               </span>
             </button>
           ) : null}
-          <Link
-            to={brandHref}
-            className="text-lg font-semibold tracking-tight text-foreground transition-colors hover:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            <span aria-hidden="true">EBaL</span>
-            <span className="sr-only">{t('app.title')}</span>
-          </Link>
+          <AppBrandLink to="/" collapseTextOnMobile className="shrink-0" />
         </div>
         <div className="flex items-center gap-2">
           <LanguageSwitcher currentLanguage={currentLanguage} variant="compact" />

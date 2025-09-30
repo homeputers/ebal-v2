@@ -1,10 +1,11 @@
 import { Fragment, useEffect, useRef } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import type { AppNavigationLink } from '@/components/navigation/links';
 import { buildLanguagePath } from '@/components/navigation/links';
 import { MOBILE_NAVIGATION_ID } from '@/components/layout/constants';
+import { AppBrandLink } from '@/components/layout/AppBrandLink';
 
 type AppSideNavProps = {
   currentLanguage: string;
@@ -56,7 +57,6 @@ export function AppSideNav({
   onClose,
 }: AppSideNavProps) {
   const { t } = useTranslation('common');
-  const brandHref = buildLanguagePath(currentLanguage, 'services');
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const drawerRef = useRef<HTMLDivElement | null>(null);
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
@@ -223,8 +223,13 @@ export function AppSideNav({
   return (
     <Fragment>
       <aside className="hidden w-64 shrink-0 border-r border-border bg-card px-4 py-6 text-foreground shadow-sm lg:flex lg:flex-col">
-        <div className="flex-1 space-y-2 overflow-y-auto">
-          {desktopNavigation}
+        <div className="flex flex-1 flex-col gap-6">
+          <AppBrandLink
+            to="/"
+            className="shrink-0"
+            textClassName="text-xl font-semibold tracking-tight"
+          />
+          <div className="flex-1 space-y-2 overflow-y-auto">{desktopNavigation}</div>
         </div>
       </aside>
       {isOpen ? (
@@ -243,13 +248,12 @@ export function AppSideNav({
           >
             <div className="flex h-full flex-col">
               <div className="flex items-center justify-between gap-3">
-                <Link
-                  to={brandHref}
-                  className="text-base font-semibold tracking-tight text-foreground transition-colors hover:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                <AppBrandLink
+                  to="/"
+                  className="shrink-0"
+                  textClassName="text-base font-semibold tracking-tight"
                   onClick={onClose}
-                >
-                  {t('app.title')}
-                </Link>
+                />
                 <button
                   ref={closeButtonRef}
                   type="button"
