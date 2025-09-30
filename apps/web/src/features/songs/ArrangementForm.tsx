@@ -180,7 +180,7 @@ export function ArrangementForm({
             transpose={transpose}
             useFlats={useFlats}
             layout={layout}
-            className="flex-1 overflow-auto p-3 border rounded font-mono text-sm"
+            className="flex-1 overflow-auto p-3 border rounded font-mono text-sm max-h-96"
           />
         </div>
       </div>

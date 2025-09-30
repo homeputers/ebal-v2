@@ -27,11 +27,11 @@ function Modal({
   if (!open) return null;
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="bg-white p-4 rounded shadow max-w-3xl w-full"
+        className="bg-white p-4 rounded shadow max-w-3xl w-full max-h-[calc(100vh-4rem)] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
