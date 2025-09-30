@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { AppHeader } from '@/components/layout/AppHeader';
@@ -24,6 +24,10 @@ export function AppShell({ currentLanguage, children }: AppShellProps) {
     [hasRole],
   );
 
+  const handleCloseNavigation = useCallback(() => {
+    setNavigationOpen(false);
+  }, []);
+
   useEffect(() => {
     if (!isNavigationOpen) {
       return;
@@ -31,7 +35,7 @@ export function AppShell({ currentLanguage, children }: AppShellProps) {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setNavigationOpen(false);
+        handleCloseNavigation();
       }
     };
 
@@ -40,11 +44,16 @@ export function AppShell({ currentLanguage, children }: AppShellProps) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isNavigationOpen]);
+  }, [handleCloseNavigation, isNavigationOpen]);
 
   useEffect(() => {
-    setNavigationOpen(false);
-  }, [location.pathname, location.search, location.hash]);
+    handleCloseNavigation();
+  }, [
+    handleCloseNavigation,
+    location.hash,
+    location.pathname,
+    location.search,
+  ]);
 
   const handleToggleNavigation = () => {
     setNavigationOpen((value) => !value);
@@ -57,7 +66,7 @@ export function AppShell({ currentLanguage, children }: AppShellProps) {
           currentLanguage={currentLanguage}
           navigationLinks={navigationLinks}
           isOpen={isNavigationOpen}
-          onClose={() => setNavigationOpen(false)}
+          onClose={handleCloseNavigation}
         />
         <div className="flex min-h-screen flex-1 flex-col">
           <AppHeader
