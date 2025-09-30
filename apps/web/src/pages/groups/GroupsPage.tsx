@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -8,42 +8,7 @@ import {
   useDeleteGroup,
 } from '../../features/groups/hooks';
 import GroupForm, { GroupFormValues } from '../../features/groups/GroupForm';
-
-function Modal({
-  open,
-  onClose,
-  children,
-}: {
-  open: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
-  const { t: tCommon } = useTranslation('common');
-
-  if (!open) return null;
-
-  return (
-    <>
-      <button
-        type="button"
-        tabIndex={-1}
-        onClick={onClose}
-        className="fixed inset-0 z-40 bg-black/50"
-        aria-label={tCommon('actions.close', { defaultValue: 'Close dialog' })}
-      />
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="w-full max-w-md rounded bg-white p-4 shadow"
-          tabIndex={-1}
-        >
-          {children}
-        </div>
-      </div>
-    </>
-  );
-}
+import Modal from '../../components/Modal';
 
 export default function GroupsPage() {
   const { t } = useTranslation('groups');
@@ -102,6 +67,8 @@ export default function GroupsPage() {
   const filtered = (data?.content || []).filter((g) =>
     g.name?.toLowerCase().includes(queryParam.toLowerCase()),
   ); // TODO: server-side search when API adds query parameter
+
+  const createTitleId = useId();
 
   return (
     <div className="p-4">
@@ -210,8 +177,15 @@ export default function GroupsPage() {
         </div>
       ) : null}
 
-      <Modal open={creating} onClose={() => setCreating(false)}>
-        <h2 className="text-lg font-semibold mb-2">{t('modals.createTitle')}</h2>
+      <Modal
+        open={creating}
+        onClose={() => setCreating(false)}
+        closeLabel={tCommon('actions.close', { defaultValue: 'Close dialog' })}
+        titleId={createTitleId}
+      >
+        <h2 id={createTitleId} className="text-lg font-semibold mb-2">
+          {t('modals.createTitle')}
+        </h2>
         <GroupForm onSubmit={handleCreate} onCancel={() => setCreating(false)} />
       </Modal>
     </div>

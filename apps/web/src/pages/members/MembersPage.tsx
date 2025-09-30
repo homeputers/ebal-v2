@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { components } from '../../api/types';
@@ -9,42 +9,7 @@ import {
   useDeleteMember,
 } from '../../features/members/hooks';
 import MemberForm from '../../features/members/MemberForm';
-
-function Modal({
-  open,
-  onClose,
-  children,
-}: {
-  open: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
-  const { t: tCommon } = useTranslation('common');
-
-  if (!open) return null;
-
-  return (
-    <>
-      <button
-        type="button"
-        tabIndex={-1}
-        onClick={onClose}
-        className="fixed inset-0 z-40 bg-black/50"
-        aria-label={tCommon('actions.close', { defaultValue: 'Close dialog' })}
-      />
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="w-full max-w-md rounded bg-white p-4 shadow"
-          tabIndex={-1}
-        >
-          {children}
-        </div>
-      </div>
-    </>
-  );
-}
+import Modal from '../../components/Modal';
 
 type Member = components['schemas']['MemberResponse'];
 type MemberRequest = components['schemas']['MemberRequest'];
@@ -102,6 +67,9 @@ export default function MembersPage() {
 
   const memberCount = data?.totalElements ?? data?.content?.length ?? 0;
   const shouldShowCount = data?.totalElements !== undefined || data?.content !== undefined;
+
+  const createTitleId = useId();
+  const editTitleId = useId();
 
   return (
     <div className="p-4">
@@ -200,12 +168,26 @@ export default function MembersPage() {
           )}
         </div>
       ) : null}
-      <Modal open={creating} onClose={() => setCreating(false)}>
-        <h2 className="text-lg font-semibold mb-2">{t('modals.createTitle')}</h2>
+      <Modal
+        open={creating}
+        onClose={() => setCreating(false)}
+        closeLabel={tCommon('actions.close', { defaultValue: 'Close dialog' })}
+        titleId={createTitleId}
+      >
+        <h2 id={createTitleId} className="text-lg font-semibold mb-2">
+          {t('modals.createTitle')}
+        </h2>
         <MemberForm onSubmit={handleCreate} onCancel={() => setCreating(false)} />
       </Modal>
-      <Modal open={!!editing} onClose={() => setEditing(null)}>
-        <h2 className="text-lg font-semibold mb-2">{t('modals.editTitle')}</h2>
+      <Modal
+        open={!!editing}
+        onClose={() => setEditing(null)}
+        closeLabel={tCommon('actions.close', { defaultValue: 'Close dialog' })}
+        titleId={editTitleId}
+      >
+        <h2 id={editTitleId} className="text-lg font-semibold mb-2">
+          {t('modals.editTitle')}
+        </h2>
         {editing && (
           <MemberForm
             defaultValues={{

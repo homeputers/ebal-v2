@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -24,42 +24,7 @@ import { formatArrangementLine, formatKeyTransform } from '@/lib/arrangement-lab
 import { computeKeys } from '@/lib/keys';
 import { withLangKey } from '@/lib/queryClient';
 import { formatDate } from '@/i18n/intl';
-
-function Modal({
-  open,
-  onClose,
-  children,
-}: {
-  open: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
-  const { t: tCommon } = useTranslation('common');
-
-  if (!open) return null;
-
-  return (
-    <>
-      <button
-        type="button"
-        tabIndex={-1}
-        onClick={onClose}
-        className="fixed inset-0 z-40 bg-black/50"
-        aria-label={tCommon('actions.close', { defaultValue: 'Close dialog' })}
-      />
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="w-full max-w-md rounded bg-white p-4 shadow"
-          tabIndex={-1}
-        >
-          {children}
-        </div>
-      </div>
-    </>
-  );
-}
+import Modal from '../../components/Modal';
 
 type ServiceRequest = components['schemas']['ServiceRequest'];
 
@@ -92,6 +57,7 @@ export default function ServiceDetailPage() {
   const removeItemMut = useRemovePlanItem(id!);
 
   const [editingService, setEditingService] = useState(false);
+  const editServiceTitleId = useId();
   const [songId, setSongId] = useState<string | undefined>();
 
   const {
@@ -344,8 +310,15 @@ export default function ServiceDetailPage() {
           )}
         </div>
       </div>
-      <Modal open={editingService} onClose={() => setEditingService(false)}>
-        <h2 className="text-lg font-semibold mb-2">{t('modals.editTitle')}</h2>
+      <Modal
+        open={editingService}
+        onClose={() => setEditingService(false)}
+        closeLabel={tCommon('actions.close', { defaultValue: 'Close dialog' })}
+        titleId={editServiceTitleId}
+      >
+        <h2 id={editServiceTitleId} className="text-lg font-semibold mb-2">
+          {t('modals.editTitle')}
+        </h2>
         <ServiceForm
           defaultValues={{
             startsAt: service.startsAt ? service.startsAt.slice(0, 16) : '',

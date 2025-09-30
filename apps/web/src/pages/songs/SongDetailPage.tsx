@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { components } from '../../api/types';
@@ -14,42 +14,7 @@ import SongForm from '../../features/songs/SongForm';
 import ArrangementForm from '../../features/songs/ArrangementForm';
 import { formatBpm, formatDate } from '@/i18n/intl';
 import { useAuth } from '../../features/auth/useAuth';
-
-function Modal({
-  open,
-  onClose,
-  children,
-}: {
-  open: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
-  const { t: tCommon } = useTranslation('common');
-
-  if (!open) return null;
-
-  return (
-    <>
-      <button
-        type="button"
-        tabIndex={-1}
-        onClick={onClose}
-        className="fixed inset-0 z-40 bg-black/50"
-        aria-label={tCommon('actions.close', { defaultValue: 'Close dialog' })}
-      />
-      <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4">
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="w-full max-h-[calc(100vh-4rem)] max-w-3xl overflow-y-auto rounded bg-white p-4 shadow"
-          tabIndex={-1}
-        >
-          {children}
-        </div>
-      </div>
-    </>
-  );
-}
+import Modal from '../../components/Modal';
 
 type SongRequest = components['schemas']['SongRequest'];
 type Arrangement = components['schemas']['ArrangementResponse'];
@@ -75,6 +40,9 @@ export default function SongDetailPage() {
   const [editingSong, setEditingSong] = useState(false);
   const [creatingArr, setCreatingArr] = useState(false);
   const [editingArr, setEditingArr] = useState<Arrangement | null>(null);
+  const editSongTitleId = useId();
+  const createArrTitleId = useId();
+  const editArrTitleId = useId();
 
   const canManageSongs = hasRole('ADMIN') || hasRole('PLANNER');
 
@@ -201,8 +169,13 @@ export default function SongDetailPage() {
       )}
       {canManageSongs && (
         <>
-          <Modal open={editingSong} onClose={() => setEditingSong(false)}>
-            <h2 className="text-lg font-semibold mb-2">
+          <Modal
+            open={editingSong}
+            onClose={() => setEditingSong(false)}
+            closeLabel={tCommon('actions.close', { defaultValue: 'Close dialog' })}
+            titleId={editSongTitleId}
+          >
+            <h2 id={editSongTitleId} className="text-lg font-semibold mb-2">
               {t('modals.editTitle')}
             </h2>
             <SongForm
@@ -217,8 +190,14 @@ export default function SongDetailPage() {
               onCancel={() => setEditingSong(false)}
             />
           </Modal>
-          <Modal open={creatingArr} onClose={() => setCreatingArr(false)}>
-            <h2 className="text-lg font-semibold mb-2">
+          <Modal
+            open={creatingArr}
+            onClose={() => setCreatingArr(false)}
+            closeLabel={tCommon('actions.close', { defaultValue: 'Close dialog' })}
+            titleId={createArrTitleId}
+            contentClassName="w-full max-h-[calc(100vh-4rem)] max-w-3xl overflow-y-auto rounded bg-white p-4 shadow"
+          >
+            <h2 id={createArrTitleId} className="text-lg font-semibold mb-2">
               {tArrangements('modals.createTitle')}
             </h2>
             <ArrangementForm
@@ -226,8 +205,14 @@ export default function SongDetailPage() {
               onCancel={() => setCreatingArr(false)}
             />
           </Modal>
-          <Modal open={!!editingArr} onClose={() => setEditingArr(null)}>
-            <h2 className="text-lg font-semibold mb-2">
+          <Modal
+            open={!!editingArr}
+            onClose={() => setEditingArr(null)}
+            closeLabel={tCommon('actions.close', { defaultValue: 'Close dialog' })}
+            titleId={editArrTitleId}
+            contentClassName="w-full max-h-[calc(100vh-4rem)] max-w-3xl overflow-y-auto rounded bg-white p-4 shadow"
+          >
+            <h2 id={editArrTitleId} className="text-lg font-semibold mb-2">
               {tArrangements('modals.editTitle')}
             </h2>
             {editingArr && (

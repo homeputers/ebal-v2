@@ -168,10 +168,11 @@ export function LanguageSwitcher({
         )}
       </button>
       {isOpen ? (
-        <ul
+        <div
           ref={popoverRef}
           role="listbox"
           aria-label={t('language.select')}
+          aria-activedescendant={`${switcherName}-${currentLanguage}`}
           className="absolute right-0 z-50 mt-2 w-40 overflow-hidden rounded-md border border-border bg-card py-1 shadow-lg focus:outline-none"
           tabIndex={-1}
         >
@@ -180,39 +181,28 @@ export function LanguageSwitcher({
             const optionId = `${switcherName}-${language}`;
 
             return (
-              <li key={language} role="none" className="px-1">
-                <label
-                  htmlFor={optionId}
+              <div key={language} role="none" className="px-1">
+                <button
+                  type="button"
+                  id={optionId}
                   role="option"
                   aria-selected={isSelected}
-                  tabIndex={isSelected ? 0 : -1}
-                  className="block"
+                  className={`flex w-full items-center justify-between rounded px-2 py-2 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                    isSelected
+                      ? 'bg-muted font-medium text-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                  onClick={() => handleSelect(language)}
                 >
-                  <input
-                    id={optionId}
-                    className="peer sr-only"
-                    type="radio"
-                    name={switcherName}
-                    checked={isSelected}
-                    onChange={() => handleSelect(language)}
-                  />
-                  <span
-                    className={`flex w-full cursor-pointer items-center justify-between rounded px-2 py-2 text-left text-sm transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background ${
-                      isSelected
-                        ? 'bg-muted font-medium text-foreground'
-                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                    }`}
-                  >
-                    <span>{getLanguageLabel(language)}</span>
-                    {isSelected ? (
-                      <span aria-hidden="true">{t('language.selectedIndicator')}</span>
-                    ) : null}
-                  </span>
-                </label>
-              </li>
+                  <span>{getLanguageLabel(language)}</span>
+                  {isSelected ? (
+                    <span aria-hidden="true">{t('language.selectedIndicator')}</span>
+                  ) : null}
+                </button>
+              </div>
             );
           })}
-        </ul>
+        </div>
       ) : null}
     </div>
   );
