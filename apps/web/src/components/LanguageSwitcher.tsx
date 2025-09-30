@@ -38,7 +38,7 @@ export function LanguageSwitcher({
   const location = useLocation();
   const navigate = useNavigate();
   const { close, isOpen, toggle, triggerRef, popoverRef } =
-    useHeaderPopover<HTMLUListElement>();
+    useHeaderPopover<HTMLDivElement>();
   const switcherName = useId();
 
   const languages = useMemo(
