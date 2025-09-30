@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import type { AppNavigationLink } from '@/components/navigation/links';
 import { buildLanguagePath } from '@/components/navigation/links';
 import { MOBILE_NAVIGATION_ID } from '@/components/layout/constants';
-import { AppBrandLink } from '@/components/layout/AppBrandLink';
 
 type AppSideNavProps = {
   currentLanguage: string;
@@ -223,12 +222,7 @@ export function AppSideNav({
   return (
     <Fragment>
       <aside className="hidden w-64 shrink-0 border-r border-border bg-card px-4 py-6 text-foreground shadow-sm lg:flex lg:flex-col">
-        <div className="flex flex-1 flex-col gap-6">
-          <AppBrandLink
-            to="/"
-            className="shrink-0"
-            textClassName="text-xl font-semibold tracking-tight"
-          />
+        <div className="flex flex-1 flex-col">
           <div className="flex-1 space-y-2 overflow-y-auto">{desktopNavigation}</div>
         </div>
       </aside>
@@ -247,13 +241,7 @@ export function AppSideNav({
             tabIndex={-1}
           >
             <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between gap-3">
-                <AppBrandLink
-                  to="/"
-                  className="shrink-0"
-                  textClassName="text-base font-semibold tracking-tight"
-                  onClick={onClose}
-                />
+              <div className="flex justify-end">
                 <button
                   ref={closeButtonRef}
                   type="button"
@@ -278,9 +266,9 @@ export function AppSideNav({
                   </span>
                 </button>
               </div>
-                <div className="mt-6 flex flex-1 flex-col">
-                  <div className="flex-1 overflow-y-auto">{mobileNavigation}</div>
-                </div>
+              <div className="mt-6 flex flex-1 flex-col">
+                <div className="flex-1 overflow-y-auto">{mobileNavigation}</div>
+              </div>
             </div>
           </div>
         </div>
