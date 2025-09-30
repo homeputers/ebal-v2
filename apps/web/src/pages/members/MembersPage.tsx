@@ -200,6 +200,10 @@ export default function MembersPage() {
             defaultValues={{
               displayName: editing.displayName || '',
               instruments: editing.instruments?.join(', ') || '',
+              email: editing.email || '',
+              phoneNumber: editing.phoneNumber || '',
+              birthdayMonth: editing.birthdayMonth ?? undefined,
+              birthdayDay: editing.birthdayDay ?? undefined,
             }}
             onSubmit={(vals) => handleUpdate(editing.id!, vals)}
             onCancel={() => setEditing(null)}

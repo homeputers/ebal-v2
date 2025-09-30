@@ -9,7 +9,15 @@ public record Member(
 
         String displayName,
 
-        List<String> instruments
+        List<String> instruments,
+
+        String email,
+
+        String phoneNumber,
+
+        Integer birthdayMonth,
+
+        Integer birthdayDay
 ) {
     public Member {
         if (id == null) {
