@@ -88,7 +88,7 @@ test('language switcher smoke: switches navigation language and persists after r
   }
 
   await page.getByRole('button', { name: LANGUAGE_BUTTON_NAME }).click();
-  await page.getByRole('option', { name: 'Español' }).click();
+  await page.getByRole('option', { name: 'Spanish' }).click();
 
   await expect(page).toHaveURL(/\/es\/services$/);
 

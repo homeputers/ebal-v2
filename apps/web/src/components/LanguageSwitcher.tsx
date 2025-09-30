@@ -16,7 +16,7 @@ type LanguageSwitcherProps = {
 
 const FALLBACK_LANGUAGE_LABELS: Record<string, string> = {
   en: 'English',
-  es: 'Español',
+  es: 'Spanish',
 };
 
 const isBrowser = typeof window !== 'undefined';
