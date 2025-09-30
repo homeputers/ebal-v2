@@ -1,16 +1,18 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 
 import type { CurrentUser, Role } from '@/api/auth';
 import i18n from '@/i18n';
 import { AppShell } from '@/components/layout/AppShell';
-
-vi.mock('@/components/LanguageSwitcher', () => ({
-  LanguageSwitcher: ({ currentLanguage }: { currentLanguage: string }) => (
-    <div data-testid="language-switcher">{currentLanguage}</div>
-  ),
-}));
 
 let activeRoles: Set<Role> = new Set<Role>([
   'ADMIN',
@@ -60,12 +62,18 @@ const changeLanguage = async (language: string) => {
   });
 };
 
-const renderAppShell = async (language: string) => {
+type RenderOptions = {
+  initialEntry?: string;
+};
+
+const renderAppShell = async (language: string, options: RenderOptions = {}) => {
   await changeLanguage(language);
+
+  const initialEntry = options.initialEntry ?? `/${language}/services`;
 
   return render(
     <I18nextProvider i18n={i18n}>
-      <MemoryRouter initialEntries={[`/${language}/services`]}>
+      <MemoryRouter initialEntries={[initialEntry]}>
         <AppShell currentLanguage={language}>
           <div>Content</div>
         </AppShell>
@@ -165,85 +173,17 @@ describe('AppShell', () => {
     expect(activeLink).toHaveAttribute('aria-current', 'page');
   });
 
-  it('renders logout control when authenticated', async () => {
+  it('renders account controls in the navigation when authenticated', async () => {
     setIsAuthenticated(true);
     mockUseAuth.mockClear();
 
     await renderAppShell('en');
 
-    const accountButton = screen.getByRole('button', {
-      name: 'Account options for Test User',
-    });
-    expect(accountButton).toBeInTheDocument();
-    await act(async () => {
-      accountButton.click();
-    });
-
+    expect(screen.getByRole('link', { name: 'Profile' })).toBeInTheDocument();
     expect(
-      await screen.findByRole('menuitem', { name: 'Change password' }),
+      screen.getByRole('link', { name: 'Change password' }),
     ).toBeInTheDocument();
-    expect(
-      await screen.findByRole('menuitem', { name: 'Log out' }),
-    ).toBeInTheDocument();
-  });
-
-  it('closes the account menu on Escape and restores focus to the trigger', async () => {
-    setIsAuthenticated(true);
-    mockUseAuth.mockClear();
-
-    await renderAppShell('en');
-
-    const accountButton = screen.getByRole('button', {
-      name: 'Account options for Test User',
-    });
-
-    accountButton.focus();
-
-    await act(async () => {
-      accountButton.click();
-    });
-
-    expect(
-      await screen.findByRole('menuitem', { name: 'Change password' }),
-    ).toBeInTheDocument();
-
-    await act(async () => {
-      fireEvent.keyDown(document, { key: 'Escape' });
-    });
-
-    expect(
-      screen.queryByRole('menuitem', { name: 'Change password' }),
-    ).not.toBeInTheDocument();
-    expect(accountButton).toHaveFocus();
-  });
-
-  it('closes the account menu when clicking outside', async () => {
-    setIsAuthenticated(true);
-    mockUseAuth.mockClear();
-
-    await renderAppShell('en');
-
-    const accountButton = screen.getByRole('button', {
-      name: 'Account options for Test User',
-    });
-
-    await act(async () => {
-      accountButton.click();
-    });
-
-    expect(
-      await screen.findByRole('menuitem', { name: 'Change password' }),
-    ).toBeInTheDocument();
-
-    await act(async () => {
-      fireEvent.mouseDown(document.body);
-    });
-
-    await waitFor(() => {
-      expect(
-        screen.queryByRole('menuitem', { name: 'Change password' }),
-      ).not.toBeInTheDocument();
-    });
+    expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();
   });
 
   it('hides logout control when unauthenticated', async () => {
@@ -252,7 +192,7 @@ describe('AppShell', () => {
 
     await renderAppShell('en');
 
-    const logoutButton = screen.queryByRole('menuitem', { name: 'Log out' });
+    const logoutButton = screen.queryByRole('button', { name: 'Log out' });
     expect(logoutButton).not.toBeInTheDocument();
   });
 
@@ -263,14 +203,7 @@ describe('AppShell', () => {
 
     await renderAppShell('en');
 
-    const accountButton = screen.getByRole('button', {
-      name: 'Account options for Test User',
-    });
-    await act(async () => {
-      accountButton.click();
-    });
-
-    const button = await screen.findByRole('menuitem', { name: 'Log out' });
+    const button = screen.getByRole('button', { name: 'Log out' });
     await act(async () => {
       button.click();
     });
@@ -296,5 +229,81 @@ describe('AppShell', () => {
     });
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('closes the mobile navigation when pressing Escape', async () => {
+    await renderAppShell('en');
+
+    const toggleButton = screen.getByRole('button', {
+      name: 'Open navigation menu',
+    });
+
+    await act(async () => {
+      toggleButton.click();
+    });
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.keyDown(window, { key: 'Escape' });
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+  });
+
+  it('navigates to the services page from the organization section', async () => {
+    await renderAppShell('en', { initialEntry: '/en/song-sets' });
+
+    const toggleButton = screen.getByRole('button', {
+      name: 'Open navigation menu',
+    });
+
+    await act(async () => {
+      toggleButton.click();
+    });
+
+    const drawer = screen.getByRole('dialog');
+    const organizationSection = within(drawer).getByRole('region', {
+      name: 'Organization',
+    });
+    const organizationLink = within(organizationSection).getByRole('link', {
+      name: 'Every Breath and Life',
+    });
+
+    const user = userEvent.setup();
+    await user.click(organizationLink);
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('link', { name: 'Services' }),
+      ).toHaveAttribute('aria-current', 'page');
+    });
+  });
+
+  it('allows changing the language from the navigation controls', async () => {
+    await renderAppShell('en');
+
+    const languageButton = screen.getByRole('button', {
+      name: 'Change language',
+    });
+
+    const user = userEvent.setup();
+    await user.click(languageButton);
+
+    const spanishOption = await screen.findByRole('option', {
+      name: 'Spanish',
+    });
+
+    await user.click(spanishOption);
+
+    await waitFor(() => {
+      expect(screen.getByRole('link', { name: 'Servicios' })).toBeInTheDocument();
+    });
   });
 });

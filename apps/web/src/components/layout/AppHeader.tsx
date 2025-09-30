@@ -1,11 +1,8 @@
-import { useId, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { useAuth } from '@/features/auth/useAuth';
 import { buildLanguagePath, type AppNavigationLink } from '@/components/navigation/links';
-import { useHeaderPopover } from '@/hooks/useHeaderPopover';
 import { MOBILE_NAVIGATION_ID } from '@/components/layout/constants';
 
 type AppHeaderProps = {
@@ -22,33 +19,11 @@ export function AppHeader({
   isNavigationOpen,
 }: AppHeaderProps) {
   const { t } = useTranslation('common');
-  const { logout, me, isAuthenticated } = useAuth();
-  const accountMenu = useHeaderPopover<HTMLDivElement>();
-  const accountMenuButtonId = useId();
-
-  const profileHref = useMemo(
-    () => buildLanguagePath(currentLanguage, 'me'),
-    [currentLanguage],
-  );
-
-  const changePasswordHref = useMemo(
-    () => buildLanguagePath(currentLanguage, 'change-password'),
-    [currentLanguage],
-  );
 
   const brandHref = useMemo(
     () => buildLanguagePath(currentLanguage, 'services'),
     [currentLanguage],
   );
-
-  const displayName = me?.displayName?.trim();
-  const menuLabel = displayName || t('nav.profile');
-  const accountLabelValue = displayName || me?.email || t('nav.profile');
-
-  const handleLogout = () => {
-    logout();
-    accountMenu.close({ focusTrigger: true });
-  };
 
   const hasNavigation = navigationLinks.length > 0;
 
@@ -100,70 +75,6 @@ export function AppHeader({
             <span aria-hidden="true">EBaL</span>
             <span className="sr-only">{t('app.title')}</span>
           </Link>
-        </div>
-        <div className="flex flex-1 justify-end">
-          <div className="hidden items-center gap-3 lg:flex">
-            <LanguageSwitcher currentLanguage={currentLanguage} />
-            {isAuthenticated ? (
-              <div className="relative">
-                <button
-                  ref={accountMenu.triggerRef}
-                  id={accountMenuButtonId}
-                  type="button"
-                  aria-haspopup="menu"
-                  aria-expanded={accountMenu.isOpen}
-                  aria-controls={`${accountMenuButtonId}-menu`}
-                  aria-label={t('nav.accountMenuLabel', {
-                    value: accountLabelValue,
-                    defaultValue: accountLabelValue,
-                  })}
-                  className="flex items-center gap-2 rounded-md border border-border/60 bg-muted px-3 py-1 text-sm font-medium text-foreground transition-colors hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                  onClick={accountMenu.toggle}
-                >
-                  <span className="max-w-[10rem] truncate" title={menuLabel}>
-                    {menuLabel}
-                  </span>
-                  <span aria-hidden="true" className="text-xs">
-                    {t('nav.menuIndicator')}
-                  </span>
-                </button>
-                {accountMenu.isOpen ? (
-                  <div
-                    ref={accountMenu.popoverRef}
-                    role="menu"
-                    id={`${accountMenuButtonId}-menu`}
-                    aria-labelledby={accountMenuButtonId}
-                    className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-md border border-border bg-card text-sm text-foreground shadow-lg"
-                  >
-                    <Link
-                      to={profileHref}
-                      role="menuitem"
-                      className="block px-4 py-2 transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
-                      onClick={() => accountMenu.close()}
-                    >
-                      {t('nav.profile')}
-                    </Link>
-                    <Link
-                      to={changePasswordHref}
-                      role="menuitem"
-                      className="block px-4 py-2 transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
-                      onClick={() => accountMenu.close()}
-                    >
-                      {t('nav.changePassword')}
-                    </Link>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={handleLogout}
-                      className="block w-full px-4 py-2 text-left text-destructive transition-colors hover:bg-destructive/10 focus:bg-destructive/10 focus:outline-none"
-                    >
-                      {t('nav.logout')}
-                    </button>
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
-          </div>
         </div>
       </div>
     </header>
