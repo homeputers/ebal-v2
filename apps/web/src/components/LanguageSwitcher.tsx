@@ -67,6 +67,22 @@ export function LanguageSwitcher({
     }
   }, []);
 
+  const sanitizedSearch = useMemo(() => {
+    if (!location.search) {
+      return '';
+    }
+
+    const params = new URLSearchParams(location.search);
+
+    if (params.get('page') === '0') {
+      params.delete('page');
+    }
+
+    const nextSearch = params.toString();
+
+    return nextSearch ? `?${nextSearch}` : '';
+  }, [location.search]);
+
   const buildNextPathname = useCallback(
     (nextLanguage: string) => {
       const segments = location.pathname.split('/').filter(Boolean);
@@ -95,7 +111,7 @@ export function LanguageSwitcher({
       persistLanguage(nextLanguage);
 
       const nextPathname = buildNextPathname(nextLanguage);
-      const nextLocation = `${nextPathname}${location.search}${location.hash}`;
+      const nextLocation = `${nextPathname}${sanitizedSearch}${location.hash}`;
       const currentLocation = `${location.pathname}${location.search}${location.hash}`;
 
       if (nextLocation !== currentLocation) {
@@ -110,6 +126,7 @@ export function LanguageSwitcher({
       location.search,
       navigate,
       persistLanguage,
+      sanitizedSearch,
       close,
     ],
   );
