@@ -41,10 +41,14 @@ export function AppBrandLink({
     textClassName,
   );
 
+  const baseUrl = import.meta.env.BASE_URL ?? '/';
+  const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  const logoSrc = `${normalizedBaseUrl}logo.png`;
+
   return (
     <Link to={to} className={mergedClassName} aria-label={label} onClick={onClick}>
       <span className="sr-only">{label}</span>
-      <img src="/logo.png" alt="" aria-hidden="true" className={mergedImageClassName} />
+      <img src={logoSrc} alt="" aria-hidden="true" className={mergedImageClassName} />
       {showText ? (
         <span aria-hidden="true" className={mergedTextClassName}>
           EBaL
