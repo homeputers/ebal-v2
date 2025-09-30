@@ -92,6 +92,16 @@ export default function MembersPage() {
   const memberCount = data?.totalElements ?? data?.content?.length ?? 0;
   const shouldShowCount = data?.totalElements !== undefined || data?.content !== undefined;
 
+  const formatBirthday = (member: Member) => {
+    if (!member.birthdayMonth || !member.birthdayDay) return undefined;
+    const formatter = new Intl.DateTimeFormat(undefined, {
+      month: 'long',
+      day: 'numeric',
+    });
+    const date = new Date(Date.UTC(2000, (member.birthdayMonth || 1) - 1, member.birthdayDay || 1));
+    return formatter.format(date);
+  };
+
   return (
     <div className="p-4">
       <div className="mb-4">
@@ -129,6 +139,8 @@ export default function MembersPage() {
                   <tr className="bg-gray-50">
                     <th className="text-left p-2">{t('table.name')}</th>
                     <th className="text-left p-2">{t('table.instruments')}</th>
+                    <th className="text-left p-2">{t('table.contact')}</th>
+                    <th className="text-left p-2">{t('table.birthday')}</th>
                     <th className="p-2 text-right">{tCommon('table.actions')}</th>
                   </tr>
                 </thead>
@@ -137,6 +149,12 @@ export default function MembersPage() {
                     <tr key={m.id} className="border-t">
                       <td className="p-2">{m.displayName}</td>
                       <td className="p-2">{m.instruments?.join(', ')}</td>
+                      <td className="p-2 space-y-1">
+                        {m.email ? <div>{m.email}</div> : null}
+                        {m.phoneNumber ? <div>{m.phoneNumber}</div> : null}
+                        {!m.email && !m.phoneNumber ? <div>{t('table.contactPlaceholder')}</div> : null}
+                      </td>
+                      <td className="p-2">{formatBirthday(m) ?? t('table.birthdayPlaceholder')}</td>
                       <td className="p-2 text-right">
                         <div className="flex gap-2 justify-end">
                           <button
@@ -200,6 +218,10 @@ export default function MembersPage() {
             defaultValues={{
               displayName: editing.displayName || '',
               instruments: editing.instruments?.join(', ') || '',
+              email: editing.email || '',
+              phoneNumber: editing.phoneNumber || '',
+              birthdayMonth: editing.birthdayMonth ?? undefined,
+              birthdayDay: editing.birthdayDay ?? undefined,
             }}
             onSubmit={(vals) => handleUpdate(editing.id!, vals)}
             onCancel={() => setEditing(null)}

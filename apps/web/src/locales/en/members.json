@@ -11,7 +11,11 @@
   },
   "form": {
     "displayName": "Display Name",
-    "instrumentsLabel": "Instruments (comma separated)"
+    "instrumentsLabel": "Instruments (comma separated)",
+    "email": "Email",
+    "phoneNumber": "Phone number",
+    "birthdayMonth": "Birthday month",
+    "birthdayDay": "Birthday day"
   },
   "actions": {
     "new": "New Member"
@@ -22,7 +26,11 @@
   },
   "table": {
     "name": "Name",
-    "instruments": "Instruments"
+    "instruments": "Instruments",
+    "contact": "Contact",
+    "contactPlaceholder": "—",
+    "birthday": "Birthday",
+    "birthdayPlaceholder": "—"
   },
   "modals": {
     "createTitle": "New Member",

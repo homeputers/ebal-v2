@@ -84,7 +84,10 @@ public class GroupService {
     private Group attachMembers(Group group) {
         var ids = groupMemberMapper.findMemberIds(group.id());
         var members = ids.stream()
-                .map(id -> new GroupMember(new GroupMemberId(group.id(), id), group, new Member(id, null, null)))
+                .map(id -> new GroupMember(
+                        new GroupMemberId(group.id(), id),
+                        group,
+                        new Member(id, null, null, null, null, null, null)))
                 .collect(java.util.stream.Collectors.toSet());
         return new Group(group.id(), group.name(), members);
     }
