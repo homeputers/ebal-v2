@@ -52,26 +52,33 @@ jobs:
           TAG_NAME="v${VERSION_PART}"
           echo "tag_name=${TAG_NAME}" >> "$GITHUB_OUTPUT"
 
-      - name: Fetch merge commit
+      - name: Determine target commit
+        id: target
         env:
-          MERGE_COMMIT: ${{ github.event.pull_request.merge_commit_sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           set -euo pipefail
-          if [[ -z "${MERGE_COMMIT}" ]]; then
-            echo "Merge commit SHA is not available" >&2
+          if [[ -z "${BASE_REF}" ]]; then
+            echo "Base branch ref is empty" >&2
             exit 1
           fi
-          git fetch origin "${MERGE_COMMIT}"
+          git fetch origin "${BASE_REF}"
+          TARGET_COMMIT="$(git rev-parse "origin/${BASE_REF}")"
+          if [[ -z "${TARGET_COMMIT}" ]]; then
+            echo "Unable to resolve commit for origin/${BASE_REF}" >&2
+            exit 1
+          fi
+          echo "sha=${TARGET_COMMIT}" >> "$GITHUB_OUTPUT"
 
       - name: Create and push tag
         env:
           TAG_NAME: ${{ steps.tag.outputs.tag_name }}
-          MERGE_COMMIT: ${{ github.event.pull_request.merge_commit_sha }}
+          TARGET_COMMIT: ${{ steps.target.outputs.sha }}
         run: |
           set -euo pipefail
           if git rev-parse "refs/tags/${TAG_NAME}" >/dev/null 2>&1; then
             echo "Tag ${TAG_NAME} already exists. Skipping creation."
             exit 0
           fi
-          git tag -a "${TAG_NAME}" "${MERGE_COMMIT}" -m "Release ${TAG_NAME}"
+          git tag -a "${TAG_NAME}" "${TARGET_COMMIT}" -m "Release ${TAG_NAME}"
           git push origin "${TAG_NAME}"
