@@ -1,3 +1,21 @@
+## [0.4.0](https://github.com/homeputers/ebal-v2/compare/v0.3.1...v0.4.0) (2025-09-30)
+
+### Features
+
+* **api:** expose git build metadata endpoint ([#128](https://github.com/homeputers/ebal-v2/issues/128)) ([2d98d55](https://github.com/homeputers/ebal-v2/commit/2d98d558b1b9fdda2cf38ed8ccf5b4720c2c3089))
+* convert header menus to popover controls ([#132](https://github.com/homeputers/ebal-v2/issues/132)) ([165570f](https://github.com/homeputers/ebal-v2/commit/165570f01d34f2f19ca4e5eacd13415265e98954))
+* **web:** add autocomplete member picker ([#124](https://github.com/homeputers/ebal-v2/issues/124)) ([cafeb85](https://github.com/homeputers/ebal-v2/commit/cafeb8528bdf83ffe399910eea3a37fc255ecb52))
+* **web:** add EBaL logo to header and update icons ([#136](https://github.com/homeputers/ebal-v2/issues/136)) ([03303fe](https://github.com/homeputers/ebal-v2/commit/03303fe3376eef00afe1d0f092e8609fd42b9655))
+* **web:** allow musicians to view songs read-only ([#127](https://github.com/homeputers/ebal-v2/issues/127)) ([a26f346](https://github.com/homeputers/ebal-v2/commit/a26f346e744546045b426921e9a418af5e7ce0f9))
+* **web:** improve mobile navigation drawer ([#134](https://github.com/homeputers/ebal-v2/issues/134)) ([b2a5006](https://github.com/homeputers/ebal-v2/commit/b2a500629e5e9e8f087b3f4259e83a3db2c0ca29))
+* **web:** integrate header into app shell ([#131](https://github.com/homeputers/ebal-v2/issues/131)) ([4a0db4a](https://github.com/homeputers/ebal-v2/commit/4a0db4a560f91fedb9854b0f2f50b364dfa4e6e1))
+* **web:** redesign navbar header ([#129](https://github.com/homeputers/ebal-v2/issues/129)) ([44121c5](https://github.com/homeputers/ebal-v2/commit/44121c56ceb85508cde04aa8db50fd921b27f144))
+* **web:** simplify app header navigation actions ([#135](https://github.com/homeputers/ebal-v2/issues/135)) ([69d180a](https://github.com/homeputers/ebal-v2/commit/69d180adc11444fdb95a74116cb30b88db90f61d))
+* **web:** unify navigation theming ([#133](https://github.com/homeputers/ebal-v2/issues/133)) ([4ba0b62](https://github.com/homeputers/ebal-v2/commit/4ba0b625fcdbdf1fc810000c31d987e97e0c4ecf))
+
+### Bug Fixes
+
+* **web:** add song set form name translation ([#139](https://github.com/homeputers/ebal-v2/issues/139)) ([834143a](https://github.com/homeputers/ebal-v2/commit/834143ac69478ff0e9420c0ca256cb690d934971))
 ## [0.3.1](https://github.com/homeputers/ebal-v2/compare/v0.3.0...v0.3.1) (2025-09-24)
 
 ### Bug Fixes
