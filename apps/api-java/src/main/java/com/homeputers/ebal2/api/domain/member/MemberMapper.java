@@ -19,9 +19,23 @@ public interface MemberMapper {
 
     int count(@Param("query") String query);
 
-    void insert(@Param("id") UUID id, @Param("displayName") String displayName, @Param("instruments") List<String> instruments);
+    void insert(
+            @Param("id") UUID id,
+            @Param("displayName") String displayName,
+            @Param("instruments") List<String> instruments,
+            @Param("email") String email,
+            @Param("phoneNumber") String phoneNumber,
+            @Param("birthdayMonth") Integer birthdayMonth,
+            @Param("birthdayDay") Integer birthdayDay);
 
-    void update(@Param("id") UUID id, @Param("displayName") String displayName, @Param("instruments") List<String> instruments);
+    void update(
+            @Param("id") UUID id,
+            @Param("displayName") String displayName,
+            @Param("instruments") List<String> instruments,
+            @Param("email") String email,
+            @Param("phoneNumber") String phoneNumber,
+            @Param("birthdayMonth") Integer birthdayMonth,
+            @Param("birthdayDay") Integer birthdayDay);
 
     void delete(@Param("id") UUID id);
 }
