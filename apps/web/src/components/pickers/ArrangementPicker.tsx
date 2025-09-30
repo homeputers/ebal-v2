@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { useQuery } from '@tanstack/react-query';
@@ -55,6 +55,7 @@ export function ArrangementPicker({ songId, value, onChange }: Props) {
     queryFn: () => listArrangements(songId!),
     enabled: !!songId,
   });
+  const listboxId = useId();
 
   const options = data ?? [];
   const selected = options.find((a) => a.id === value);
@@ -106,33 +107,44 @@ export function ArrangementPicker({ songId, value, onChange }: Props) {
         onBlur={closeLater}
         onKeyDown={handleKeyDown}
         className="border p-2 rounded w-full"
+        role="combobox"
+        aria-expanded={open}
+        aria-controls={open ? listboxId : undefined}
       />
       {open && (
-        <ul
-          className="absolute z-10 mt-1 bg-white border rounded max-h-60 overflow-auto w-full"
+        <div
+          className="absolute z-10 mt-1 w-full max-h-60 overflow-auto rounded border bg-white"
           role="listbox"
+          id={listboxId}
+          tabIndex={0}
         >
-          {isLoading && <li className="p-2 text-sm">{tCommon('status.loading')}</li>}
+          {isLoading && <div className="p-2 text-sm">{tCommon('status.loading')}</div>}
           {isError && (
-            <li className="p-2 text-sm text-red-500">{tCommon('status.loadFailed')}</li>
+            <div className="p-2 text-sm text-red-500">{tCommon('status.loadFailed')}</div>
           )}
           {!isLoading && !isError && options.length === 0 && (
-            <li className="p-2 text-sm">{tArrangements('list.empty')}</li>
+            <div className="p-2 text-sm">{tArrangements('list.empty')}</div>
           )}
           {options.map((a, idx) => (
-            <li
-              key={a.id}
-              role="option"
-              aria-selected={value === a.id}
-              className={`p-2 cursor-pointer ${
-                idx === active ? 'bg-blue-500 text-white' : ''
-              }`}
-              onMouseDown={() => handleSelect(a)}
-            >
-              {formatLabel(tArrangements, a)}
-            </li>
+            <div key={a.id}>
+              <button
+                type="button"
+                role="option"
+                aria-selected={value === a.id}
+                className={`w-full cursor-pointer rounded px-2 py-2 text-left ${
+                  idx === active ? 'bg-blue-500 text-white' : ''
+                }`}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  handleSelect(a);
+                }}
+                onClick={() => handleSelect(a)}
+              >
+                {formatLabel(tArrangements, a)}
+              </button>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

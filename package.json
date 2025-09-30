@@ -10,6 +10,7 @@
     "build": "yarn workspace web build",
     "preview": "yarn workspace web preview",
     "lint": "yarn workspace web lint",
+    "lint:a11y": "yarn workspace web lint:a11y",
     "typecheck": "yarn workspace web typecheck",
     "i18n:scan": "yarn workspace web i18n:scan",
     "format": "prettier --write . --config packages/config/prettier.cjs",

@@ -20,15 +20,23 @@ function Modal({
   onClose: () => void;
   children: React.ReactNode;
 }) {
+  const { t: tCommon } = useTranslation('common');
+
   if (!open) return null;
+
   return (
-    <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center relative">
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute inset-0 bg-black/50"
+        aria-label={tCommon('actions.close', { defaultValue: 'Close dialog' })}
+      />
       <div
-        className="bg-white p-4 rounded shadow max-w-md w-full"
-        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        className="relative z-10 w-full max-w-md rounded bg-white p-4 shadow"
+        tabIndex={-1}
       >
         {children}
       </div>
