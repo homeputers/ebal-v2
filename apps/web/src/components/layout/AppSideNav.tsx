@@ -6,6 +6,7 @@ import type { AppNavigationLink } from '@/components/navigation/links';
 import { buildLanguagePath } from '@/components/navigation/links';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useAuth } from '@/features/auth/useAuth';
+import { MOBILE_NAVIGATION_ID } from '@/components/layout/constants';
 
 type AppSideNavProps = {
   currentLanguage: string;
@@ -31,6 +32,13 @@ const focusableSelectors = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
+const isElementVisible = (element: HTMLElement) => {
+  const hasSize = element.offsetWidth > 0 || element.offsetHeight > 0;
+  const hasClientRect = element.getClientRects().length > 0;
+
+  return hasSize || hasClientRect;
+};
+
 const getFocusableElements = (container: HTMLElement | null) => {
   if (!container) {
     return [];
@@ -40,13 +48,7 @@ const getFocusableElements = (container: HTMLElement | null) => {
     container.querySelectorAll<HTMLElement>(focusableSelectors),
   );
 
-  return elements.filter((element) =>
-    Boolean(
-      element.offsetParent !== null ||
-        element instanceof HTMLAnchorElement ||
-        element instanceof HTMLButtonElement,
-    ),
-  );
+  return elements.filter((element) => isElementVisible(element));
 };
 
 export function AppSideNav({
@@ -76,8 +78,12 @@ export function AppSideNav({
     if (!isOpen) {
       const previous = previouslyFocusedElementRef.current;
 
-      if (previous) {
-        previous.focus();
+      if (
+        previous &&
+        document.contains(previous) &&
+        typeof previous.focus === 'function'
+      ) {
+        requestAnimationFrame(() => previous.focus());
       }
 
       previouslyFocusedElementRef.current = null;
@@ -110,6 +116,12 @@ export function AppSideNav({
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
       if (event.key !== 'Tab') {
         return;
       }
@@ -165,34 +177,62 @@ export function AppSideNav({
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('focusin', handleFocusIn);
     };
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    if (!isOpen) {
+      return;
+    }
+
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+    body.style.overflow = 'hidden';
+
+    return () => {
+      body.style.overflow = previousOverflow;
+    };
   }, [isOpen]);
 
-  const navContent = (
+  const renderNavigationItems = () => (
+    <ul className="space-y-1">
+      {navigationLinks.map((link) => (
+        <li key={link.path}>
+          <NavLink
+            to={buildLanguagePath(currentLanguage, link.path)}
+            className={navLinkClassName}
+            onClick={onClose}
+          >
+            {t(link.labelKey)}
+          </NavLink>
+        </li>
+      ))}
+    </ul>
+  );
+
+  const desktopNavigation = (
+    <nav aria-label={t('nav.primaryLabel')} className="space-y-2">
+      {renderNavigationItems()}
+    </nav>
+  );
+
+  const mobileNavigation = (
     <nav
-      id="app-navigation"
+      id={MOBILE_NAVIGATION_ID}
       aria-label={t('nav.primaryLabel')}
       className="space-y-2"
     >
-      <ul className="space-y-1">
-        {navigationLinks.map((link) => (
-          <li key={link.path}>
-            <NavLink
-              to={buildLanguagePath(currentLanguage, link.path)}
-              className={navLinkClassName}
-              onClick={onClose}
-            >
-              {t(link.labelKey)}
-            </NavLink>
-          </li>
-        ))}
-      </ul>
+      {renderNavigationItems()}
     </nav>
   );
 
   return (
     <Fragment>
       <aside className="hidden w-64 shrink-0 border-r border-border bg-card px-4 py-6 text-foreground shadow-sm lg:flex lg:flex-col">
-        {navContent}
+        {desktopNavigation}
       </aside>
       {isOpen ? (
         <div className="lg:hidden">
@@ -242,7 +282,7 @@ export function AppSideNav({
                 </button>
               </div>
               <div className="mt-6 flex flex-1 flex-col">
-                <div className="flex-1 overflow-y-auto">{navContent}</div>
+                <div className="flex-1 overflow-y-auto">{mobileNavigation}</div>
                 <div className="mt-8 space-y-6 border-t border-border pt-6">
                   <section aria-label={t('nav.organizationSectionLabel')}>
                     <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">

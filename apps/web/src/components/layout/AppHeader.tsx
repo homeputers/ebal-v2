@@ -6,6 +6,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useAuth } from '@/features/auth/useAuth';
 import { buildLanguagePath, type AppNavigationLink } from '@/components/navigation/links';
 import { useHeaderPopover } from '@/hooks/useHeaderPopover';
+import { MOBILE_NAVIGATION_ID } from '@/components/layout/constants';
 
 type AppHeaderProps = {
   currentLanguage: string;
@@ -59,7 +60,7 @@ export function AppHeader({
             <button
               type="button"
               className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border/60 bg-muted text-foreground transition hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background lg:hidden"
-              aria-controls="app-navigation"
+              aria-controls={MOBILE_NAVIGATION_ID}
               aria-expanded={isNavigationOpen}
               aria-label={
                 isNavigationOpen ? t('nav.closeMenu') : t('nav.openMenu')
