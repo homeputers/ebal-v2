@@ -179,6 +179,7 @@
                         <includeOnlyProperty>^git.tags$</includeOnlyProperty>
                         <includeOnlyProperty>^git.dirty$</includeOnlyProperty>
                     </includeOnlyProperties>
+                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
                     <verbose>true</verbose>
                 </configuration>
             </plugin>
