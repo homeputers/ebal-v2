@@ -29,22 +29,25 @@ function Modal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4 relative">
+    <>
       <button
         type="button"
+        tabIndex={-1}
         onClick={onClose}
-        className="absolute inset-0 bg-black/50"
+        className="fixed inset-0 z-40 bg-black/50"
         aria-label={tCommon('actions.close', { defaultValue: 'Close dialog' })}
       />
-      <div
-        role="dialog"
-        aria-modal="true"
-        className="relative z-10 w-full max-h-[calc(100vh-4rem)] max-w-3xl overflow-y-auto rounded bg-white p-4 shadow"
-        tabIndex={-1}
-      >
-        {children}
+      <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4">
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="w-full max-h-[calc(100vh-4rem)] max-w-3xl overflow-y-auto rounded bg-white p-4 shadow"
+          tabIndex={-1}
+        >
+          {children}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
