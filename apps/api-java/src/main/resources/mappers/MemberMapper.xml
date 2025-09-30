@@ -8,17 +8,21 @@
             <arg column="display_name" javaType="java.lang.String"/>
             <arg column="instruments" javaType="java.util.List"
                  typeHandler="com.homeputers.ebal2.api.mybatis.typehandler.StringArrayTypeHandler"/>
+            <arg column="email" javaType="java.lang.String"/>
+            <arg column="phone_number" javaType="java.lang.String"/>
+            <arg column="birthday_month" javaType="java.lang.Integer"/>
+            <arg column="birthday_day" javaType="java.lang.Integer"/>
         </constructor>
     </resultMap>
 
     <select id="findById" resultMap="memberResult">
-        select id, display_name, instruments
+        select id, display_name, instruments, email, phone_number, birthday_month, birthday_day
         from members
         where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
     </select>
 
     <select id="findPage" resultMap="memberResult">
-        select id, display_name, instruments
+        select id, display_name, instruments, email, phone_number, birthday_month, birthday_day
         from members
         <where>
             <if test="query != null and query != ''">
@@ -30,7 +34,7 @@
     </select>
 
     <select id="search" resultMap="memberResult">
-        select id, display_name, instruments
+        select id, display_name, instruments, email, phone_number, birthday_month, birthday_day
         from members
         <where>
             <if test="query != null and query != ''">
@@ -51,18 +55,26 @@
     </select>
 
     <insert id="insert">
-        insert into members (id, display_name, instruments)
+        insert into members (id, display_name, instruments, email, phone_number, birthday_month, birthday_day)
         values (
             #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler},
             #{displayName},
-            #{instruments, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.StringArrayTypeHandler}
+            #{instruments, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.StringArrayTypeHandler},
+            #{email},
+            #{phoneNumber},
+            #{birthdayMonth},
+            #{birthdayDay}
         )
     </insert>
 
     <update id="update">
         update members
         set display_name = #{displayName},
-            instruments = #{instruments, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.StringArrayTypeHandler}
+            instruments = #{instruments, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.StringArrayTypeHandler},
+            email = #{email},
+            phone_number = #{phoneNumber},
+            birthday_month = #{birthdayMonth},
+            birthday_day = #{birthdayDay}
         where id = #{id, typeHandler=com.homeputers.ebal2.api.mybatis.typehandler.UUIDTypeHandler}
     </update>
 

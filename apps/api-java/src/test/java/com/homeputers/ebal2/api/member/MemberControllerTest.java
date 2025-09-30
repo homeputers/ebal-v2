@@ -40,6 +40,10 @@ class MemberControllerTest extends AbstractIntegrationTest {
         MemberRequest request = new MemberRequest();
         request.setDisplayName("John Doe");
         request.setInstruments(List.of("guitar"));
+        request.setEmail("john.doe@example.com");
+        request.setPhoneNumber("+1 555 123 4567");
+        request.setBirthdayMonth(5);
+        request.setBirthdayDay(14);
 
         ResponseEntity<MemberResponse> create = restTemplate.exchange(
                 "/api/v1/members",
@@ -60,6 +64,10 @@ class MemberControllerTest extends AbstractIntegrationTest {
         assertThat(get.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(get.getBody()).isNotNull();
         assertThat(get.getBody().getDisplayName()).isEqualTo("John Doe");
+        assertThat(get.getBody().getEmail()).isEqualTo("john.doe@example.com");
+        assertThat(get.getBody().getPhoneNumber()).isEqualTo("+1 555 123 4567");
+        assertThat(get.getBody().getBirthdayMonth()).isEqualTo(5);
+        assertThat(get.getBody().getBirthdayDay()).isEqualTo(14);
     }
 
     @Test
@@ -70,6 +78,10 @@ class MemberControllerTest extends AbstractIntegrationTest {
 
         MemberRequest request = new MemberRequest();
         request.setDisplayName("Jane");
+        request.setEmail("jane@example.com");
+        request.setPhoneNumber("555-0001");
+        request.setBirthdayMonth(7);
+        request.setBirthdayDay(9);
         restTemplate.exchange(
                 "/api/v1/members",
                 HttpMethod.POST,

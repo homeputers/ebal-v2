@@ -38,15 +38,36 @@ public class MemberService {
     @Transactional
     public Member create(MemberRequest request) {
         Member member = MemberMapper.toEntity(request);
-        mapper.insert(member.id(), member.displayName(), member.instruments());
+        mapper.insert(
+                member.id(),
+                member.displayName(),
+                member.instruments(),
+                member.email(),
+                member.phoneNumber(),
+                member.birthdayMonth(),
+                member.birthdayDay());
         return member;
     }
 
     @Transactional
     public Member update(UUID id, MemberRequest request) {
         get(id);
-        Member updated = new Member(id, request.getDisplayName(), request.getInstruments());
-        mapper.update(id, request.getDisplayName(), request.getInstruments());
+        Member updated = new Member(
+                id,
+                request.getDisplayName(),
+                request.getInstruments(),
+                request.getEmail(),
+                request.getPhoneNumber(),
+                request.getBirthdayMonth(),
+                request.getBirthdayDay());
+        mapper.update(
+                id,
+                request.getDisplayName(),
+                request.getInstruments(),
+                request.getEmail(),
+                request.getPhoneNumber(),
+                request.getBirthdayMonth(),
+                request.getBirthdayDay());
         return updated;
     }
 

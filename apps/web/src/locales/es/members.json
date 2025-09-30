@@ -11,7 +11,26 @@
   },
   "form": {
     "displayName": "Nombre para mostrar",
-    "instrumentsLabel": "Instrumentos (separados por comas)"
+    "instrumentsLabel": "Instrumentos (separados por comas)",
+    "email": "Correo electrónico",
+    "phoneNumber": "Número de teléfono",
+    "birthdayMonth": "Mes de cumpleaños",
+    "birthdayMonthPlaceholder": "Selecciona un mes",
+    "birthdayDay": "Día de cumpleaños",
+    "months": {
+      "january": "enero",
+      "february": "febrero",
+      "march": "marzo",
+      "april": "abril",
+      "may": "mayo",
+      "june": "junio",
+      "july": "julio",
+      "august": "agosto",
+      "september": "septiembre",
+      "october": "octubre",
+      "november": "noviembre",
+      "december": "diciembre"
+    }
   },
   "actions": {
     "new": "Nuevo miembro"

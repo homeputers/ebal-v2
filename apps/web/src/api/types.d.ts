@@ -882,12 +882,22 @@ export interface components {
         MemberRequest: {
             displayName: string;
             instruments?: string[];
+            /** Format: email */
+            email?: string;
+            phoneNumber?: string;
+            birthdayMonth?: number;
+            birthdayDay?: number;
         };
         MemberResponse: {
             /** Format: uuid */
             id?: string;
             displayName?: string;
             instruments?: string[];
+            /** Format: email */
+            email?: string;
+            phoneNumber?: string;
+            birthdayMonth?: number;
+            birthdayDay?: number;
         };
         PageMemberResponse: {
             content?: components["schemas"]["MemberResponse"][];

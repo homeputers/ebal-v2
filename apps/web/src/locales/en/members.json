@@ -11,7 +11,26 @@
   },
   "form": {
     "displayName": "Display Name",
-    "instrumentsLabel": "Instruments (comma separated)"
+    "instrumentsLabel": "Instruments (comma separated)",
+    "email": "Email",
+    "phoneNumber": "Phone number",
+    "birthdayMonth": "Birthday month",
+    "birthdayMonthPlaceholder": "Select month",
+    "birthdayDay": "Birthday day",
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    }
   },
   "actions": {
     "new": "New Member"

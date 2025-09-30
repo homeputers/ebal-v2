@@ -1615,6 +1615,19 @@ components:
           type: array
           items:
             type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        birthdayMonth:
+          type: integer
+          minimum: 1
+          maximum: 12
+        birthdayDay:
+          type: integer
+          minimum: 1
+          maximum: 31
     MemberResponse:
       type: object
       properties:
@@ -1627,6 +1640,19 @@ components:
           type: array
           items:
             type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        birthdayMonth:
+          type: integer
+          minimum: 1
+          maximum: 12
+        birthdayDay:
+          type: integer
+          minimum: 1
+          maximum: 31
     PageMemberResponse:
       type: object
       properties:
