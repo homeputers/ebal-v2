@@ -4,8 +4,6 @@ import { useTranslation } from 'react-i18next';
 
 import type { AppNavigationLink } from '@/components/navigation/links';
 import { buildLanguagePath } from '@/components/navigation/links';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { useAuth } from '@/features/auth/useAuth';
 import { MOBILE_NAVIGATION_ID } from '@/components/layout/constants';
 
 type AppSideNavProps = {
@@ -58,14 +56,7 @@ export function AppSideNav({
   onClose,
 }: AppSideNavProps) {
   const { t } = useTranslation('common');
-  const { logout, me, isAuthenticated } = useAuth();
   const brandHref = buildLanguagePath(currentLanguage, 'services');
-  const profileHref = buildLanguagePath(currentLanguage, 'me');
-  const changePasswordHref = buildLanguagePath(
-    currentLanguage,
-    'change-password',
-  );
-  const accountName = me?.displayName?.trim() ?? me?.email ?? '';
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const drawerRef = useRef<HTMLDivElement | null>(null);
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
@@ -197,11 +188,6 @@ export function AppSideNav({
     };
   }, [isOpen]);
 
-  const handleLogout = () => {
-    onClose();
-    logout();
-  };
-
   const renderNavigationItems = () => (
     <ul className="space-y-1">
       {navigationLinks.map((link) => (
@@ -216,83 +202,6 @@ export function AppSideNav({
         </li>
       ))}
     </ul>
-  );
-
-  const renderOrganizationSection = () => (
-    <section aria-label={t('nav.organizationSectionLabel')}>
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {t('nav.organizationSectionLabel')}
-      </p>
-      <Link
-        to={brandHref}
-        className="mt-3 inline-flex w-full items-center justify-between rounded-md border border-border/60 bg-muted px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        onClick={onClose}
-      >
-        <span>{t('app.title')}</span>
-        <span aria-hidden="true" className="text-xs">
-          {t('nav.menuIndicator')}
-        </span>
-      </Link>
-    </section>
-  );
-
-  const renderLanguageSection = () => (
-    <section aria-label={t('nav.languageSectionLabel')}>
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {t('nav.languageSectionLabel')}
-      </p>
-      <LanguageSwitcher currentLanguage={currentLanguage} className="mt-3 w-full" />
-    </section>
-  );
-
-  const renderAccountSection = () => (
-    isAuthenticated ? (
-      <section aria-label={t('nav.accountSectionLabel')}>
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          {t('nav.accountSectionLabel')}
-        </p>
-        {accountName ? (
-          <p className="mt-1 text-sm text-muted-foreground">{accountName}</p>
-        ) : null}
-        <ul className="mt-3 space-y-2">
-          <li>
-            <Link
-              to={profileHref}
-              className="flex w-full items-center justify-between rounded-md border border-transparent px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              onClick={onClose}
-            >
-              {t('nav.profile')}
-            </Link>
-          </li>
-          <li>
-            <Link
-              to={changePasswordHref}
-              className="flex w-full items-center justify-between rounded-md border border-transparent px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              onClick={onClose}
-            >
-              {t('nav.changePassword')}
-            </Link>
-          </li>
-          <li>
-            <button
-              type="button"
-              className="flex w-full items-center justify-between rounded-md border border-transparent px-3 py-2 text-left text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              onClick={handleLogout}
-            >
-              {t('nav.logout')}
-            </button>
-          </li>
-        </ul>
-      </section>
-    ) : null
-  );
-
-  const renderSecondarySections = () => (
-    <div className="mt-8 space-y-6 border-t border-border pt-6">
-      {renderOrganizationSection()}
-      {renderLanguageSection()}
-      {renderAccountSection()}
-    </div>
   );
 
   const desktopNavigation = (
@@ -317,7 +226,6 @@ export function AppSideNav({
         <div className="flex-1 space-y-2 overflow-y-auto">
           {desktopNavigation}
         </div>
-        {renderSecondarySections()}
       </aside>
       {isOpen ? (
         <div className="lg:hidden">
@@ -366,10 +274,9 @@ export function AppSideNav({
                   </span>
                 </button>
               </div>
-              <div className="mt-6 flex flex-1 flex-col">
-                <div className="flex-1 overflow-y-auto">{mobileNavigation}</div>
-                {renderSecondarySections()}
-              </div>
+                <div className="mt-6 flex flex-1 flex-col">
+                  <div className="flex-1 overflow-y-auto">{mobileNavigation}</div>
+                </div>
             </div>
           </div>
         </div>

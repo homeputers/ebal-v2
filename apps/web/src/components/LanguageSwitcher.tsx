@@ -9,9 +9,12 @@ import {
 } from '@/i18n';
 import { useHeaderPopover } from '@/hooks/useHeaderPopover';
 
+type LanguageSwitcherVariant = 'default' | 'compact';
+
 type LanguageSwitcherProps = {
   currentLanguage: string;
   className?: string;
+  variant?: LanguageSwitcherVariant;
 };
 
 const FALLBACK_LANGUAGE_LABELS: Record<string, string> = {
@@ -19,11 +22,17 @@ const FALLBACK_LANGUAGE_LABELS: Record<string, string> = {
   es: 'Spanish',
 };
 
+const LANGUAGE_FLAGS: Record<string, string> = {
+  en: '🇺🇸',
+  es: '🇪🇸',
+};
+
 const isBrowser = typeof window !== 'undefined';
 
 export function LanguageSwitcher({
   className,
   currentLanguage,
+  variant = 'default',
 }: LanguageSwitcherProps) {
   const { t } = useTranslation('common');
   const location = useLocation();
@@ -104,23 +113,58 @@ export function LanguageSwitcher({
     ],
   );
 
+  const wrapperClassName = `relative inline-block text-left ${
+    className ?? ''
+  }`.trim();
+
+  const triggerClassName =
+    variant === 'compact'
+      ? 'inline-flex h-10 w-10 items-center justify-center rounded-md border border-border/60 bg-muted text-base text-foreground transition-colors hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
+      : 'inline-flex items-center gap-2 rounded-md border border-border/60 bg-muted px-3 py-1 text-sm font-medium text-foreground transition-colors hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background';
+
+  const getLanguageFlag = useCallback(
+    (language: string) => LANGUAGE_FLAGS[language] ?? language.toUpperCase(),
+    [],
+  );
+
+  const triggerLabel = t('language.changeLabel', {
+    language: getLanguageLabel(currentLanguage),
+    defaultValue: t('language.change'),
+  });
+
   return (
-    <div className={`relative inline-block text-left ${className ?? ''}`.trim()}>
+    <div className={wrapperClassName}>
       <button
         ref={triggerRef}
         type="button"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        aria-label={t('language.change')}
-        className="inline-flex items-center gap-2 rounded-md border border-border/60 bg-muted px-3 py-1 text-sm font-medium text-foreground transition-colors hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        aria-label={triggerLabel}
+        className={triggerClassName}
         onClick={toggle}
       >
-        <span className="uppercase tracking-wide">
-          {getLanguageLabel(currentLanguage)}
-        </span>
-        <span aria-hidden="true" className="text-xs">
-          {t('language.dropdownIndicator')}
-        </span>
+        {variant === 'compact' ? (
+          <>
+            <span aria-hidden="true" className="text-xl leading-none">
+              {getLanguageFlag(currentLanguage)}
+            </span>
+            <span className="sr-only">
+              {t('language.triggerFlagAlt', {
+                language: getLanguageLabel(currentLanguage),
+                defaultValue: getLanguageLabel(currentLanguage),
+              })}
+            </span>
+          </>
+        ) : (
+          <>
+            <span className="uppercase tracking-wide">
+              {getLanguageLabel(currentLanguage)}
+            </span>
+            <span aria-hidden="true" className="text-xs">
+              {t('language.dropdownIndicator')}
+            </span>
+          </>
+        )}
       </button>
       {isOpen ? (
         <ul

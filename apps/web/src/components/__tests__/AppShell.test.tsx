@@ -173,17 +173,29 @@ describe('AppShell', () => {
     expect(activeLink).toHaveAttribute('aria-current', 'page');
   });
 
-  it('renders account controls in the navigation when authenticated', async () => {
+  it('opens the account menu from the header when authenticated', async () => {
     setIsAuthenticated(true);
     mockUseAuth.mockClear();
 
     await renderAppShell('en');
 
-    expect(screen.getByRole('link', { name: 'Profile' })).toBeInTheDocument();
+    const accountButton = screen.getByRole('button', {
+      name: 'Account options for Test User',
+    });
+
+    const user = userEvent.setup();
+    await user.click(accountButton);
+
+    const menu = await screen.findByRole('menu');
     expect(
-      screen.getByRole('link', { name: 'Change password' }),
+      within(menu).getByRole('menuitem', { name: 'Profile' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();
+    expect(
+      within(menu).getByRole('menuitem', { name: 'Change password' }),
+    ).toBeInTheDocument();
+    expect(
+      within(menu).getByRole('menuitem', { name: 'Log out' }),
+    ).toBeInTheDocument();
   });
 
   it('hides logout control when unauthenticated', async () => {
@@ -192,8 +204,10 @@ describe('AppShell', () => {
 
     await renderAppShell('en');
 
-    const logoutButton = screen.queryByRole('button', { name: 'Log out' });
-    expect(logoutButton).not.toBeInTheDocument();
+    const accountButton = screen.queryByRole('button', {
+      name: /Account options/i,
+    });
+    expect(accountButton).not.toBeInTheDocument();
   });
 
   it('calls logout handler when logout button clicked', async () => {
@@ -203,10 +217,18 @@ describe('AppShell', () => {
 
     await renderAppShell('en');
 
-    const button = screen.getByRole('button', { name: 'Log out' });
-    await act(async () => {
-      button.click();
+    const accountButton = screen.getByRole('button', {
+      name: 'Account options for Test User',
     });
+
+    const user = userEvent.setup();
+    await user.click(accountButton);
+
+    const logoutButton = await screen.findByRole('menuitem', {
+      name: 'Log out',
+    });
+
+    await user.click(logoutButton);
 
     expect(logoutMock).toHaveBeenCalledTimes(1);
   });
@@ -253,44 +275,11 @@ describe('AppShell', () => {
     });
   });
 
-  it('navigates to the services page from the organization section', async () => {
-    await renderAppShell('en', { initialEntry: '/en/song-sets' });
-
-    const toggleButton = screen.getByRole('button', {
-      name: 'Open navigation menu',
-    });
-
-    await act(async () => {
-      toggleButton.click();
-    });
-
-    const drawer = screen.getByRole('dialog');
-    const organizationSection = within(drawer).getByRole('region', {
-      name: 'Organization',
-    });
-    const organizationLink = within(organizationSection).getByRole('link', {
-      name: 'Every Breath and Life',
-    });
-
-    const user = userEvent.setup();
-    await user.click(organizationLink);
-
-    await waitFor(() => {
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    });
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole('link', { name: 'Services' }),
-      ).toHaveAttribute('aria-current', 'page');
-    });
-  });
-
   it('allows changing the language from the navigation controls', async () => {
     await renderAppShell('en');
 
     const languageButton = screen.getByRole('button', {
-      name: 'Change language',
+      name: /Change language/i,
     });
 
     const user = userEvent.setup();
