@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PageHeading } from '@/components/layout/PageHeading';
 import {
   useServicesList,
   useCreateService,
@@ -90,7 +91,9 @@ export default function ServicesPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-semibold mb-4">{t('page.title')}</h1>
+      <PageHeading autoFocus className="text-xl font-semibold mb-4">
+        {t('page.title')}
+      </PageHeading>
       <div className="flex flex-wrap items-end gap-2 mb-4">
         <input
           value={search}
@@ -219,6 +222,7 @@ export default function ServicesPage() {
             <ServiceForm
               onSubmit={handleCreate}
               onCancel={() => setCreating(false)}
+              autoFocusFirstField
             />
           </Modal>
 
@@ -241,6 +245,7 @@ export default function ServicesPage() {
                 }}
                 onSubmit={(vals) => handleUpdate(editing.id!, vals)}
                 onCancel={() => setEditing(null)}
+                autoFocusFirstField
               />
             )}
           </Modal>

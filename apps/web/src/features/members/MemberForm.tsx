@@ -59,15 +59,19 @@ const baseResolver = zodResolver(schema);
 const resolver: typeof baseResolver = async (values, context, options) =>
   withFieldErrorPrefix('members', () => baseResolver(values, context, options));
 
+type MemberFormProps = {
+  defaultValues?: MemberFormValues;
+  onSubmit: (values: components['schemas']['MemberRequest']) => void;
+  onCancel?: () => void;
+  autoFocusFirstField?: boolean;
+};
+
 export function MemberForm({
   defaultValues,
   onSubmit,
   onCancel,
-}: {
-  defaultValues?: MemberFormValues;
-  onSubmit: (values: components['schemas']['MemberRequest']) => void;
-  onCancel?: () => void;
-}) {
+  autoFocusFirstField = false,
+}: MemberFormProps) {
   const { t } = useTranslation('members');
   const { t: tCommon } = useTranslation('common');
 
@@ -121,6 +125,7 @@ export function MemberForm({
         <input
           id="displayName"
           {...register('displayName')}
+          data-autofocus={autoFocusFirstField ? 'true' : undefined}
           className="border p-2 rounded w-full"
           aria-invalid={Boolean(errors.displayName)}
           aria-describedby={describedBy('displayName', {

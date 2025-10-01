@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PageHeading } from '@/components/layout/PageHeading';
 import { usePlanItems, useService } from '@/features/services/hooks';
 import { usePlanArrangementInfo } from '@/features/services/usePlanArrangementInfo';
 import { formatArrangementLine, formatKeyTransform } from '@/lib/arrangement-labels';
@@ -43,7 +44,9 @@ export default function ServicePlanViewPage() {
     return (
       <div className="plan-view px-4 py-10">
         <div className="mx-auto max-w-3xl rounded border border-dashed border-red-200 bg-red-50 p-6 text-center text-red-700">
-          <h1 className="text-lg font-semibold">{t('planView.shareRequiredTitle')}</h1>
+          <PageHeading autoFocus className="text-lg font-semibold">
+            {t('planView.shareRequiredTitle')}
+          </PageHeading>
           <p className="mt-2 text-sm">{t('planView.shareRequiredDescription')}</p>
         </div>
       </div>
@@ -64,7 +67,9 @@ export default function ServicePlanViewPage() {
     return (
       <div className="plan-view px-4 py-10">
         <div className="mx-auto max-w-3xl rounded border border-red-100 bg-red-50 p-6 text-center text-red-700">
-          <h1 className="text-lg font-semibold">{t('planView.unavailableTitle')}</h1>
+          <PageHeading autoFocus className="text-lg font-semibold">
+            {t('planView.unavailableTitle')}
+          </PageHeading>
           <p className="mt-2 text-sm">{t('planView.unavailableDescription')}</p>
         </div>
       </div>
@@ -79,11 +84,14 @@ export default function ServicePlanViewPage() {
         <header className="flex flex-col gap-4 border-b border-gray-200 pb-4 print:border-0 print:pb-0">
           <div>
             <p className="text-sm uppercase tracking-wide text-muted-foreground">{t('planView.title')}</p>
-            <h1 className="mt-1 text-2xl font-semibold text-gray-900">
+            <PageHeading
+              autoFocus
+              className="mt-1 text-2xl font-semibold text-gray-900"
+            >
               {service.startsAt
                 ? new Date(service.startsAt).toLocaleString()
                 : t('fallback.title')}
-            </h1>
+            </PageHeading>
             {service.location ? (
               <p className="mt-1 text-base text-gray-600">{service.location}</p>
             ) : null}

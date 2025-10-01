@@ -11,15 +11,19 @@ const schema = z.object({
 
 export type GroupFormValues = z.infer<typeof schema>;
 
+type GroupFormProps = {
+  defaultValues?: GroupFormValues;
+  onSubmit: (values: GroupFormValues) => void;
+  onCancel?: () => void;
+  autoFocusFirstField?: boolean;
+};
+
 export function GroupForm({
   defaultValues,
   onSubmit,
   onCancel,
-}: {
-  defaultValues?: GroupFormValues;
-  onSubmit: (values: GroupFormValues) => void;
-  onCancel?: () => void;
-}) {
+  autoFocusFirstField = false,
+}: GroupFormProps) {
   const { t } = useTranslation('groups');
   const { t: tCommon } = useTranslation('common');
   const {
@@ -51,6 +55,7 @@ export function GroupForm({
         <input
           id="name"
           {...register('name')}
+          data-autofocus={autoFocusFirstField ? 'true' : undefined}
           className="border p-2 rounded w-full"
           aria-invalid={Boolean(errors.name)}
           aria-describedby={describedBy('name', { includeError: Boolean(errors.name) })}

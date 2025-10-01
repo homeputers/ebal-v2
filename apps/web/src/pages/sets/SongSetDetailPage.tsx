@@ -2,6 +2,7 @@ import { useEffect, useId, useMemo, useState } from 'react';
 import type { CSSProperties, FormEvent } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PageHeading } from '@/components/layout/PageHeading';
 import {
   DndContext,
   PointerSensor,
@@ -372,7 +373,9 @@ export default function SongSetDetailPage() {
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold">{songSet.name ?? t('fallback.title')}</h1>
+          <PageHeading autoFocus className="text-xl font-semibold">
+            {songSet.name ?? t('fallback.title')}
+          </PageHeading>
         </div>
         <div className="flex gap-2">
           <button
@@ -512,6 +515,7 @@ export default function SongSetDetailPage() {
           defaultValues={{ name: songSet.name ?? '' }}
           onSubmit={handleSetUpdate}
           onCancel={() => setEditingSet(false)}
+          autoFocusFirstField
         />
       </Modal>
     </div>

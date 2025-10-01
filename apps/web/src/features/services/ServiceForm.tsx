@@ -19,15 +19,19 @@ const baseResolver = zodResolver(schema);
 const resolver: typeof baseResolver = async (values, context, options) =>
   withFieldErrorPrefix('services', () => baseResolver(values, context, options));
 
+type ServiceFormProps = {
+  defaultValues?: ServiceFormValues;
+  onSubmit: (values: components['schemas']['ServiceRequest']) => void;
+  onCancel?: () => void;
+  autoFocusFirstField?: boolean;
+};
+
 export function ServiceForm({
   defaultValues,
   onSubmit,
   onCancel,
-}: {
-  defaultValues?: ServiceFormValues;
-  onSubmit: (values: components['schemas']['ServiceRequest']) => void;
-  onCancel?: () => void;
-}) {
+  autoFocusFirstField = false,
+}: ServiceFormProps) {
   const { t } = useTranslation('services');
   const { t: tCommon } = useTranslation('common');
 
@@ -65,6 +69,7 @@ export function ServiceForm({
           id="startsAt"
           type="datetime-local"
           {...register('startsAt')}
+          data-autofocus={autoFocusFirstField ? 'true' : undefined}
           className="border p-2 rounded w-full"
           aria-invalid={Boolean(errors.startsAt)}
           aria-describedby={describedBy('startsAt', { includeError: Boolean(errors.startsAt) })}

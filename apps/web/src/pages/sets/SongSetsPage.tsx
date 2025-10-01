@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PageHeading } from '@/components/layout/PageHeading';
 import {
   useSongSetsList,
   useCreateSet,
@@ -102,7 +103,9 @@ export default function SongSetsPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-semibold mb-4">{t('page.title')}</h1>
+      <PageHeading autoFocus className="text-xl font-semibold mb-4">
+        {t('page.title')}
+      </PageHeading>
       <div className="flex items-center gap-2 mb-4">
         <input
           value={search}
@@ -214,7 +217,11 @@ export default function SongSetsPage() {
         <h2 id={createTitleId} className="text-lg font-semibold mb-2">
           {t('modals.createTitle')}
         </h2>
-        <SetForm onSubmit={handleCreate} onCancel={() => setCreating(false)} />
+        <SetForm
+          onSubmit={handleCreate}
+          onCancel={() => setCreating(false)}
+          autoFocusFirstField
+        />
       </Modal>
 
       <Modal
@@ -231,6 +238,7 @@ export default function SongSetsPage() {
             defaultValues={{ name: editing.name }}
             onSubmit={(values) => handleUpdate(editing.id, values)}
             onCancel={() => setEditing(null)}
+            autoFocusFirstField
           />
         )}
       </Modal>

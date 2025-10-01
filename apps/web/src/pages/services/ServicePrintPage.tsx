@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PageHeading } from '@/components/layout/PageHeading';
 import { useService, usePlanItems } from '../../features/services/hooks';
 import { usePlanArrangementInfo } from '@/features/services/usePlanArrangementInfo';
 import { formatArrangementLine, formatKeyTransform } from '@/lib/arrangement-labels';
@@ -50,7 +51,9 @@ export default function ServicePrintPage() {
             <p className="text-sm uppercase tracking-wide text-muted-foreground">
               {t('print.title')}
             </p>
-            <h1 className="text-xl font-semibold">{headerTitle}</h1>
+            <PageHeading autoFocus className="text-xl font-semibold">
+              {headerTitle}
+            </PageHeading>
           </div>
           <button
             onClick={handlePrint}

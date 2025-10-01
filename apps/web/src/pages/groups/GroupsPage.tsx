@@ -1,13 +1,15 @@
 import { useEffect, useId, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PageHeading } from '@/components/layout/PageHeading';
+import type { GroupFormValues } from '../../features/groups/GroupForm';
 import {
   useGroupsList,
   useCreateGroup,
   useUpdateGroup,
   useDeleteGroup,
 } from '../../features/groups/hooks';
-import GroupForm, { GroupFormValues } from '../../features/groups/GroupForm';
+import GroupForm from '../../features/groups/GroupForm';
 import Modal from '../../components/Modal';
 
 export default function GroupsPage() {
@@ -72,7 +74,9 @@ export default function GroupsPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-semibold mb-4">{t('page.title')}</h1>
+      <PageHeading autoFocus className="text-xl font-semibold mb-4">
+        {t('page.title')}
+      </PageHeading>
       <div className="flex items-center gap-2 mb-4">
         <input
           value={search}
@@ -186,7 +190,11 @@ export default function GroupsPage() {
         <h2 id={createTitleId} className="text-lg font-semibold mb-2">
           {t('modals.createTitle')}
         </h2>
-        <GroupForm onSubmit={handleCreate} onCancel={() => setCreating(false)} />
+        <GroupForm
+          onSubmit={handleCreate}
+          onCancel={() => setCreating(false)}
+          autoFocusFirstField
+        />
       </Modal>
     </div>
   );

@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isAxiosError } from 'axios';
 import { useTranslation } from 'react-i18next';
+import { PageHeading } from '@/components/layout/PageHeading';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -115,7 +116,9 @@ export default function ProfilePage() {
     <div className="space-y-8 p-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">{t('profile.title')}</h1>
+          <PageHeading autoFocus className="text-2xl font-semibold">
+            {t('profile.title')}
+          </PageHeading>
           <p className="text-sm text-gray-600">{t('profile.subtitle')}</p>
         </div>
         <Link

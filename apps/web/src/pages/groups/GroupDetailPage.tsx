@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PageHeading } from '@/components/layout/PageHeading';
 import GroupForm from '../../features/groups/GroupForm';
 import {
   useGroup,
@@ -45,7 +46,9 @@ export default function GroupDetailPage() {
   return (
     <div className="p-4 flex flex-col md:flex-row gap-6">
       <div className="md:w-1/2">
-        <h1 className="text-xl font-semibold mb-4">{t('detail.infoTitle')}</h1>
+        <PageHeading autoFocus className="text-xl font-semibold mb-4">
+          {t('detail.infoTitle')}
+        </PageHeading>
         {groupQuery.isLoading && <div>{tCommon('status.loading')}</div>}
         {groupQuery.isError && <div>{tCommon('status.loadFailed')}</div>}
         {groupQuery.data && (

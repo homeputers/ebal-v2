@@ -15,9 +15,15 @@ type SetFormProps = {
   defaultValues?: Partial<SetFormValues>;
   onSubmit: (values: SetFormValues) => void;
   onCancel?: () => void;
+  autoFocusFirstField?: boolean;
 };
 
-export function SetForm({ defaultValues, onSubmit, onCancel }: SetFormProps) {
+export function SetForm({
+  defaultValues,
+  onSubmit,
+  onCancel,
+  autoFocusFirstField = false,
+}: SetFormProps) {
   const { t } = useTranslation('songSets');
   const { t: tCommon } = useTranslation('common');
   const {
@@ -52,6 +58,7 @@ export function SetForm({ defaultValues, onSubmit, onCancel }: SetFormProps) {
         <input
           id="name"
           {...register('name')}
+          data-autofocus={autoFocusFirstField ? 'true' : undefined}
           className="border p-2 rounded w-full"
           aria-invalid={Boolean(errors.name)}
           aria-describedby={describedBy('name', { includeError: Boolean(errors.name) })}

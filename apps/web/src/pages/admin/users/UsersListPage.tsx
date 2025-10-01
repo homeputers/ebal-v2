@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PageHeading } from '@/components/layout/PageHeading';
 import { toast } from 'sonner';
 
 import type { components } from '@/api/types';
@@ -151,7 +152,9 @@ export default function UsersListPage() {
     <div className="space-y-4 p-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">{t('page.title')}</h1>
+          <PageHeading autoFocus className="text-2xl font-semibold">
+            {t('page.title')}
+          </PageHeading>
           {hasCount ? (
             <p className="text-sm text-gray-600">
               {t('list.count', { count: totalElements ?? 0 })}

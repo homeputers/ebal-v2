@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PageHeading } from '@/components/layout/PageHeading';
 import { toast } from 'sonner';
 
 import type { UpdateUserBody } from '@/api/users';
@@ -94,7 +95,9 @@ export default function UserDetailPage() {
     <div className="space-y-6 p-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">{t('page.detailTitle')}</h1>
+          <PageHeading autoFocus className="text-2xl font-semibold">
+            {t('page.detailTitle')}
+          </PageHeading>
           <p className="text-sm text-gray-600">{user.email}</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -134,6 +137,7 @@ export default function UserDetailPage() {
         onSubmit={handleSubmit}
         onCancel={() => navigate('..', { relative: 'path' })}
         isSubmitting={updateMutation.isPending}
+        autoFocusFirstField
       />
     </div>
   );

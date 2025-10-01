@@ -1,6 +1,7 @@
 import { useId, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PageHeading } from '@/components/layout/PageHeading';
 import type { components } from '../../api/types';
 import {
   useSong,
@@ -76,7 +77,9 @@ export default function SongDetailPage() {
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-semibold">{song.title}</h1>
+        <PageHeading autoFocus className="text-xl font-semibold">
+          {song.title}
+        </PageHeading>
         {canManageSongs && (
           <button
             className="px-2 py-1 text-sm bg-gray-200 rounded"
@@ -188,6 +191,7 @@ export default function SongDetailPage() {
               }}
               onSubmit={handleSongUpdate}
               onCancel={() => setEditingSong(false)}
+              autoFocusFirstField
             />
           </Modal>
           <Modal
@@ -203,6 +207,7 @@ export default function SongDetailPage() {
             <ArrangementForm
               onSubmit={handleCreateArr}
               onCancel={() => setCreatingArr(false)}
+              autoFocusFirstField
             />
           </Modal>
           <Modal
@@ -225,6 +230,7 @@ export default function SongDetailPage() {
                 }}
                 onSubmit={(vals) => handleUpdateArr(editingArr.id!, vals)}
                 onCancel={() => setEditingArr(null)}
+                autoFocusFirstField
               />
             )}
           </Modal>
