@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import type { FieldValues, FieldErrors } from 'react-hook-form';
 
 import { fieldNameToId, flattenErrors } from '@/lib/formAccessibility';
@@ -22,35 +21,21 @@ export function FormErrorSummary<TFieldValues extends FieldValues>({
   getItemLabel,
 }: FormErrorSummaryProps<TFieldValues>) {
   const items = useMemo(() => flattenErrors(errors), [errors]);
-  const { t: tValidation } = useTranslation('validation');
 
-  const translateMessage = useMemo(() => {
-    const normaliseKey = (key: string) => {
-      if (key.startsWith('validation:')) {
-        return key.slice('validation:'.length);
-      }
+  const resolveLabelText = (fieldId: string, name: string) => {
+    const providedLabel = getItemLabel?.(name);
+    if (providedLabel) {
+      return providedLabel;
+    }
 
-      if (key.startsWith('validation.')) {
-        return key.slice('validation.'.length);
-      }
+    if (typeof document === 'undefined') {
+      return undefined;
+    }
 
-      return key;
-    };
+    const element = document.querySelector<HTMLLabelElement>(`label[for="${fieldId}"]`);
 
-    return (message: string) => {
-      if (
-        typeof message === 'string' &&
-        (message.startsWith('validation:') || message.startsWith('validation.'))
-      ) {
-        const key = normaliseKey(message);
-        const translated = tValidation(key, { defaultValue: message });
-
-        return typeof translated === 'string' ? translated : message;
-      }
-
-      return message;
-    };
-  }, [tValidation]);
+    return element?.textContent?.trim() || undefined;
+  };
 
   if (items.length === 0) return null;
 
@@ -68,9 +53,9 @@ export function FormErrorSummary<TFieldValues extends FieldValues>({
       <ul className="list-disc list-inside space-y-1">
         {items.map((item) => {
           const fieldId = (getFieldId ?? fieldNameToId)(item.name);
-          const itemLabel = getItemLabel?.(item.name);
-          const message = translateMessage(item.message);
-          const linkText = itemLabel ? `${itemLabel}: ${message}` : message;
+          const message = item.message;
+          const itemLabel = resolveLabelText(fieldId, item.name);
+          const linkText = itemLabel ?? message;
           return (
             <li key={item.name}>
               <a
@@ -84,6 +69,9 @@ export function FormErrorSummary<TFieldValues extends FieldValues>({
                 }}
               >
                 {linkText}
+                {itemLabel ? (
+                  <span className="sr-only">{`: ${message}`}</span>
+                ) : null}
               </a>
             </li>
           );
