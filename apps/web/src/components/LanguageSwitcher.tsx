@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useId } from 'react';
+import { useCallback, useEffect, useMemo, useId, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -8,6 +8,10 @@ import {
   setAppLanguage,
 } from '@/i18n';
 import { useHeaderPopover } from '@/hooks/useHeaderPopover';
+import {
+  useListNavigation,
+  type ListNavigationItem,
+} from '@/hooks/useListNavigation';
 
 type LanguageSwitcherVariant = 'default' | 'compact';
 
@@ -42,6 +46,7 @@ export function LanguageSwitcher({
   const switcherName = useId();
   const dialogLabelId = `${switcherName}-dialog-label`;
   const listboxId = `${switcherName}-listbox`;
+  const listRef = useRef<HTMLDivElement | null>(null);
 
   const languages = useMemo(
     () => Array.from(new Set(SUPPORTED_LANGUAGES)),
@@ -133,6 +138,45 @@ export function LanguageSwitcher({
     ],
   );
 
+  const languageItems = useMemo<Array<ListNavigationItem<string>>>(
+    () =>
+      languages.map((language) => ({
+        id: `${switcherName}-${language}`,
+        text: getLanguageLabel(language),
+        value: language,
+      })),
+    [getLanguageLabel, languages, switcherName],
+  );
+
+  const selectedItemId = useMemo(
+    () =>
+      languageItems.find((item) => item.value === currentLanguage)?.id ?? null,
+    [currentLanguage, languageItems],
+  );
+
+  const { listProps, getOptionProps, activeId, setActiveId } = useListNavigation({
+    items: languageItems,
+    selectedId: selectedItemId,
+    onSelect: (item) => handleSelect(item.value),
+    onCancel: () => close({ focusTrigger: true }),
+  });
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const node = listRef.current;
+
+    requestAnimationFrame(() => {
+      node?.focus({ preventScroll: true });
+    });
+
+    if (selectedItemId) {
+      setActiveId(selectedItemId);
+    }
+  }, [isOpen, selectedItemId, setActiveId]);
+
   const wrapperClassName = `relative inline-block text-left ${
     className ?? ''
   }`.trim();
@@ -199,37 +243,36 @@ export function LanguageSwitcher({
             {t('language.select')}
           </p>
           <div
+            {...listProps}
+            ref={listRef}
             id={listboxId}
             role="listbox"
             aria-labelledby={dialogLabelId}
-            aria-activedescendant={`${switcherName}-${currentLanguage}`}
-            tabIndex={0}
-            className="space-y-1"
+            className="flex flex-col gap-1 px-1 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
-            {languages.map((language) => {
-              const isSelected = language === currentLanguage;
-              const optionId = `${switcherName}-${language}`;
+            {languageItems.map((item) => {
+              const isSelected = item.id === selectedItemId;
+              const isActive = item.id === activeId;
+              const optionProps = getOptionProps(item);
 
               return (
-                <div key={language} role="none" className="px-1">
-                  <button
-                    type="button"
-                    id={optionId}
-                    role="option"
-                    aria-selected={isSelected}
-                    className={`flex w-full items-center justify-between rounded px-2 py-2 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                      isSelected
-                        ? 'bg-muted font-medium text-foreground'
-                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                    }`}
-                    onClick={() => handleSelect(language)}
-                  >
-                    <span>{getLanguageLabel(language)}</span>
-                    {isSelected ? (
-                      <span aria-hidden="true">{t('language.selectedIndicator')}</span>
-                    ) : null}
-                  </button>
-                </div>
+                <button
+                  key={item.id}
+                  type="button"
+                  role="option"
+                  {...optionProps}
+                  aria-selected={isSelected}
+                  className={`flex w-full cursor-pointer items-center justify-between rounded px-2 py-2 text-left text-sm transition-colors ${
+                    isActive
+                      ? 'bg-muted text-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  } ${isSelected ? 'font-medium' : ''}`.trim()}
+                >
+                  <span>{item.text}</span>
+                  {isSelected ? (
+                    <span aria-hidden="true">{t('language.selectedIndicator')}</span>
+                  ) : null}
+                </button>
               );
             })}
           </div>

@@ -1,10 +1,14 @@
-import { useState, useEffect, useId } from 'react';
+import { useState, useEffect, useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { useQuery } from '@tanstack/react-query';
 import { listArrangements } from '@/api/songs';
 import type { components } from '@/api/types';
 import { withLangKey } from '@/lib/queryClient';
+import {
+  useListNavigation,
+  type ListNavigationItem,
+} from '@/hooks/useListNavigation';
 
 interface Props {
   songId: string | undefined;
@@ -47,7 +51,6 @@ function formatLabel(
 
 export function ArrangementPicker({ songId, value, onChange }: Props) {
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState(0);
   const { t: tArrangements } = useTranslation('arrangements');
   const { t: tCommon } = useTranslation('common');
   const { data, isLoading, isError } = useQuery({
@@ -71,17 +74,81 @@ export function ArrangementPicker({ songId, value, onChange }: Props) {
     setOpen(false);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setOpen(true);
-      setActive((p) => Math.min(p + 1, options.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setActive((p) => Math.max(p - 1, 0));
-    } else if (e.key === 'Enter' && open && options[active]) {
-      e.preventDefault();
-      handleSelect(options[active]);
+  const navigationItems = useMemo<
+    Array<ListNavigationItem<components['schemas']['ArrangementResponse']>>
+  >(
+    () =>
+      options.map((arrangement, index) => ({
+        id: `${listboxId}-${arrangement.id ?? index}`,
+        text: formatLabel(tArrangements, arrangement),
+        value: arrangement,
+      })),
+    [listboxId, options, tArrangements],
+  );
+
+  const selectedItemId = useMemo(() => {
+    if (!value) {
+      return null;
+    }
+
+    return (
+      navigationItems.find((item) => item.value.id === value)?.id ?? null
+    );
+  }, [navigationItems, value]);
+
+  const {
+    listProps,
+    getOptionProps,
+    activeId,
+    move,
+    setActiveId,
+    selectActive,
+  } = useListNavigation({
+    items: navigationItems,
+    selectedId: selectedItemId,
+    loop: true,
+    onSelect: (item) => handleSelect(item.value),
+    onCancel: () => setOpen(false),
+  });
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    if (selectedItemId) {
+      setActiveId(selectedItemId);
+      return;
+    }
+
+    const firstId = navigationItems[0]?.id ?? null;
+
+    if (firstId) {
+      setActiveId(firstId);
+    }
+  }, [navigationItems, open, selectedItemId, setActiveId]);
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      if (!open) {
+        setOpen(true);
+        return;
+      }
+      move('next');
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      if (!open) {
+        setOpen(true);
+        return;
+      }
+      move('prev');
+    } else if (event.key === 'Enter' && open) {
+      event.preventDefault();
+      selectActive(event);
+    } else if (event.key === 'Escape' && open) {
+      event.preventDefault();
+      setOpen(false);
     }
   };
 
@@ -110,14 +177,11 @@ export function ArrangementPicker({ songId, value, onChange }: Props) {
         role="combobox"
         aria-expanded={open}
         aria-controls={open ? listboxId : undefined}
+        aria-activedescendant={open ? activeId ?? undefined : undefined}
+        aria-haspopup="listbox"
       />
       {open && (
-        <div
-          className="absolute z-10 mt-1 w-full max-h-60 overflow-auto rounded border bg-white"
-          role="listbox"
-          id={listboxId}
-          tabIndex={0}
-        >
+        <div className="absolute z-10 mt-1 w-full max-h-60 overflow-auto rounded border bg-white">
           {isLoading && <div className="p-2 text-sm">{tCommon('status.loading')}</div>}
           {isError && (
             <div className="p-2 text-sm text-red-500">{tCommon('status.loadFailed')}</div>
@@ -125,25 +189,33 @@ export function ArrangementPicker({ songId, value, onChange }: Props) {
           {!isLoading && !isError && options.length === 0 && (
             <div className="p-2 text-sm">{tArrangements('list.empty')}</div>
           )}
-          {options.map((a, idx) => (
-            <div key={a.id}>
-              <button
-                type="button"
-                role="option"
-                aria-selected={value === a.id}
-                className={`w-full cursor-pointer rounded px-2 py-2 text-left ${
-                  idx === active ? 'bg-blue-500 text-white' : ''
-                }`}
-                onMouseDown={(event) => {
-                  event.preventDefault();
-                  handleSelect(a);
-                }}
-                onClick={() => handleSelect(a)}
-              >
-                {formatLabel(tArrangements, a)}
-              </button>
-            </div>
-          ))}
+          <div
+            {...listProps}
+            id={listboxId}
+            role="listbox"
+            className="flex flex-col gap-1 py-1 px-1 outline-none"
+          >
+            {navigationItems.map((item) => {
+              const optionProps = getOptionProps(item);
+              const isActive = item.id === activeId;
+              const isSelected = value === item.value.id;
+
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="option"
+                  {...optionProps}
+                  aria-selected={isSelected}
+                  className={`w-full rounded px-2 py-2 text-left ${
+                    isActive ? 'bg-blue-500 text-white' : 'text-gray-900'
+                  } ${isSelected && !isActive ? 'font-medium' : ''}`.trim()}
+                >
+                  {formatLabel(tArrangements, item.value)}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

@@ -1,9 +1,13 @@
-import { useState, useEffect, useId } from 'react';
+import { useState, useEffect, useId, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { listSongs } from '@/api/songs';
 import type { components } from '@/api/types';
 import { withLangKey } from '@/lib/queryClient';
+import {
+  useListNavigation,
+  type ListNavigationItem,
+} from '@/hooks/useListNavigation';
 
 function useDebounce<T>(value: T, delay: number) {
   const [debounced, setDebounced] = useState(value);
@@ -25,7 +29,6 @@ export function SongPicker({ value, onChange, placeholder }: Props) {
   const { t: tCommon } = useTranslation('common');
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState(0);
   const debounced = useDebounce(search, 300);
   const listboxId = useId();
 
@@ -53,17 +56,81 @@ export function SongPicker({ value, onChange, placeholder }: Props) {
     setSearch(song.title ?? '');
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setOpen(true);
-      setActive((p) => Math.min(p + 1, options.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setActive((p) => Math.max(p - 1, 0));
-    } else if (e.key === 'Enter' && open && options[active]) {
-      e.preventDefault();
-      handleSelect(options[active]);
+  const navigationItems = useMemo<Array<ListNavigationItem<components['schemas']['SongResponse']>>>(
+    () =>
+      options.map((song, index) => ({
+        id: `${listboxId}-${song.id ?? index}`,
+        text: [song.title ?? '', song.defaultKey ?? '']
+          .join(' ')
+          .trim(),
+        value: song,
+      })),
+    [listboxId, options],
+  );
+
+  const selectedItemId = useMemo(() => {
+    if (!value) {
+      return null;
+    }
+
+    return (
+      navigationItems.find((item) => item.value.id === value)?.id ?? null
+    );
+  }, [navigationItems, value]);
+
+  const {
+    listProps,
+    getOptionProps,
+    activeId,
+    move,
+    setActiveId,
+    selectActive,
+  } = useListNavigation({
+    items: navigationItems,
+    selectedId: selectedItemId,
+    loop: true,
+    onSelect: (item) => handleSelect(item.value),
+    onCancel: () => setOpen(false),
+  });
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    if (selectedItemId) {
+      setActiveId(selectedItemId);
+      return;
+    }
+
+    const firstId = navigationItems[0]?.id ?? null;
+
+    if (firstId) {
+      setActiveId(firstId);
+    }
+  }, [navigationItems, open, selectedItemId, setActiveId]);
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      if (!open) {
+        setOpen(true);
+        return;
+      }
+      move('next');
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      if (!open) {
+        setOpen(true);
+        return;
+      }
+      move('prev');
+    } else if (event.key === 'Enter' && open) {
+      event.preventDefault();
+      selectActive(event);
+    } else if (event.key === 'Escape' && open) {
+      event.preventDefault();
+      setOpen(false);
     }
   };
 
@@ -86,15 +153,12 @@ export function SongPicker({ value, onChange, placeholder }: Props) {
         aria-autocomplete="list"
         aria-expanded={open}
         aria-controls={open ? listboxId : undefined}
+        aria-activedescendant={open ? activeId ?? undefined : undefined}
+        aria-haspopup="listbox"
         role="combobox"
       />
       {open && (
-        <div
-          className="absolute z-10 mt-1 w-full max-h-60 overflow-auto rounded border bg-white"
-          role="listbox"
-          id={listboxId}
-          tabIndex={0}
-        >
+        <div className="absolute z-10 mt-1 w-full max-h-60 overflow-auto rounded border bg-white">
           {isLoading && (
             <div className="p-2 text-sm">{tCommon('status.loading')}</div>
           )}
@@ -104,35 +168,51 @@ export function SongPicker({ value, onChange, placeholder }: Props) {
           {!isLoading && !isError && options.length === 0 && (
             <div className="p-2 text-sm">{t('pickers.empty')}</div>
           )}
-          {options.map((song, idx) => (
-            <div key={song.id}>
-              <button
-                type="button"
-                role="option"
-                aria-selected={value === song.id}
-                className={`w-full cursor-pointer rounded px-2 py-2 text-left ${
-                  idx === active ? 'bg-blue-500 text-white' : ''
-                }`}
-                onMouseDown={(event) => {
-                  event.preventDefault();
-                  handleSelect(song);
-                }}
-                onClick={() => handleSelect(song)}
-              >
-                <span>
-                  {song.title}{' '}
-                  {song.defaultKey && (
-                    <span className="text-gray-500">({song.defaultKey})</span>
-                  )}
-                </span>
-                {song.tags && song.tags.length > 0 && (
-                  <span className="block text-xs text-gray-500">
-                    {song.tags.join(', ')}
+          <div
+            {...listProps}
+            id={listboxId}
+            role="listbox"
+            className="flex flex-col gap-1 py-1 px-1 outline-none"
+          >
+            {navigationItems.map((item) => {
+              const optionProps = getOptionProps(item);
+              const isActive = item.id === activeId;
+              const isSelected = value === item.value.id;
+
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="option"
+                  {...optionProps}
+                  aria-selected={isSelected}
+                  className={`w-full rounded px-2 py-2 text-left ${
+                    isActive ? 'bg-blue-500 text-white' : 'text-gray-900'
+                  } ${isSelected && !isActive ? 'font-medium' : ''}`.trim()}
+                >
+                  <span>
+                    {item.value.title}{' '}
+                    {item.value.defaultKey && (
+                      <span
+                        className={isActive ? 'text-blue-100' : 'text-gray-500'}
+                      >
+                        ({item.value.defaultKey})
+                      </span>
+                    )}
                   </span>
-                )}
-              </button>
-            </div>
-          ))}
+                  {item.value.tags && item.value.tags.length > 0 && (
+                    <span
+                      className={`block text-xs ${
+                        isActive ? 'text-blue-100' : 'text-gray-500'
+                      }`}
+                    >
+                      {item.value.tags.join(', ')}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
