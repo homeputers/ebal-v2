@@ -98,8 +98,18 @@ export default function SongSetsPage() {
     setSearchParams(params);
   };
 
-  const sets = (data?.content ?? []) as SongSetRow[];
-  const hasResults = sets.length > 0;
+  const sets = useMemo(() => (data?.content ?? []) as SongSetRow[], [data]);
+  const filteredSets = useMemo(() => {
+    const normalizedQuery = queryParam.trim().toLowerCase();
+    if (!normalizedQuery) {
+      return sets;
+    }
+
+    return sets.filter((set) =>
+      (set.name ?? '').toLowerCase().includes(normalizedQuery),
+    );
+  }, [queryParam, sets]);
+  const hasResults = filteredSets.length > 0;
 
   return (
     <div className="p-4">
@@ -144,7 +154,7 @@ export default function SongSetsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {sets.map((set) => {
+                  {filteredSets.map((set) => {
                     const setId = set.id;
                     if (!setId) return null;
 

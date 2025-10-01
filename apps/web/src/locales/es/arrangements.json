@@ -61,6 +61,10 @@
     "empty": "No hay arreglos",
     "deleteConfirm": "¿Estás seguro de que deseas eliminar este arreglo? Esta acción no se puede deshacer."
   },
+  "picker": {
+    "songRequired": "Selecciona una canción primero",
+    "placeholder": "Selecciona un arreglo"
+  },
   "labels": {
     "fallback": "Arreglo {{id}}",
     "generic": "Arreglo",

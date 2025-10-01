@@ -61,6 +61,10 @@
     "empty": "No arrangements",
     "deleteConfirm": "Are you sure you want to delete this arrangement? This action cannot be undone."
   },
+  "picker": {
+    "songRequired": "Select a song first",
+    "placeholder": "Select arrangement"
+  },
   "labels": {
     "fallback": "Arrangement {{id}}",
     "generic": "Arrangement",
