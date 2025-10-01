@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useMemo } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { AppShell } from '@/components/layout/AppShell';
@@ -105,6 +106,9 @@ export function LanguageGuard() {
     }
   }, [hasValidLanguage, normalizedLang]);
 
+  const translationLanguage = normalizedLang ?? DEFAULT_LANGUAGE;
+  const { t } = useTranslation('common', { lng: translationLanguage });
+
   if (!hasValidLanguage || !normalizedLang) {
     return null;
   }
@@ -113,7 +117,7 @@ export function LanguageGuard() {
     <AppShell currentLanguage={normalizedLang}>
       <SessionExpirationHandler currentLanguage={normalizedLang} />
       <ErrorBoundary>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div>{t('status.loading')}</div>}>
           <Outlet />
         </Suspense>
       </ErrorBoundary>

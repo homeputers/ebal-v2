@@ -38,6 +38,14 @@
     "loading": "Loading…",
     "loadFailed": "Failed to load"
   },
+  "announcements": {
+    "loading": "Loading data…",
+    "loaded": "Finished loading.",
+    "error": "Failed to load data.",
+    "submitting": "Submitting form…",
+    "submitted": "Form submitted.",
+    "submitError": "Form submission failed."
+  },
   "pagination": {
     "previous": "Previous",
     "next": "Next",

@@ -38,6 +38,14 @@
     "loading": "Cargando…",
     "loadFailed": "No se pudo cargar"
   },
+  "announcements": {
+    "loading": "Cargando datos…",
+    "loaded": "Carga completada.",
+    "error": "Error al cargar datos.",
+    "submitting": "Enviando formulario…",
+    "submitted": "Formulario enviado.",
+    "submitError": "Error al enviar el formulario."
+  },
   "pagination": {
     "previous": "Anterior",
     "next": "Siguiente",
