@@ -24,6 +24,34 @@ export function FormErrorSummary<TFieldValues extends FieldValues>({
   const items = useMemo(() => flattenErrors(errors), [errors]);
   const { t: tValidation } = useTranslation('validation');
 
+  const translateMessage = useMemo(() => {
+    const normaliseKey = (key: string) => {
+      if (key.startsWith('validation:')) {
+        return key.slice('validation:'.length);
+      }
+
+      if (key.startsWith('validation.')) {
+        return key.slice('validation.'.length);
+      }
+
+      return key;
+    };
+
+    return (message: string) => {
+      if (
+        typeof message === 'string' &&
+        (message.startsWith('validation:') || message.startsWith('validation.'))
+      ) {
+        const key = normaliseKey(message);
+        const translated = tValidation(key, { defaultValue: message });
+
+        return typeof translated === 'string' ? translated : message;
+      }
+
+      return message;
+    };
+  }, [tValidation]);
+
   if (items.length === 0) return null;
 
   return (
@@ -41,9 +69,7 @@ export function FormErrorSummary<TFieldValues extends FieldValues>({
         {items.map((item) => {
           const fieldId = (getFieldId ?? fieldNameToId)(item.name);
           const itemLabel = getItemLabel?.(item.name);
-          const message = tValidation(item.message, {
-            defaultValue: item.message,
-          });
+          const message = translateMessage(item.message);
           const linkText = itemLabel ? `${itemLabel}: ${message}` : message;
           return (
             <li key={item.name}>
