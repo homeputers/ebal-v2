@@ -185,8 +185,8 @@ export function LanguageSwitcher({
 
   const triggerClassName =
     variant === 'compact'
-      ? 'inline-flex h-10 w-10 items-center justify-center rounded-md border border-border/60 bg-muted text-base text-foreground transition-colors hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
-      : 'inline-flex items-center gap-2 rounded-md border border-border/60 bg-muted px-3 py-1 text-sm font-medium text-foreground transition-colors hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background';
+      ? 'inline-flex h-10 w-10 items-center justify-center rounded-md border border-border/60 bg-muted text-base text-foreground transition-colors transition-base hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
+      : 'inline-flex items-center gap-2 rounded-md border border-border/60 bg-muted px-3 py-1 text-sm font-medium text-foreground transition-colors transition-base hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background';
 
   const getLanguageFlag = useCallback(
     (language: string) => LANGUAGE_FLAGS[language] ?? language.toUpperCase(),
@@ -264,7 +264,7 @@ export function LanguageSwitcher({
                   role="option"
                   {...optionProps}
                   aria-selected={isSelected}
-                  className={`flex w-full cursor-pointer items-center justify-between rounded px-2 py-2 text-left text-sm transition-colors ${
+                  className={`flex w-full cursor-pointer items-center justify-between rounded px-2 py-2 text-left text-sm transition-colors transition-base ${
                     isActive
                       ? 'bg-muted text-foreground'
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground'

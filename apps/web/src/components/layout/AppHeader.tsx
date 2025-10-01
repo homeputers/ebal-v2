@@ -139,7 +139,7 @@ export function AppHeader({
           {hasNavigation ? (
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border/60 bg-muted text-foreground transition hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background lg:hidden"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border/60 bg-muted text-foreground transition transition-base hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background lg:hidden"
               aria-controls={MOBILE_NAVIGATION_ID}
               aria-expanded={isNavigationOpen}
               aria-label={
@@ -190,7 +190,7 @@ export function AppHeader({
                   value: accountLabelValue,
                   defaultValue: accountLabelValue,
                 })}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border/60 bg-muted text-foreground transition hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border/60 bg-muted text-foreground transition transition-base hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 onClick={accountMenu.toggle}
               >
                 <VisuallyHidden>{accountLabelValue}</VisuallyHidden>
@@ -260,7 +260,7 @@ export function AppHeader({
                           type="button"
                           role="menuitem"
                           {...optionProps}
-                          className={`block w-full px-4 py-2 text-left text-sm transition-colors ${toneClassName}`.trim()}
+                          className={`block w-full px-4 py-2 text-left text-sm transition-colors transition-base ${toneClassName}`.trim()}
                         >
                           {item.text}
                         </button>

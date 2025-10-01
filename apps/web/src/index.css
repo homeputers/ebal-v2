@@ -24,6 +24,13 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.75rem;
+    --motion-transition-duration: 150ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --motion-transition-duration: 0ms;
+    }
   }
 
   * {
@@ -32,6 +39,12 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .transition-base {
+    transition-duration: var(--motion-transition-duration, 150ms);
   }
 }
 

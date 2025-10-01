@@ -39,7 +39,7 @@ type TabsProps = {
 };
 
 const defaultTabBaseClass =
-  'inline-flex items-center gap-2 rounded-t border border-b-0 border-gray-200 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white';
+  'inline-flex items-center gap-2 rounded-t border border-b-0 border-gray-200 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 transition-colors transition-base focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white';
 const defaultTabSelectedClass = 'bg-white text-gray-900';
 const defaultTabUnselectedClass = 'hover:text-gray-800';
 const defaultTabDisabledClass = 'cursor-not-allowed opacity-50';
