@@ -1,3 +1,15 @@
+## [0.5.0](https://github.com/homeputers/ebal-v2/compare/v0.4.1...v0.5.0) (2025-10-01)
+
+### Features
+
+* **web:** add focus management utilities ([#151](https://github.com/homeputers/ebal-v2/issues/151)) ([0024ebf](https://github.com/homeputers/ebal-v2/commit/0024ebfb9145eda109dabc6350f4f635e97dd4cc))
+* **web:** enhance modal accessibility semantics ([#152](https://github.com/homeputers/ebal-v2/issues/152)) ([af21d88](https://github.com/homeputers/ebal-v2/commit/af21d88fe76994cad9d3f7104285a5dcbbb3d5fa))
+
+### Bug Fixes
+
+* ensure logo loads when hosted under a sub-path ([#146](https://github.com/homeputers/ebal-v2/issues/146)) ([2d17aad](https://github.com/homeputers/ebal-v2/commit/2d17aad1e4e345432a9500f54df278cedad1357c))
+* refine members birthday ui ([#149](https://github.com/homeputers/ebal-v2/issues/149)) ([31ffc34](https://github.com/homeputers/ebal-v2/commit/31ffc345841e7b1e582c5ff689c8c96336fa38a9))
+* **web:** keep arrangement modal visible ([#145](https://github.com/homeputers/ebal-v2/issues/145)) ([0ae24f3](https://github.com/homeputers/ebal-v2/commit/0ae24f3337d8313460520419ae3ec26a76b80b33))
 ## [0.4.1](https://github.com/homeputers/ebal-v2/compare/v0.4.0...v0.4.1) (2025-09-30)
 
 ### Bug Fixes
