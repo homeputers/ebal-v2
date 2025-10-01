@@ -7,11 +7,13 @@
   },
   "list": {
     "searchPlaceholder": "Search by name...",
-    "empty": "No groups found"
+    "empty": "No groups found",
+    "deleteConfirm": "Are you sure you want to delete this group? This action cannot be undone."
   },
   "table": {
     "name": "Name",
-    "members": "Members"
+    "members": "Members",
+    "caption": "Group results"
   },
   "modals": {
     "createTitle": "New Group",
@@ -30,6 +32,7 @@
     "selectMember": "Select member",
     "emptyMembers": "No members",
     "loadFailedMembers": "Failed to load members",
-    "removeMemberConfirm": "Remove member?"
+    "removeMemberConfirm": "Remove member?",
+    "membersTableCaption": "Members in this group"
   }
 }

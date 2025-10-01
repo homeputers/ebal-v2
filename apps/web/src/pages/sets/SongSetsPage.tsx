@@ -98,8 +98,18 @@ export default function SongSetsPage() {
     setSearchParams(params);
   };
 
-  const sets = (data?.content ?? []) as SongSetRow[];
-  const hasResults = sets.length > 0;
+  const sets = useMemo(() => (data?.content ?? []) as SongSetRow[], [data]);
+  const filteredSets = useMemo(() => {
+    const normalizedQuery = queryParam.trim().toLowerCase();
+    if (!normalizedQuery) {
+      return sets;
+    }
+
+    return sets.filter((set) =>
+      (set.name ?? '').toLowerCase().includes(normalizedQuery),
+    );
+  }, [queryParam, sets]);
+  const hasResults = filteredSets.length > 0;
 
   return (
     <div className="p-4">
@@ -129,15 +139,22 @@ export default function SongSetsPage() {
           {hasResults ? (
             <>
               <table className="w-full border">
+                <caption className="sr-only">{t('table.caption')}</caption>
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="text-left p-2">{t('table.name')}</th>
-                    <th className="text-left p-2">{t('table.items')}</th>
-                    <th className="p-2 text-right">{tCommon('table.actions')}</th>
+                    <th scope="col" className="text-left p-2">
+                      {t('table.name')}
+                    </th>
+                    <th scope="col" className="text-left p-2">
+                      {t('table.items')}
+                    </th>
+                    <th scope="col" className="p-2 text-right">
+                      {tCommon('table.actions')}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {sets.map((set) => {
+                  {filteredSets.map((set) => {
                     const setId = set.id;
                     if (!setId) return null;
 
@@ -146,7 +163,12 @@ export default function SongSetsPage() {
 
                     return (
                       <tr key={setId} className="border-t">
-                        <td className="p-2 align-top">{set.name}</td>
+                        <th
+                          scope="row"
+                          className="p-2 text-left font-normal align-top"
+                        >
+                          {set.name}
+                        </th>
                         <td className="p-2 align-top">{itemsCount ?? '—'}</td>
                         <td className="p-2 text-right align-top">
                           <div className="flex gap-2 justify-end">
@@ -203,7 +225,9 @@ export default function SongSetsPage() {
               </div>
             </>
           ) : (
-            <div>{t('list.empty')}</div>
+            <div role="status" aria-live="polite">
+              {t('list.empty')}
+            </div>
           )}
         </div>
       ) : null}

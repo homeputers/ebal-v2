@@ -229,7 +229,11 @@ export default function UsersListPage() {
       {listQuery.isError ? <div>{tCommon('status.loadFailed')}</div> : null}
 
       {!listQuery.isLoading && users.length === 0 ? (
-        <div className="rounded border border-dashed p-6 text-center text-gray-500">
+        <div
+          className="rounded border border-dashed p-6 text-center text-gray-500"
+          role="status"
+          aria-live="polite"
+        >
           {t('list.empty')}
         </div>
       ) : null}
@@ -237,27 +241,49 @@ export default function UsersListPage() {
       {!listQuery.isLoading && users.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
+            <caption className="sr-only">{t('table.caption')}</caption>
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
+                <th
+                  scope="col"
+                  className="px-4 py-2 text-left text-sm font-semibold text-gray-600"
+                >
                   {t('table.email')}
                 </th>
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
+                <th
+                  scope="col"
+                  className="px-4 py-2 text-left text-sm font-semibold text-gray-600"
+                >
                   {t('table.displayName')}
                 </th>
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
+                <th
+                  scope="col"
+                  className="px-4 py-2 text-left text-sm font-semibold text-gray-600"
+                >
                   {t('table.roles')}
                 </th>
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
+                <th
+                  scope="col"
+                  className="px-4 py-2 text-left text-sm font-semibold text-gray-600"
+                >
                   {t('table.isActive')}
                 </th>
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
+                <th
+                  scope="col"
+                  className="px-4 py-2 text-left text-sm font-semibold text-gray-600"
+                >
                   {t('table.createdAt')}
                 </th>
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
+                <th
+                  scope="col"
+                  className="px-4 py-2 text-left text-sm font-semibold text-gray-600"
+                >
                   {t('table.updatedAt')}
                 </th>
-                <th className="px-4 py-2 text-right text-sm font-semibold text-gray-600">
+                <th
+                  scope="col"
+                  className="px-4 py-2 text-right text-sm font-semibold text-gray-600"
+                >
                   {tCommon('table.actions')}
                 </th>
               </tr>
@@ -265,7 +291,9 @@ export default function UsersListPage() {
             <tbody className="divide-y divide-gray-200 bg-white">
               {users.map((user) => (
                 <tr key={user.id}>
-                  <td className="px-4 py-2 text-sm text-gray-900">{user.email}</td>
+                  <th scope="row" className="px-4 py-2 text-left text-sm font-normal text-gray-900">
+                    {user.email}
+                  </th>
                   <td className="px-4 py-2 text-sm text-gray-900">
                     {user.displayName}
                   </td>

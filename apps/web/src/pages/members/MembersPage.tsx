@@ -60,6 +60,14 @@ export default function MembersPage() {
     updateMut.mutate({ id, body: vals }, { onSuccess: () => setEditing(null) });
   };
 
+  const handleDelete = (id: string) => {
+    if (!window.confirm(t('list.deleteConfirm'))) {
+      return;
+    }
+
+    deleteMut.mutate(id);
+  };
+
   const goToPage = (p: number) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', String(p));
@@ -107,17 +115,26 @@ export default function MembersPage() {
           {data.content && data.content.length > 0 ? (
             <>
               <table className="w-full border">
+                <caption className="sr-only">{t('table.caption')}</caption>
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="text-left p-2">{t('table.name')}</th>
-                    <th className="text-left p-2">{t('table.instruments')}</th>
-                    <th className="p-2 text-right">{tCommon('table.actions')}</th>
+                    <th scope="col" className="text-left p-2">
+                      {t('table.name')}
+                    </th>
+                    <th scope="col" className="text-left p-2">
+                      {t('table.instruments')}
+                    </th>
+                    <th scope="col" className="p-2 text-right">
+                      {tCommon('table.actions')}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.content.map((m) => (
                     <tr key={m.id} className="border-t">
-                      <td className="p-2">{m.displayName}</td>
+                      <th scope="row" className="p-2 text-left font-normal">
+                        {m.displayName}
+                      </th>
                       <td className="p-2">{m.instruments?.join(', ')}</td>
                       <td className="p-2 text-right">
                         <div className="flex gap-2 justify-end">
@@ -129,7 +146,7 @@ export default function MembersPage() {
                           </button>
                           <button
                             className="px-2 py-1 text-sm bg-red-500 text-white rounded"
-                            onClick={() => deleteMut.mutate(m.id!)}
+                            onClick={() => m.id && handleDelete(m.id)}
                           >
                             {tCommon('actions.delete')}
                           </button>
@@ -167,7 +184,9 @@ export default function MembersPage() {
               </div>
             </>
           ) : (
-            <div>{t('list.empty')}</div>
+            <div role="status" aria-live="polite">
+              {t('list.empty')}
+            </div>
           )}
         </div>
       ) : null}

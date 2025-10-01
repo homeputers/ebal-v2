@@ -14,11 +14,13 @@
   },
   "list": {
     "searchPlaceholder": "Search...",
-    "empty": "No services found"
+    "empty": "No services found",
+    "deleteConfirm": "Are you sure you want to delete this service? This action cannot be undone."
   },
   "table": {
     "startsAt": "Starts At",
-    "location": "Location"
+    "location": "Location",
+    "caption": "Service list"
   },
   "status": {
     "loadFailed": "Failed to load services."

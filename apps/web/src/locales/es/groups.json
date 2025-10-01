@@ -7,11 +7,13 @@
   },
   "list": {
     "searchPlaceholder": "Buscar por nombre...",
-    "empty": "No se encontraron grupos"
+    "empty": "No se encontraron grupos",
+    "deleteConfirm": "¿Estás seguro de que deseas eliminar este grupo? Esta acción no se puede deshacer."
   },
   "table": {
     "name": "Nombre",
-    "members": "Miembros"
+    "members": "Miembros",
+    "caption": "Resultados de grupos"
   },
   "modals": {
     "createTitle": "Nuevo grupo",
@@ -30,6 +32,7 @@
     "selectMember": "Seleccionar miembro",
     "emptyMembers": "Sin miembros",
     "loadFailedMembers": "No se pudieron cargar los miembros",
-    "removeMemberConfirm": "¿Quitar miembro?"
+    "removeMemberConfirm": "¿Quitar miembro?",
+    "membersTableCaption": "Miembros de este grupo"
   }
 }

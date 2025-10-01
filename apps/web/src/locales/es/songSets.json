@@ -23,7 +23,8 @@
   },
   "table": {
     "name": "Nombre",
-    "items": "Elementos"
+    "items": "Elementos",
+    "caption": "Resultados de conjuntos de canciones"
   },
   "status": {
     "loadFailed": "No se pudieron cargar los conjuntos de canciones.",
@@ -31,7 +32,7 @@
     "savingOrder": "Guardando el orden…"
   },
   "confirm": {
-    "delete": "¿Seguro que deseas eliminar este conjunto?"
+    "delete": "¿Seguro que deseas eliminar este conjunto? Esta acción no se puede deshacer."
   },
   "items": {
     "addTitle": "Agregar elemento",

@@ -14,11 +14,13 @@
   },
   "list": {
     "searchPlaceholder": "Buscar...",
-    "empty": "No se encontraron servicios"
+    "empty": "No se encontraron servicios",
+    "deleteConfirm": "¿Estás seguro de que deseas eliminar este servicio? Esta acción no se puede deshacer."
   },
   "table": {
     "startsAt": "Hora de inicio",
-    "location": "Ubicación"
+    "location": "Ubicación",
+    "caption": "Lista de servicios"
   },
   "status": {
     "loadFailed": "No se pudieron cargar los servicios."

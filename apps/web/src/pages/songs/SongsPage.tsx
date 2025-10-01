@@ -72,6 +72,14 @@ export default function SongsPage() {
     updateMut.mutate({ id, body: vals }, { onSuccess: () => setEditing(null) });
   };
 
+  const handleDelete = (id: string) => {
+    if (!window.confirm(t('list.deleteConfirm'))) {
+      return;
+    }
+
+    deleteMut.mutate(id);
+  };
+
   const goToPage = (p: number) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', String(p));
@@ -133,13 +141,20 @@ export default function SongsPage() {
           {data.content && data.content.length > 0 ? (
             <>
               <table className="w-full border">
+                <caption className="sr-only">{t('table.caption')}</caption>
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="text-left p-2">{t('fields.title')}</th>
-                    <th className="text-left p-2">{t('fields.defaultKey')}</th>
-                    <th className="text-left p-2">{t('fields.tags')}</th>
+                    <th scope="col" className="text-left p-2">
+                      {t('fields.title')}
+                    </th>
+                    <th scope="col" className="text-left p-2">
+                      {t('fields.defaultKey')}
+                    </th>
+                    <th scope="col" className="text-left p-2">
+                      {t('fields.tags')}
+                    </th>
                     {canManageSongs && (
-                      <th className="p-2 text-right">
+                      <th scope="col" className="p-2 text-right">
                         {tCommon('table.actions')}
                       </th>
                     )}
@@ -148,14 +163,14 @@ export default function SongsPage() {
                 <tbody>
                   {data.content.map((s) => (
                     <tr key={s.id} className="border-t">
-                      <td className="p-2">
+                      <th scope="row" className="p-2 text-left font-normal">
                         <Link
                           to={s.id ?? ''}
                           className="text-blue-600 hover:underline"
                         >
                           {s.title}
                         </Link>
-                      </td>
+                      </th>
                       <td className="p-2">{s.defaultKey}</td>
                       <td className="p-2">{s.tags?.join(', ')}</td>
                       {canManageSongs && (
@@ -169,7 +184,7 @@ export default function SongsPage() {
                             </button>
                             <button
                               className="px-2 py-1 text-sm bg-red-500 text-white rounded"
-                              onClick={() => s.id && deleteMut.mutate(s.id)}
+                              onClick={() => s.id && handleDelete(s.id)}
                             >
                               {tCommon('actions.delete')}
                             </button>
@@ -208,7 +223,9 @@ export default function SongsPage() {
               </div>
             </>
           ) : (
-            <div>{t('list.empty')}</div>
+            <div role="status" aria-live="polite">
+              {t('list.empty')}
+            </div>
           )}
         </div>
       ) : null}

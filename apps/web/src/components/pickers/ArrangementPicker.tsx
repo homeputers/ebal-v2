@@ -158,7 +158,9 @@ export function ArrangementPicker({ songId, value, onChange }: Props) {
     return (
       <input
         disabled
-        placeholder="Select a song first"
+        placeholder={tArrangements('picker.songRequired', {
+          defaultValue: 'Select a song first',
+        })}
         className="border p-2 rounded w-full bg-gray-100"
       />
     );
@@ -169,7 +171,9 @@ export function ArrangementPicker({ songId, value, onChange }: Props) {
       <input
         value={selected ? formatLabel(tArrangements, selected) : ''}
         readOnly
-        placeholder="Select arrangement"
+        placeholder={tArrangements('picker.placeholder', {
+          defaultValue: 'Select arrangement',
+        })}
         onFocus={() => setOpen(true)}
         onBlur={closeLater}
         onKeyDown={handleKeyDown}

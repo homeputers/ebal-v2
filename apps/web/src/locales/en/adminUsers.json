@@ -28,7 +28,8 @@
     "roles": "Roles",
     "isActive": "Active?",
     "createdAt": "Created",
-    "updatedAt": "Updated"
+    "updatedAt": "Updated",
+    "caption": "User accounts"
   },
   "actions": {
     "view": "View / Edit",

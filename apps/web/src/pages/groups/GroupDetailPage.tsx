@@ -79,16 +79,23 @@ export default function GroupDetailPage() {
         {membersQuery.isError && <div>{t('detail.loadFailedMembers')}</div>}
         {membersQuery.data && membersQuery.data.length > 0 ? (
           <table className="w-full border mt-2">
+            <caption className="sr-only">{t('detail.membersTableCaption')}</caption>
             <thead>
               <tr className="bg-gray-50">
-                <th className="text-left p-2">{t('table.name')}</th>
-                <th className="p-2 text-right">{tCommon('table.actions')}</th>
+                <th scope="col" className="text-left p-2">
+                  {t('table.name')}
+                </th>
+                <th scope="col" className="p-2 text-right">
+                  {tCommon('table.actions')}
+                </th>
               </tr>
             </thead>
             <tbody>
               {membersQuery.data.map((m) => (
                 <tr key={m.id} className="border-t">
-                  <td className="p-2">{m.displayName}</td>
+                  <th scope="row" className="p-2 text-left font-normal">
+                    {m.displayName}
+                  </th>
                   <td className="p-2 text-right">
                     <button
                       className="px-2 py-1 text-sm bg-red-500 text-white rounded"
@@ -106,7 +113,9 @@ export default function GroupDetailPage() {
             </tbody>
           </table>
         ) : (
-          <div className="mt-2">{t('detail.emptyMembers')}</div>
+          <div className="mt-2" role="status" aria-live="polite">
+            {t('detail.emptyMembers')}
+          </div>
         )}
       </div>
     </div>

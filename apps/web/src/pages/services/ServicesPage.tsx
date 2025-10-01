@@ -81,13 +81,54 @@ export default function ServicesPage() {
     updateMut.mutate({ id, body: vals }, { onSuccess: () => setEditing(null) });
   };
 
+  const handleDelete = (id: string) => {
+    if (!window.confirm(t('list.deleteConfirm'))) {
+      return;
+    }
+
+    deleteMut.mutate(id);
+  };
+
   const goToPage = (p: number) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', String(p));
     setSearchParams(params);
   };
 
-  const services = data?.content ?? [];
+  const services = useMemo(() => data?.content ?? [], [data]);
+  const fromDate = useMemo(
+    () => (fromParam ? new Date(`${fromParam}T00:00:00`) : null),
+    [fromParam],
+  );
+  const toDate = useMemo(
+    () => (toParam ? new Date(`${toParam}T23:59:59.999`) : null),
+    [toParam],
+  );
+  const filteredServices = useMemo(() => {
+    const normalizedQuery = queryParam.trim().toLowerCase();
+
+    return services.filter((service) => {
+      const location = service.location ?? '';
+      const formattedDate = service.startsAt
+        ? formatDate(service.startsAt, i18n.language)
+        : '';
+      const matchesQuery =
+        !normalizedQuery ||
+        location.toLowerCase().includes(normalizedQuery) ||
+        formattedDate.toLowerCase().includes(normalizedQuery);
+
+      if (!matchesQuery) {
+        return false;
+      }
+
+      const startsAtDate = service.startsAt ? new Date(service.startsAt) : null;
+      const matchesFrom = !fromDate || (startsAtDate && startsAtDate >= fromDate);
+      const matchesTo = !toDate || (startsAtDate && startsAtDate <= toDate);
+
+      return matchesFrom && matchesTo;
+    });
+  }, [fromDate, i18n.language, queryParam, services, toDate]);
+  const hasResults = filteredServices.length > 0;
 
   return (
     <div className="p-4">
@@ -124,89 +165,104 @@ export default function ServicesPage() {
       </div>
       {isLoading && <div>{tCommon('status.loading')}</div>}
       {isError && <div>{tCommon('status.loadFailed')}</div>}
-      {!isLoading && services.length > 0 ? (
+      {!isLoading && data ? (
         <div className="mt-4">
-          <table className="w-full border">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="text-left p-2">{t('table.startsAt')}</th>
-                <th className="text-left p-2">{t('table.location')}</th>
-                <th className="p-2 text-right">{tCommon('table.actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {services.map((s) => (
-                <tr key={s.id} className="border-t">
-                  <td className="p-2">{s.startsAt ? formatDate(s.startsAt, i18n.language) : ''}</td>
-                  <td className="p-2">{s.location}</td>
-                  <td className="p-2 text-right">
-                    <div className="flex gap-2 justify-end">
-                      <Link
-                        to={
-                          canManageServices
-                            ? s.id ?? ''
-                            : `${s.id ?? ''}/plan`
-                        }
-                        className="px-2 py-1 text-sm bg-green-500 text-white rounded"
-                      >
-                        {t(
-                          canManageServices
-                            ? 'actions.openPlan'
-                            : 'actions.planView',
-                        )}
-                      </Link>
-                      {canManageServices ? (
-                        <>
-                          <button
-                            className="px-2 py-1 text-sm bg-gray-200 rounded"
-                            onClick={() => setEditing(s)}
+          {hasResults ? (
+            <>
+              <table className="w-full border">
+                <caption className="sr-only">{t('table.caption')}</caption>
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th scope="col" className="text-left p-2">
+                      {t('table.startsAt')}
+                    </th>
+                    <th scope="col" className="text-left p-2">
+                      {t('table.location')}
+                    </th>
+                    <th scope="col" className="p-2 text-right">
+                      {tCommon('table.actions')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredServices.map((s) => (
+                    <tr key={s.id} className="border-t">
+                      <th scope="row" className="p-2 text-left font-normal">
+                        {s.startsAt ? formatDate(s.startsAt, i18n.language) : ''}
+                      </th>
+                      <td className="p-2">{s.location}</td>
+                      <td className="p-2 text-right">
+                        <div className="flex gap-2 justify-end">
+                          <Link
+                            to={
+                              canManageServices
+                                ? s.id ?? ''
+                                : `${s.id ?? ''}/plan`
+                            }
+                            className="px-2 py-1 text-sm bg-green-500 text-white rounded"
                           >
-                            {tCommon('actions.edit')}
-                          </button>
-                          <button
-                            className="px-2 py-1 text-sm bg-red-500 text-white rounded"
-                            onClick={() => deleteMut.mutate(s.id!)}
-                          >
-                            {tCommon('actions.delete')}
-                          </button>
-                        </>
-                      ) : null}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="flex items-center gap-2 mt-4">
-            <button
-              className="px-3 py-1 border rounded disabled:opacity-50"
-              disabled={pageParam === 0}
-              onClick={() => goToPage(Math.max(0, pageParam - 1))}
-            >
-              {tCommon('pagination.previous')}
-            </button>
-            <span>
-              {tCommon('pagination.pageOf', {
-                page: (data?.number ?? 0) + 1,
-                total: data?.totalPages ?? 1,
-              })}
-            </span>
-            <button
-              className="px-3 py-1 border rounded disabled:opacity-50"
-              disabled={
-                data?.number !== undefined &&
-                data?.totalPages !== undefined &&
-                data.number + 1 >= data.totalPages
-              }
-              onClick={() => goToPage(pageParam + 1)}
-            >
-              {tCommon('pagination.next')}
-            </button>
-          </div>
+                            {t(
+                              canManageServices
+                                ? 'actions.openPlan'
+                                : 'actions.planView',
+                            )}
+                          </Link>
+                          {canManageServices ? (
+                            <>
+                              <button
+                                className="px-2 py-1 text-sm bg-gray-200 rounded"
+                                onClick={() => setEditing(s)}
+                              >
+                                {tCommon('actions.edit')}
+                              </button>
+                              <button
+                                className="px-2 py-1 text-sm bg-red-500 text-white rounded"
+                                onClick={() => s.id && handleDelete(s.id)}
+                              >
+                                {tCommon('actions.delete')}
+                              </button>
+                            </>
+                          ) : null}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="flex items-center gap-2 mt-4">
+                <button
+                  className="px-3 py-1 border rounded disabled:opacity-50"
+                  disabled={pageParam === 0}
+                  onClick={() => goToPage(Math.max(0, pageParam - 1))}
+                >
+                  {tCommon('pagination.previous')}
+                </button>
+                <span>
+                  {tCommon('pagination.pageOf', {
+                    page: (data?.number ?? 0) + 1,
+                    total: data?.totalPages ?? 1,
+                  })}
+                </span>
+                <button
+                  className="px-3 py-1 border rounded disabled:opacity-50"
+                  disabled={
+                    data?.number !== undefined &&
+                    data?.totalPages !== undefined &&
+                    data.number + 1 >= data.totalPages
+                  }
+                  onClick={() => goToPage(pageParam + 1)}
+                >
+                  {tCommon('pagination.next')}
+                </button>
+              </div>
+            </>
+          ) : (
+            <div role="status" aria-live="polite">
+              {t('list.empty')}
+            </div>
+          )}
         </div>
-      ) : (
-        !isLoading && <div>{t('list.empty')}</div>
-      )}
+      ) : null}
 
       {canManageServices ? (
         <>

@@ -54,10 +54,16 @@
   "table": {
     "key": "Tonalidad",
     "bpm": "PPM",
-    "meter": "Compás"
+    "meter": "Compás",
+    "caption": "Arreglos"
   },
   "list": {
-    "empty": "No hay arreglos"
+    "empty": "No hay arreglos",
+    "deleteConfirm": "¿Estás seguro de que deseas eliminar este arreglo? Esta acción no se puede deshacer."
+  },
+  "picker": {
+    "songRequired": "Selecciona una canción primero",
+    "placeholder": "Selecciona un arreglo"
   },
   "labels": {
     "fallback": "Arreglo {{id}}",

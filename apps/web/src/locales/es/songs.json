@@ -51,7 +51,11 @@
   },
   "list": {
     "searchPlaceholder": "Buscar por título...",
-    "empty": "No se encontraron canciones"
+    "empty": "No se encontraron canciones",
+    "deleteConfirm": "¿Estás seguro de que deseas eliminar esta canción? Esta acción no se puede deshacer."
+  },
+  "table": {
+    "caption": "Resultados de canciones"
   },
   "validation": {
     "titleMin": "El título debe tener al menos 2 caracteres"
