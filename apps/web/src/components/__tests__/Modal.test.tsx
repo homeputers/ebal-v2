@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { useRef, useState } from 'react';
 
 import Modal from '../Modal';
+import { useHeaderPopover } from '@/hooks/useHeaderPopover';
 
 describe('Modal', () => {
   it('renders dialog semantics with accessible labelling', async () => {
@@ -156,5 +157,65 @@ describe('Modal', () => {
     await user.click(overlay as Element);
 
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('supports nested popovers without breaking dialog semantics', async () => {
+    const user = userEvent.setup();
+
+    function NestedPopover() {
+      const { close, isOpen, toggle, triggerRef, popoverRef } =
+        useHeaderPopover<HTMLDivElement>();
+
+      return (
+        <div>
+          <button ref={triggerRef} type="button" onClick={toggle}>
+            Toggle popover
+          </button>
+          {isOpen ? (
+            <div
+              ref={popoverRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="nested-popover-title"
+              tabIndex={-1}
+            >
+              <h3 id="nested-popover-title">Nested actions</h3>
+              <button
+                type="button"
+                onClick={() => close({ focusTrigger: true })}
+              >
+                Close popover
+              </button>
+            </div>
+          ) : null}
+        </div>
+      );
+    }
+
+    render(
+      <Modal open onClose={() => undefined} closeLabel="Close dialog" titleId="parent-modal">
+        <h2 id="parent-modal">Parent modal</h2>
+        <NestedPopover />
+        <button type="button">Outside popover</button>
+      </Modal>,
+    );
+
+    const popoverTrigger = screen.getByRole('button', { name: 'Toggle popover' });
+    await user.click(popoverTrigger);
+
+    const nestedDialog = await screen.findByRole('dialog', { name: 'Nested actions' });
+    expect(nestedDialog).toBeInTheDocument();
+    const closePopoverButton = screen.getByRole('button', { name: 'Close popover' });
+
+    await waitFor(() => expect(closePopoverButton).toHaveFocus());
+
+    await user.keyboard('{Escape}');
+
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog', { name: 'Nested actions' })).not.toBeInTheDocument(),
+    );
+
+    expect(popoverTrigger).toHaveFocus();
+    expect(screen.getByRole('dialog', { name: 'Parent modal' })).toBeInTheDocument();
   });
 });

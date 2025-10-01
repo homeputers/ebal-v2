@@ -108,6 +108,7 @@ export function AppSideNav({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
+        event.stopImmediatePropagation();
         onClose();
         return;
       }
@@ -120,6 +121,7 @@ export function AppSideNav({
 
       if (focusable.length === 0) {
         event.preventDefault();
+        event.stopImmediatePropagation();
         return;
       }
 
@@ -130,6 +132,7 @@ export function AppSideNav({
       if (event.shiftKey) {
         if (!active || !drawer.contains(active) || active === first) {
           event.preventDefault();
+          event.stopImmediatePropagation();
           last.focus();
         }
 
@@ -138,6 +141,7 @@ export function AppSideNav({
 
       if (!active || !drawer.contains(active) || active === last) {
         event.preventDefault();
+        event.stopImmediatePropagation();
         first.focus();
       }
     };

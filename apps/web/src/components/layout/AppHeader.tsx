@@ -26,6 +26,7 @@ export function AppHeader({
   const { logout, me, isAuthenticated } = useAuth();
   const accountMenu = useHeaderPopover<HTMLDivElement>();
   const accountMenuButtonId = useId();
+  const accountMenuDialogLabelId = `${accountMenuButtonId}-dialog-label`;
 
   const profileHref = useMemo(
     () => buildLanguagePath(currentLanguage, 'me'),
@@ -97,9 +98,8 @@ export function AppHeader({
                 ref={accountMenu.triggerRef}
                 id={accountMenuButtonId}
                 type="button"
-                aria-haspopup="menu"
+                aria-haspopup="dialog"
                 aria-expanded={accountMenu.isOpen}
-                aria-controls={`${accountMenuButtonId}-menu`}
                 aria-label={t('nav.accountMenuLabel', {
                   value: accountLabelValue,
                   defaultValue: accountLabelValue,
@@ -135,35 +135,44 @@ export function AppHeader({
               {accountMenu.isOpen ? (
                 <div
                   ref={accountMenu.popoverRef}
-                  role="menu"
-                  id={`${accountMenuButtonId}-menu`}
-                  aria-labelledby={accountMenuButtonId}
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby={accountMenuDialogLabelId}
                   className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-md border border-border bg-card text-sm text-foreground shadow-lg"
+                  tabIndex={-1}
                 >
-                  <Link
-                    to={profileHref}
-                    role="menuitem"
-                    className="block px-4 py-2 transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
-                    onClick={() => accountMenu.close()}
-                  >
-                    {t('nav.profile')}
-                  </Link>
-                  <Link
-                    to={changePasswordHref}
-                    role="menuitem"
-                    className="block px-4 py-2 transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
-                    onClick={() => accountMenu.close()}
-                  >
-                    {t('nav.changePassword')}
-                  </Link>
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={handleLogout}
-                    className="block w-full px-4 py-2 text-left text-destructive transition-colors hover:bg-destructive/10 focus:bg-destructive/10 focus:outline-none"
-                  >
-                    {t('nav.logout')}
-                  </button>
+                  <p id={accountMenuDialogLabelId} className="sr-only">
+                    {t('nav.accountMenuLabel', {
+                      value: accountLabelValue,
+                      defaultValue: accountLabelValue,
+                    })}
+                  </p>
+                  <div role="menu" aria-labelledby={accountMenuDialogLabelId}>
+                    <Link
+                      to={profileHref}
+                      role="menuitem"
+                      className="block px-4 py-2 transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
+                      onClick={() => accountMenu.close()}
+                    >
+                      {t('nav.profile')}
+                    </Link>
+                    <Link
+                      to={changePasswordHref}
+                      role="menuitem"
+                      className="block px-4 py-2 transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
+                      onClick={() => accountMenu.close()}
+                    >
+                      {t('nav.changePassword')}
+                    </Link>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={handleLogout}
+                      className="block w-full px-4 py-2 text-left text-destructive transition-colors hover:bg-destructive/10 focus:bg-destructive/10 focus:outline-none"
+                    >
+                      {t('nav.logout')}
+                    </button>
+                  </div>
                 </div>
               ) : null}
             </div>
