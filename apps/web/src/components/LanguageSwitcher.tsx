@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useId, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
+import { VisuallyHidden } from '@/components/a11y/VisuallyHidden';
+
 import {
   LANGUAGE_STORAGE_KEY,
   SUPPORTED_LANGUAGES,
@@ -212,12 +214,12 @@ export function LanguageSwitcher({
             <span aria-hidden="true" className="text-xl leading-none">
               {getLanguageFlag(currentLanguage)}
             </span>
-            <span className="sr-only">
+            <VisuallyHidden>
               {t('language.triggerFlagAlt', {
                 language: getLanguageLabel(currentLanguage),
                 defaultValue: getLanguageLabel(currentLanguage),
               })}
-            </span>
+            </VisuallyHidden>
           </>
         ) : (
           <>

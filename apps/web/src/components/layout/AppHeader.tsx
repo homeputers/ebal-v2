@@ -11,6 +11,7 @@ import {
   type ListNavigationItem,
 } from '@/hooks/useListNavigation';
 import { MOBILE_NAVIGATION_ID } from '@/components/layout/constants';
+import { VisuallyHidden } from '@/components/a11y/VisuallyHidden';
 import { AppBrandLink } from '@/components/layout/AppBrandLink';
 
 type AppHeaderProps = {
@@ -152,6 +153,7 @@ export function AppHeader({
                   viewBox="0 0 20 20"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
                 >
                   {isNavigationOpen ? (
                     <path
@@ -191,13 +193,14 @@ export function AppHeader({
                 className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border/60 bg-muted text-foreground transition hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 onClick={accountMenu.toggle}
               >
-                <span className="sr-only">{accountLabelValue}</span>
+                <VisuallyHidden>{accountLabelValue}</VisuallyHidden>
                 <span aria-hidden="true" className="block h-5 w-5">
                   <svg
                     className="h-full w-full"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
                   >
                     <path
                       d="M12 12c2.485 0 4.5-2.015 4.5-4.5S14.485 3 12 3 7.5 5.015 7.5 7.5 9.515 12 12 12Z"
