@@ -46,6 +46,9 @@
     "submitted": "Form submitted.",
     "submitError": "Form submission failed."
   },
+  "notifications": {
+    "dismiss": "Dismiss notification"
+  },
   "pagination": {
     "previous": "Previous",
     "next": "Next",

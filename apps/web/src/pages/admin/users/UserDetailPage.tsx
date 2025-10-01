@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PageHeading } from '@/components/layout/PageHeading';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 import type { UpdateUserBody } from '@/api/users';
 import { UserEditForm } from '@/features/users/UserForm';

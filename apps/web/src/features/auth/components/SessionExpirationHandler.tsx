@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 import { subscribeToSessionExpiration } from '@/api/auth';
 import { authQueryKeys } from '@/features/auth/hooks';

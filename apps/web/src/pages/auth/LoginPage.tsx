@@ -12,7 +12,7 @@ import {
   useParams,
 } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 import { AuthPageLayout } from '@/pages/auth/AuthPageLayout';
 import { buildLanguagePath } from '@/pages/auth/utils';

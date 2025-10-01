@@ -46,6 +46,9 @@
     "submitted": "Formulario enviado.",
     "submitError": "Error al enviar el formulario."
   },
+  "notifications": {
+    "dismiss": "Cerrar notificación"
+  },
   "pagination": {
     "previous": "Anterior",
     "next": "Siguiente",
