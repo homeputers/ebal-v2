@@ -58,7 +58,8 @@
     "caption": "Arreglos"
   },
   "list": {
-    "empty": "No hay arreglos"
+    "empty": "No hay arreglos",
+    "deleteConfirm": "¿Estás seguro de que deseas eliminar este arreglo? Esta acción no se puede deshacer."
   },
   "labels": {
     "fallback": "Arreglo {{id}}",

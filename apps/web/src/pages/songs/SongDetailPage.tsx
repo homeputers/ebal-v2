@@ -66,6 +66,10 @@ export default function SongDetailPage() {
   };
 
   const handleDeleteArr = (arrId: string) => {
+    if (!window.confirm(tArrangements('list.deleteConfirm'))) {
+      return;
+    }
+
     deleteArrMut.mutate(arrId);
   };
 

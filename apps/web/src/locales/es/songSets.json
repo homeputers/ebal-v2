@@ -32,7 +32,7 @@
     "savingOrder": "Guardando el orden…"
   },
   "confirm": {
-    "delete": "¿Seguro que deseas eliminar este conjunto?"
+    "delete": "¿Seguro que deseas eliminar este conjunto? Esta acción no se puede deshacer."
   },
   "items": {
     "addTitle": "Agregar elemento",

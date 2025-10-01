@@ -58,7 +58,8 @@
     "caption": "Arrangements"
   },
   "list": {
-    "empty": "No arrangements"
+    "empty": "No arrangements",
+    "deleteConfirm": "Are you sure you want to delete this arrangement? This action cannot be undone."
   },
   "labels": {
     "fallback": "Arrangement {{id}}",

@@ -72,6 +72,14 @@ export default function SongsPage() {
     updateMut.mutate({ id, body: vals }, { onSuccess: () => setEditing(null) });
   };
 
+  const handleDelete = (id: string) => {
+    if (!window.confirm(t('list.deleteConfirm'))) {
+      return;
+    }
+
+    deleteMut.mutate(id);
+  };
+
   const goToPage = (p: number) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', String(p));
@@ -176,7 +184,7 @@ export default function SongsPage() {
                             </button>
                             <button
                               className="px-2 py-1 text-sm bg-red-500 text-white rounded"
-                              onClick={() => s.id && deleteMut.mutate(s.id)}
+                              onClick={() => s.id && handleDelete(s.id)}
                             >
                               {tCommon('actions.delete')}
                             </button>
