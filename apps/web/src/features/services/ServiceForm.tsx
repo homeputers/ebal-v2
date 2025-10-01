@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { withFieldErrorPrefix } from '../../lib/zodErrorMap';
 import type { components } from '../../api/types';
+import { FormErrorSummary } from '@/components/forms/FormErrorSummary';
+import { createOnInvalidFocus, describedBy, fieldErrorId } from '@/lib/formAccessibility';
 
 const schema = z.object({
   startsAt: z.string().min(1),
@@ -32,16 +34,29 @@ export function ServiceForm({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    setFocus,
+    formState: { errors, submitCount },
   } = useForm<ServiceFormValues>({ resolver, defaultValues });
+
+  const showErrorSummary = submitCount > 0;
 
   return (
     <form
-      onSubmit={handleSubmit((vals) =>
-        onSubmit({ startsAt: new Date(vals.startsAt).toISOString(), location: vals.location }),
+      onSubmit={handleSubmit(
+        (vals) =>
+          onSubmit({ startsAt: new Date(vals.startsAt).toISOString(), location: vals.location }),
+        createOnInvalidFocus(setFocus),
       )}
       className="space-y-2"
+      noValidate
     >
+      {showErrorSummary ? (
+        <FormErrorSummary
+          errors={errors}
+          title={tCommon('forms.errorSummary.title')}
+          description={tCommon('forms.errorSummary.description')}
+        />
+      ) : null}
       <div>
         <label htmlFor="startsAt" className="block text-sm font-medium mb-1">
           {t('form.startsAtLabel')}
@@ -51,9 +66,13 @@ export function ServiceForm({
           type="datetime-local"
           {...register('startsAt')}
           className="border p-2 rounded w-full"
+          aria-invalid={Boolean(errors.startsAt)}
+          aria-describedby={describedBy('startsAt', { includeError: Boolean(errors.startsAt) })}
         />
         {errors.startsAt && (
-          <p className="text-red-500 text-sm">{errors.startsAt.message}</p>
+          <p id={fieldErrorId('startsAt')} className="text-red-500 text-sm">
+            {errors.startsAt.message}
+          </p>
         )}
       </div>
       <div>
@@ -64,9 +83,13 @@ export function ServiceForm({
           id="location"
           {...register('location')}
           className="border p-2 rounded w-full"
+          aria-invalid={Boolean(errors.location)}
+          aria-describedby={describedBy('location', { includeError: Boolean(errors.location) })}
         />
         {errors.location && (
-          <p className="text-red-500 text-sm">{errors.location.message}</p>
+          <p id={fieldErrorId('location')} className="text-red-500 text-sm">
+            {errors.location.message}
+          </p>
         )}
       </div>
       <div className="flex gap-2">

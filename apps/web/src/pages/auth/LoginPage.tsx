@@ -18,12 +18,15 @@ import { AuthPageLayout } from '@/pages/auth/AuthPageLayout';
 import { buildLanguagePath } from '@/pages/auth/utils';
 import { useLogin } from '@/features/auth/hooks';
 import { useAuth } from '@/features/auth/useAuth';
+import { FormErrorSummary } from '@/components/forms/FormErrorSummary';
+import { createOnInvalidFocus, describedBy, fieldErrorId } from '@/lib/formAccessibility';
 
 const MIN_PASSWORD_LENGTH = 8;
 
 export default function LoginPage() {
   const { t } = useTranslation('auth');
   const { t: tValidation } = useTranslation('validation');
+  const { t: tCommon } = useTranslation('common');
   const { isAuthenticated } = useAuth();
   const loginMutation = useLogin();
   const params = useParams();
@@ -53,7 +56,8 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    setFocus,
+    formState: { errors, isSubmitting, submitCount },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -62,6 +66,8 @@ export default function LoginPage() {
     },
   });
 
+  const showErrorSummary = submitCount > 0;
+
   const locationState = location.state as { from?: Location } | undefined;
   const fromLocation = locationState?.from;
   const fallbackPath = language ? buildLanguagePath(language, 'services') : '/';
@@ -69,18 +75,21 @@ export default function LoginPage() {
     ? `${fromLocation.pathname}${fromLocation.search}${fromLocation.hash}`
     : fallbackPath;
 
-  const onSubmit = handleSubmit(async (values) => {
-    try {
-      await loginMutation.mutateAsync(values);
-      toast.success(t('login.notifications.success'));
-      navigate(redirectTo, { replace: true });
-    } catch (error) {
-      const message = isAxiosError(error)
-        ? error.response?.data?.message ?? error.response?.data?.error
-        : null;
-      toast.error(message ?? t('login.notifications.error'));
-    }
-  });
+  const onSubmit = handleSubmit(
+    async (values) => {
+      try {
+        await loginMutation.mutateAsync(values);
+        toast.success(t('login.notifications.success'));
+        navigate(redirectTo, { replace: true });
+      } catch (error) {
+        const message = isAxiosError(error)
+          ? error.response?.data?.message ?? error.response?.data?.error
+          : null;
+        toast.error(message ?? t('login.notifications.error'));
+      }
+    },
+    createOnInvalidFocus(setFocus),
+  );
 
   if (isAuthenticated) {
     return <Navigate to={fallbackPath} replace />;
@@ -112,6 +121,13 @@ export default function LoginPage() {
       }
     >
       <form className="space-y-4" onSubmit={onSubmit} noValidate>
+        {showErrorSummary ? (
+          <FormErrorSummary
+            errors={errors}
+            title={tCommon('forms.errorSummary.title')}
+            description={tCommon('forms.errorSummary.description')}
+          />
+        ) : null}
         <div>
           <label className="block text-sm font-medium text-gray-700" htmlFor="email">
             {t('login.fields.email')}
@@ -122,9 +138,13 @@ export default function LoginPage() {
             autoComplete="email"
             className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             {...register('email')}
+            aria-invalid={Boolean(errors.email)}
+            aria-describedby={describedBy('email', { includeError: Boolean(errors.email) })}
           />
           {errors.email ? (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+            <p id={fieldErrorId('email')} className="mt-1 text-sm text-red-600">
+              {errors.email.message}
+            </p>
           ) : null}
         </div>
         <div>
@@ -137,9 +157,13 @@ export default function LoginPage() {
             autoComplete="current-password"
             className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             {...register('password')}
+            aria-invalid={Boolean(errors.password)}
+            aria-describedby={describedBy('password', { includeError: Boolean(errors.password) })}
           />
           {errors.password ? (
-            <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+            <p id={fieldErrorId('password')} className="mt-1 text-sm text-red-600">
+              {errors.password.message}
+            </p>
           ) : null}
         </div>
         <button

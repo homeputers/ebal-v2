@@ -70,5 +70,11 @@
   },
   "errors": {
     "generic": "Something went wrong."
+  },
+  "forms": {
+    "errorSummary": {
+      "title": "Please fix the highlighted fields",
+      "description": "Select a link below to jump to the problem field."
+    }
   }
 }

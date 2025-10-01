@@ -15,6 +15,8 @@ import {
 } from '@/features/me/hooks';
 import type { UpdateMyProfileBody } from '@/api/me';
 import { DEFAULT_LANGUAGE } from '@/i18n';
+import { FormErrorSummary } from '@/components/forms/FormErrorSummary';
+import { createOnInvalidFocus, describedBy, fieldErrorId } from '@/lib/formAccessibility';
 
 type ProfileFormValues = {
   displayName: string;
@@ -49,7 +51,8 @@ export default function ProfilePage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting, isDirty },
+    setFocus,
+    formState: { errors, isSubmitting, isDirty, submitCount },
     reset,
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(schema),
@@ -57,6 +60,8 @@ export default function ProfilePage() {
       displayName: '',
     },
   });
+
+  const showErrorSummary = submitCount > 0;
 
   const profile = profileQuery.data;
 
@@ -66,22 +71,25 @@ export default function ProfilePage() {
     }
   }, [profile, reset]);
 
-  const onSubmit = handleSubmit(async (values) => {
-    try {
-      const payload: UpdateMyProfileBody = {
-        displayName: values.displayName,
-        avatarAction: 'KEEP',
-      };
+  const onSubmit = handleSubmit(
+    async (values) => {
+      try {
+        const payload: UpdateMyProfileBody = {
+          displayName: values.displayName,
+          avatarAction: 'KEEP',
+        };
 
-      await updateMutation.mutateAsync(payload);
-      toast.success(t('profile.notifications.updateSuccess'));
-    } catch (error) {
-      const message = isAxiosError(error)
-        ? error.response?.data?.message ?? error.response?.data?.error
-        : null;
-      toast.error(message ?? t('profile.notifications.updateError'));
-    }
-  });
+        await updateMutation.mutateAsync(payload);
+        toast.success(t('profile.notifications.updateSuccess'));
+      } catch (error) {
+        const message = isAxiosError(error)
+          ? error.response?.data?.message ?? error.response?.data?.error
+          : null;
+        toast.error(message ?? t('profile.notifications.updateError'));
+      }
+    },
+    createOnInvalidFocus(setFocus),
+  );
 
   const handleRemoveAvatar = async () => {
     try {
@@ -139,6 +147,13 @@ export default function ProfilePage() {
           </button>
         </div>
         <form className="space-y-6" onSubmit={onSubmit} noValidate>
+          {showErrorSummary ? (
+            <FormErrorSummary
+              errors={errors}
+              title={tCommon('forms.errorSummary.title')}
+              description={tCommon('forms.errorSummary.description')}
+            />
+          ) : null}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700" htmlFor="displayName">
               {t('profile.fields.displayName')}
@@ -148,9 +163,15 @@ export default function ProfilePage() {
               type="text"
               className="w-full rounded border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...register('displayName')}
+              aria-invalid={Boolean(errors.displayName)}
+              aria-describedby={describedBy('displayName', {
+                includeError: Boolean(errors.displayName),
+              })}
             />
             {errors.displayName ? (
-              <p className="text-sm text-red-600">{errors.displayName.message}</p>
+              <p id={fieldErrorId('displayName')} className="text-sm text-red-600">
+                {errors.displayName.message}
+              </p>
             ) : null}
           </div>
 

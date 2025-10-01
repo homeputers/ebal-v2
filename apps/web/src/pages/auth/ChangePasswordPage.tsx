@@ -10,12 +10,15 @@ import { toast } from 'sonner';
 import { AuthPageLayout } from '@/pages/auth/AuthPageLayout';
 import { buildLanguagePath } from '@/pages/auth/utils';
 import { useChangePassword } from '@/features/auth/hooks';
+import { FormErrorSummary } from '@/components/forms/FormErrorSummary';
+import { createOnInvalidFocus, describedBy, fieldErrorId, fieldHelpTextId } from '@/lib/formAccessibility';
 
 const MIN_PASSWORD_LENGTH = 8;
 
 export default function ChangePasswordPage() {
   const { t } = useTranslation('auth');
   const { t: tValidation } = useTranslation('validation');
+  const { t: tCommon } = useTranslation('common');
   const params = useParams();
   const language = params.lang;
   const changePasswordMutation = useChangePassword();
@@ -51,7 +54,8 @@ export default function ChangePasswordPage() {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    setFocus,
+    formState: { errors, isSubmitting, submitCount },
   } = useForm<ChangePasswordForm>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -61,21 +65,27 @@ export default function ChangePasswordPage() {
     },
   });
 
-  const onSubmit = handleSubmit(async (values) => {
-    try {
-      await changePasswordMutation.mutateAsync({
-        currentPassword: values.currentPassword,
-        newPassword: values.newPassword,
-      });
-      toast.success(t('changePassword.notifications.success'));
-      reset();
-    } catch (error) {
-      const message = isAxiosError(error)
-        ? error.response?.data?.message ?? error.response?.data?.error
-        : null;
-      toast.error(message ?? t('changePassword.notifications.error'));
-    }
-  });
+  const showErrorSummary = submitCount > 0;
+  const helpTextId = fieldHelpTextId('changePasswordHelp');
+
+  const onSubmit = handleSubmit(
+    async (values) => {
+      try {
+        await changePasswordMutation.mutateAsync({
+          currentPassword: values.currentPassword,
+          newPassword: values.newPassword,
+        });
+        toast.success(t('changePassword.notifications.success'));
+        reset();
+      } catch (error) {
+        const message = isAxiosError(error)
+          ? error.response?.data?.message ?? error.response?.data?.error
+          : null;
+        toast.error(message ?? t('changePassword.notifications.error'));
+      }
+    },
+    createOnInvalidFocus(setFocus),
+  );
 
   return (
     <AuthPageLayout
@@ -91,6 +101,13 @@ export default function ChangePasswordPage() {
       }
     >
       <form className="space-y-4" onSubmit={onSubmit} noValidate>
+        {showErrorSummary ? (
+          <FormErrorSummary
+            errors={errors}
+            title={tCommon('forms.errorSummary.title')}
+            description={tCommon('forms.errorSummary.description')}
+          />
+        ) : null}
         <div>
           <label className="block text-sm font-medium text-gray-700" htmlFor="currentPassword">
             {t('changePassword.fields.currentPassword')}
@@ -101,9 +118,15 @@ export default function ChangePasswordPage() {
             autoComplete="current-password"
             className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             {...register('currentPassword')}
+            aria-invalid={Boolean(errors.currentPassword)}
+            aria-describedby={describedBy('currentPassword', {
+              includeError: Boolean(errors.currentPassword),
+            })}
           />
           {errors.currentPassword ? (
-            <p className="mt-1 text-sm text-red-600">{errors.currentPassword.message}</p>
+            <p id={fieldErrorId('currentPassword')} className="mt-1 text-sm text-red-600">
+              {errors.currentPassword.message}
+            </p>
           ) : null}
         </div>
         <div>
@@ -116,9 +139,15 @@ export default function ChangePasswordPage() {
             autoComplete="new-password"
             className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             {...register('newPassword')}
+            aria-invalid={Boolean(errors.newPassword)}
+            aria-describedby={describedBy('newPassword', {
+              includeError: Boolean(errors.newPassword),
+            })}
           />
           {errors.newPassword ? (
-            <p className="mt-1 text-sm text-red-600">{errors.newPassword.message}</p>
+            <p id={fieldErrorId('newPassword')} className="mt-1 text-sm text-red-600">
+              {errors.newPassword.message}
+            </p>
           ) : null}
         </div>
         <div>
@@ -131,9 +160,16 @@ export default function ChangePasswordPage() {
             autoComplete="new-password"
             className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             {...register('confirmPassword')}
+            aria-invalid={Boolean(errors.confirmPassword)}
+            aria-describedby={describedBy('confirmPassword', {
+              includeError: Boolean(errors.confirmPassword),
+              extraIds: [helpTextId],
+            })}
           />
           {errors.confirmPassword ? (
-            <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+            <p id={fieldErrorId('confirmPassword')} className="mt-1 text-sm text-red-600">
+              {errors.confirmPassword.message}
+            </p>
           ) : null}
         </div>
         <button
@@ -143,7 +179,7 @@ export default function ChangePasswordPage() {
         >
           {t('changePassword.actions.submit')}
         </button>
-        <p className="text-xs text-gray-500">{t('changePassword.helpText')}</p>
+        <p id={helpTextId} className="text-xs text-gray-500">{t('changePassword.helpText')}</p>
       </form>
     </AuthPageLayout>
   );

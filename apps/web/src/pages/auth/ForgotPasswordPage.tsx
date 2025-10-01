@@ -10,10 +10,13 @@ import { toast } from 'sonner';
 import { AuthPageLayout } from '@/pages/auth/AuthPageLayout';
 import { buildLanguagePath } from '@/pages/auth/utils';
 import { useForgotPassword } from '@/features/auth/hooks';
+import { FormErrorSummary } from '@/components/forms/FormErrorSummary';
+import { createOnInvalidFocus, describedBy, fieldErrorId, fieldHelpTextId } from '@/lib/formAccessibility';
 
 export default function ForgotPasswordPage() {
   const { t } = useTranslation('auth');
   const { t: tValidation } = useTranslation('validation');
+  const { t: tCommon } = useTranslation('common');
   const params = useParams();
   const language = params.lang;
   const navigate = useNavigate();
@@ -37,25 +40,32 @@ export default function ForgotPasswordPage() {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    setFocus,
+    formState: { errors, isSubmitting, submitCount },
   } = useForm<ForgotPasswordForm>({
     resolver: zodResolver(schema),
     defaultValues: { email: '' },
   });
 
-  const onSubmit = handleSubmit(async (values) => {
-    try {
-      await forgotPasswordMutation.mutateAsync(values);
-      toast.success(t('forgotPassword.notifications.success'));
-      reset();
-      navigate(buildLanguagePath(language, 'login'));
-    } catch (error) {
-      const message = isAxiosError(error)
-        ? error.response?.data?.message ?? error.response?.data?.error
-        : null;
-      toast.error(message ?? t('forgotPassword.notifications.error'));
-    }
-  });
+  const showErrorSummary = submitCount > 0;
+  const helpTextId = fieldHelpTextId('forgotPasswordEmail');
+
+  const onSubmit = handleSubmit(
+    async (values) => {
+      try {
+        await forgotPasswordMutation.mutateAsync(values);
+        toast.success(t('forgotPassword.notifications.success'));
+        reset();
+        navigate(buildLanguagePath(language, 'login'));
+      } catch (error) {
+        const message = isAxiosError(error)
+          ? error.response?.data?.message ?? error.response?.data?.error
+          : null;
+        toast.error(message ?? t('forgotPassword.notifications.error'));
+      }
+    },
+    createOnInvalidFocus(setFocus),
+  );
 
   return (
     <AuthPageLayout
@@ -71,6 +81,13 @@ export default function ForgotPasswordPage() {
       }
     >
       <form className="space-y-4" onSubmit={onSubmit} noValidate>
+        {showErrorSummary ? (
+          <FormErrorSummary
+            errors={errors}
+            title={tCommon('forms.errorSummary.title')}
+            description={tCommon('forms.errorSummary.description')}
+          />
+        ) : null}
         <div>
           <label className="block text-sm font-medium text-gray-700" htmlFor="email">
             {t('forgotPassword.fields.email')}
@@ -81,9 +98,16 @@ export default function ForgotPasswordPage() {
             autoComplete="email"
             className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             {...register('email')}
+            aria-invalid={Boolean(errors.email)}
+            aria-describedby={describedBy('email', {
+              includeError: Boolean(errors.email),
+              extraIds: [helpTextId],
+            })}
           />
           {errors.email ? (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+            <p id={fieldErrorId('email')} className="mt-1 text-sm text-red-600">
+              {errors.email.message}
+            </p>
           ) : null}
         </div>
         <button
@@ -93,7 +117,7 @@ export default function ForgotPasswordPage() {
         >
           {t('forgotPassword.actions.submit')}
         </button>
-        <p className="text-xs text-gray-500">
+        <p id={helpTextId} className="text-xs text-gray-500">
           {t('forgotPassword.helpText')}
         </p>
       </form>

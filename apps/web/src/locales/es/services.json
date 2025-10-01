@@ -36,12 +36,14 @@
   },
   "plan": {
     "addItemTitle": "Agregar elemento",
+    "typeLabel": "Tipo de elemento",
     "itemTypes": {
       "song": "Canción",
       "reading": "Lectura",
       "note": "Nota",
       "itemFallback": "Elemento"
     },
+    "notesLabel": "Notas",
     "notesPlaceholder": "Notas",
     "title": "Plan",
     "empty": "Sin elementos del plan",

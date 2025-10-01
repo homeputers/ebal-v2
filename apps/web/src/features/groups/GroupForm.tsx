@@ -2,6 +2,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
+import { FormErrorSummary } from '@/components/forms/FormErrorSummary';
+import { createOnInvalidFocus, describedBy, fieldErrorId } from '@/lib/formAccessibility';
 
 const schema = z.object({
   name: z.string().min(2, 'validation.nameMin'),
@@ -23,11 +25,25 @@ export function GroupForm({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    setFocus,
+    formState: { errors, submitCount },
   } = useForm<GroupFormValues>({ resolver: zodResolver(schema), defaultValues });
 
+  const showErrorSummary = submitCount > 0;
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+    <form
+      onSubmit={handleSubmit(onSubmit, createOnInvalidFocus(setFocus))}
+      className="space-y-2"
+      noValidate
+    >
+      {showErrorSummary ? (
+        <FormErrorSummary
+          errors={errors}
+          title={tCommon('forms.errorSummary.title')}
+          description={tCommon('forms.errorSummary.description')}
+        />
+      ) : null}
       <div>
         <label htmlFor="name" className="block text-sm font-medium mb-1">
           {t('form.nameLabel')}
@@ -36,9 +52,11 @@ export function GroupForm({
           id="name"
           {...register('name')}
           className="border p-2 rounded w-full"
+          aria-invalid={Boolean(errors.name)}
+          aria-describedby={describedBy('name', { includeError: Boolean(errors.name) })}
         />
         {errors.name && (
-          <p className="text-red-500 text-sm">
+          <p id={fieldErrorId('name')} className="text-red-500 text-sm">
             {t(errors.name.message ?? '', {
               defaultValue: errors.name.message ?? '',
             })}

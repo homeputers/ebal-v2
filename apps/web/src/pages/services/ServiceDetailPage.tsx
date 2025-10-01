@@ -25,6 +25,8 @@ import { computeKeys } from '@/lib/keys';
 import { withLangKey } from '@/lib/queryClient';
 import { formatDate } from '@/i18n/intl';
 import Modal from '../../components/Modal';
+import { FormErrorSummary } from '@/components/forms/FormErrorSummary';
+import { createOnInvalidFocus, describedBy, fieldErrorId } from '@/lib/formAccessibility';
 
 type ServiceRequest = components['schemas']['ServiceRequest'];
 
@@ -66,11 +68,14 @@ export default function ServiceDetailPage() {
     setValue,
     watch,
     reset,
-    formState: { errors },
+    setFocus,
+    formState: { errors, submitCount },
   } = useForm<AddItemForm>({
     resolver: zodResolver(addSchema),
     defaultValues: { type: 'note' },
   });
+
+  const showAddItemErrors = submitCount > 0;
 
   const type = watch('type');
   const arrangementId = watch('arrangementId');
@@ -120,24 +125,27 @@ export default function ServiceDetailPage() {
     updateServiceMut.mutate({ id: id!, body: vals }, { onSuccess: () => setEditingService(false) });
   };
 
-  const handleAddItem = handleSubmit((vals) => {
-    addItemMut.mutate(
-      {
-        type: vals.type,
-        refId: vals.arrangementId,
-        notes: vals.notes,
-        sortOrder: planItems ? planItems.length : 0,
-      },
-      {
-        onSuccess: () => {
-          toast(t('plan.notifications.itemAdded'));
-          reset({ type: 'note' });
-          setSongId(undefined);
+  const handleAddItem = handleSubmit(
+    (vals) => {
+      addItemMut.mutate(
+        {
+          type: vals.type,
+          refId: vals.arrangementId,
+          notes: vals.notes,
+          sortOrder: planItems ? planItems.length : 0,
         },
-        onError: () => toast(t('plan.notifications.addFailed')),
-      },
-    );
-  });
+        {
+          onSuccess: () => {
+            toast(t('plan.notifications.itemAdded'));
+            reset({ type: 'note' });
+            setSongId(undefined);
+          },
+          onError: () => toast(t('plan.notifications.addFailed')),
+        },
+      );
+    },
+    createOnInvalidFocus(setFocus),
+  );
 
   return (
     <div className="p-4 space-y-4">
@@ -175,26 +183,59 @@ export default function ServiceDetailPage() {
         <div className="md:w-1/3">
           <h2 className="font-semibold mb-2">{t('plan.addItemTitle')}</h2>
           <form onSubmit={handleAddItem} className="space-y-2">
-            <select {...register('type')} className="border p-2 rounded w-full">
-              <option value="song">{t('plan.itemTypes.song')}</option>
-              <option value="reading">{t('plan.itemTypes.reading')}</option>
-              <option value="note">{t('plan.itemTypes.note')}</option>
-            </select>
+            {showAddItemErrors ? (
+              <FormErrorSummary
+                errors={errors}
+                title={tCommon('forms.errorSummary.title')}
+                description={tCommon('forms.errorSummary.description')}
+              />
+            ) : null}
+            <div>
+              <label htmlFor="planItemType" className="block text-sm font-medium text-gray-700">
+                {t('plan.typeLabel', { defaultValue: t('plan.addItemTitle') })}
+              </label>
+              <select
+                id="planItemType"
+                {...register('type')}
+                className="border p-2 rounded w-full"
+                aria-invalid={Boolean(errors.type)}
+                aria-describedby={describedBy('type', { includeError: Boolean(errors.type) })}
+              >
+                <option value="song">{t('plan.itemTypes.song')}</option>
+                <option value="reading">{t('plan.itemTypes.reading')}</option>
+                <option value="note">{t('plan.itemTypes.note')}</option>
+              </select>
+              {errors.type ? (
+                <p id={fieldErrorId('type')} className="mt-1 text-sm text-red-500">
+                  {errors.type.message}
+                </p>
+              ) : null}
+            </div>
             {type === 'song' && (
               <div className="space-y-2">
-                <SongPicker
-                  value={songId}
-                  onChange={(id) => {
-                    setSongId(id);
-                    setValue('arrangementId', undefined);
-                  }}
-                  placeholder={tSongs('pickers.searchPlaceholder')}
-                />
-                <ArrangementPicker
-                  songId={songId}
-                  value={arrangementId}
-                  onChange={(id) => setValue('arrangementId', id)}
-                />
+                <label className="block text-sm font-medium text-gray-700">
+                  {t('plan.itemTypes.song')}
+                  <div className="mt-1">
+                    <SongPicker
+                      value={songId}
+                      onChange={(id) => {
+                        setSongId(id);
+                        setValue('arrangementId', undefined);
+                      }}
+                      placeholder={tSongs('pickers.searchPlaceholder')}
+                    />
+                  </div>
+                </label>
+                <label className="block text-sm font-medium text-gray-700">
+                  {tArrangements('labels.generic', { defaultValue: 'Arrangement' })}
+                  <div className="mt-1">
+                    <ArrangementPicker
+                      songId={songId}
+                      value={arrangementId}
+                      onChange={(id) => setValue('arrangementId', id)}
+                    />
+                  </div>
+                </label>
                 {arrangementId && previewLine && previewKeySummary && (
                   <div className="text-xs text-muted-foreground space-y-0.5">
                     <div>{previewLine}</div>
@@ -202,7 +243,7 @@ export default function ServiceDetailPage() {
                   </div>
                 )}
                 {errors.arrangementId && (
-                  <p className="text-red-500 text-sm">
+                  <p id={fieldErrorId('arrangementId')} className="text-red-500 text-sm">
                     {t(errors.arrangementId.message ?? '', {
                       defaultValue: errors.arrangementId.message ?? '',
                     })}
@@ -210,18 +251,26 @@ export default function ServiceDetailPage() {
                 )}
               </div>
             )}
-            <textarea
-              placeholder={t('plan.notesPlaceholder')}
-              className="border p-2 rounded w-full"
-              {...register('notes')}
-            />
-            {errors.notes && (
-              <p className="text-red-500 text-sm">
-                {t(errors.notes.message ?? '', {
-                  defaultValue: errors.notes.message ?? '',
-                })}
-              </p>
-            )}
+            <div>
+              <label htmlFor="planNotes" className="block text-sm font-medium text-gray-700">
+                {t('plan.notesLabel', { defaultValue: t('plan.notesPlaceholder') })}
+              </label>
+              <textarea
+                id="planNotes"
+                placeholder={t('plan.notesPlaceholder')}
+                className="border p-2 rounded w-full"
+                {...register('notes')}
+                aria-invalid={Boolean(errors.notes)}
+                aria-describedby={describedBy('notes', { includeError: Boolean(errors.notes) })}
+              />
+              {errors.notes && (
+                <p id={fieldErrorId('notes')} className="text-red-500 text-sm">
+                  {t(errors.notes.message ?? '', {
+                    defaultValue: errors.notes.message ?? '',
+                  })}
+                </p>
+              )}
+            </div>
             <button
               type="submit"
               disabled={addItemMut.isPending || (type === 'song' && !arrangementId)}
