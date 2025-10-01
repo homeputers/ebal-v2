@@ -203,6 +203,7 @@ export function LanguageSwitcher({
             role="listbox"
             aria-labelledby={dialogLabelId}
             aria-activedescendant={`${switcherName}-${currentLanguage}`}
+            tabIndex={0}
             className="space-y-1"
           >
             {languages.map((language) => {
