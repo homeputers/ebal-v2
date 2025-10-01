@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { FieldValues, FieldErrors } from 'react-hook-form';
 
 import { fieldNameToId, flattenErrors } from '@/lib/formAccessibility';
@@ -21,6 +22,7 @@ export function FormErrorSummary<TFieldValues extends FieldValues>({
   getItemLabel,
 }: FormErrorSummaryProps<TFieldValues>) {
   const items = useMemo(() => flattenErrors(errors), [errors]);
+  const { t: tValidation } = useTranslation('validation');
 
   if (items.length === 0) return null;
 
@@ -39,7 +41,10 @@ export function FormErrorSummary<TFieldValues extends FieldValues>({
         {items.map((item) => {
           const fieldId = (getFieldId ?? fieldNameToId)(item.name);
           const itemLabel = getItemLabel?.(item.name);
-          const linkText = itemLabel ? `${itemLabel}: ${item.message}` : item.message;
+          const message = tValidation(item.message, {
+            defaultValue: item.message,
+          });
+          const linkText = itemLabel ? `${itemLabel}: ${message}` : message;
           return (
             <li key={item.name}>
               <a
