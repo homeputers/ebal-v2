@@ -35,7 +35,7 @@ export function AppBrandLink({
   const brandText = t('app.brandInitials', { defaultValue: 'EBaL' });
 
   const baseClassName =
-    'inline-flex items-center gap-2 text-foreground transition-colors hover:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background';
+    'inline-flex items-center gap-2 text-foreground transition-colors transition-base hover:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background';
   const mergedClassName = mergeClassNames(baseClassName, className);
   const mergedImageClassName = mergeClassNames('h-9 w-auto', imageClassName);
   const mergedTextClassName = mergeClassNames(

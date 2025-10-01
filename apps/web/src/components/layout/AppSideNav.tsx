@@ -15,7 +15,7 @@ type AppSideNavProps = {
 
 const navLinkClassName = ({ isActive }: { isActive: boolean }) =>
   [
-    'flex w-full items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    'flex w-full items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium transition-colors transition-base focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     isActive
       ? 'bg-primary text-primary-foreground shadow-sm'
       : 'text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -249,7 +249,7 @@ export function AppSideNav({
                 <button
                   ref={closeButtonRef}
                   type="button"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border/60 bg-muted text-foreground transition hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border/60 bg-muted text-foreground transition transition-base hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   aria-label={t('nav.closeMenu')}
                   onClick={onClose}
                 >
