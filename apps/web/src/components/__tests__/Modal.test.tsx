@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { axe } from 'vitest-axe';
+import { axe } from '@/test-utils/axe';
 import { describe, expect, it, vi } from 'vitest';
 import { useRef, useState } from 'react';
 

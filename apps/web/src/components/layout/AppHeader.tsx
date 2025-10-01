@@ -1,11 +1,15 @@
-import { useId, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useRef, useId } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useAuth } from '@/features/auth/useAuth';
 import { buildLanguagePath, type AppNavigationLink } from '@/components/navigation/links';
 import { useHeaderPopover } from '@/hooks/useHeaderPopover';
+import {
+  useListNavigation,
+  type ListNavigationItem,
+} from '@/hooks/useListNavigation';
 import { MOBILE_NAVIGATION_ID } from '@/components/layout/constants';
 import { AppBrandLink } from '@/components/layout/AppBrandLink';
 
@@ -27,6 +31,8 @@ export function AppHeader({
   const accountMenu = useHeaderPopover<HTMLDivElement>();
   const accountMenuButtonId = useId();
   const accountMenuDialogLabelId = `${accountMenuButtonId}-dialog-label`;
+  const navigate = useNavigate();
+  const accountMenuListRef = useRef<HTMLUListElement | null>(null);
 
   const profileHref = useMemo(
     () => buildLanguagePath(currentLanguage, 'me'),
@@ -42,10 +48,88 @@ export function AppHeader({
   const accountName = me?.displayName?.trim() ?? me?.email ?? '';
   const accountLabelValue = accountName || t('nav.profile');
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout();
     accountMenu.close({ focusTrigger: true });
-  };
+  }, [accountMenu, logout]);
+
+  const accountMenuActions = useMemo(
+    () => [
+      {
+        id: `${accountMenuButtonId}-profile`,
+        label: t('nav.profile'),
+        tone: 'default' as const,
+        onSelect: () => {
+          accountMenu.close({ focusTrigger: true });
+          navigate(profileHref);
+        },
+      },
+      {
+        id: `${accountMenuButtonId}-change-password`,
+        label: t('nav.changePassword'),
+        tone: 'default' as const,
+        onSelect: () => {
+          accountMenu.close({ focusTrigger: true });
+          navigate(changePasswordHref);
+        },
+      },
+      {
+        id: `${accountMenuButtonId}-logout`,
+        label: t('nav.logout'),
+        tone: 'destructive' as const,
+        onSelect: handleLogout,
+      },
+    ],
+    [
+      accountMenu,
+      accountMenuButtonId,
+      changePasswordHref,
+      handleLogout,
+      navigate,
+      profileHref,
+      t,
+    ],
+  );
+
+  const accountMenuItems = useMemo<Array<ListNavigationItem<(typeof accountMenuActions)[number]>>>(
+    () =>
+      accountMenuActions.map((action) => ({
+        id: action.id,
+        text: action.label,
+        value: action,
+      })),
+    [accountMenuActions],
+  );
+
+  const {
+    listProps: accountMenuListProps,
+    getOptionProps: getAccountMenuOptionProps,
+    activeId: activeAccountMenuId,
+    setActiveId: setActiveAccountMenuId,
+  } = useListNavigation({
+    items: accountMenuItems,
+    loop: false,
+    onSelect: (item) => item.value.onSelect(),
+    onCancel: () => accountMenu.close({ focusTrigger: true }),
+  });
+
+  useEffect(() => {
+    if (!accountMenu.isOpen) {
+      return;
+    }
+
+    const node = accountMenuListRef.current;
+
+    requestAnimationFrame(() => {
+      node?.focus({ preventScroll: true });
+    });
+
+    const firstId = accountMenuItems[0]?.id ?? null;
+
+    if (firstId) {
+      setActiveAccountMenuId(firstId);
+    }
+  }, [accountMenu.isOpen, accountMenuItems, setActiveAccountMenuId]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/95 text-foreground shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/80 print:hidden">
@@ -147,32 +231,40 @@ export function AppHeader({
                       defaultValue: accountLabelValue,
                     })}
                   </p>
-                  <div role="menu" aria-labelledby={accountMenuDialogLabelId}>
-                    <Link
-                      to={profileHref}
-                      role="menuitem"
-                      className="block px-4 py-2 transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
-                      onClick={() => accountMenu.close()}
-                    >
-                      {t('nav.profile')}
-                    </Link>
-                    <Link
-                      to={changePasswordHref}
-                      role="menuitem"
-                      className="block px-4 py-2 transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
-                      onClick={() => accountMenu.close()}
-                    >
-                      {t('nav.changePassword')}
-                    </Link>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={handleLogout}
-                      className="block w-full px-4 py-2 text-left text-destructive transition-colors hover:bg-destructive/10 focus:bg-destructive/10 focus:outline-none"
-                    >
-                      {t('nav.logout')}
-                    </button>
-                  </div>
+                  <ul
+                    {...accountMenuListProps}
+                    ref={accountMenuListRef}
+                    role="menu"
+                    aria-labelledby={accountMenuDialogLabelId}
+                    className="py-1 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  >
+                    {accountMenuItems.map((item) => {
+                      const optionProps = getAccountMenuOptionProps(item);
+                      const isActive = item.id === activeAccountMenuId;
+                      const { tone } = item.value;
+                      const toneClassName =
+                        tone === 'destructive'
+                          ? isActive
+                            ? 'bg-destructive/10 text-destructive'
+                            : 'text-destructive hover:bg-destructive/10'
+                          : isActive
+                            ? 'bg-muted text-foreground'
+                            : 'text-foreground hover:bg-muted';
+
+                      return (
+                        <li key={item.id} role="none">
+                          <button
+                            type="button"
+                            role="menuitem"
+                            {...optionProps}
+                            className={`block w-full px-4 py-2 text-left text-sm transition-colors ${toneClassName}`.trim()}
+                          >
+                            {item.text}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
               ) : null}
             </div>

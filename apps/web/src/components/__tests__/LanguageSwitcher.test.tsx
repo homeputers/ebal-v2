@@ -1,7 +1,7 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { I18nextProvider } from 'react-i18next';
-import { axe } from 'vitest-axe';
+import { axe } from '@/test-utils/axe';
 
 const { mockNavigate } = vi.hoisted(() => ({
   mockNavigate: vi.fn(),
@@ -125,16 +125,10 @@ describe('LanguageSwitcher', () => {
     await waitFor(() => expect(listbox).toHaveFocus());
     expect(listbox).toHaveAttribute('aria-activedescendant', englishOption.id);
 
-    await user.tab();
-    expect(englishOption).toHaveFocus();
+    await user.keyboard('{ArrowDown}');
+    expect(listbox).toHaveAttribute('aria-activedescendant', spanishOption.id);
 
     await user.tab();
-    expect(spanishOption).toHaveFocus();
-
-    await user.tab({ shift: true });
-    expect(englishOption).toHaveFocus();
-
-    await user.tab({ shift: true });
     expect(listbox).toHaveFocus();
 
     const results = await axe(dialog);
@@ -147,5 +141,22 @@ describe('LanguageSwitcher', () => {
     );
 
     expect(trigger).toHaveFocus();
+  });
+
+  it('supports typeahead navigation within the language list', async () => {
+    const user = userEvent.setup();
+
+    renderLanguageSwitcher('en');
+
+    await user.click(screen.getByRole('button', { name: /Change language/i }));
+
+    const listbox = await screen.findByRole('listbox');
+    const spanishOption = screen.getByRole('option', { name: 'Spanish' });
+
+    await waitFor(() => expect(listbox).toHaveFocus());
+
+    await user.keyboard('s');
+
+    expect(listbox).toHaveAttribute('aria-activedescendant', spanishOption.id);
   });
 });
