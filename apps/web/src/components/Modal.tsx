@@ -1,4 +1,11 @@
-import { type ReactNode, useEffect, useRef } from 'react';
+import {
+  type MutableRefObject,
+  type PointerEventHandler,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
 import { createPortal } from 'react-dom';
 
 const FOCUSABLE_SELECTORS = [
@@ -16,6 +23,9 @@ export interface ModalProps {
   children: ReactNode;
   closeLabel: string;
   titleId?: string;
+  descriptionId?: string;
+  initialFocusRef?: MutableRefObject<HTMLElement | null>;
+  closeOnOverlayClick?: boolean;
   contentClassName?: string;
 }
 
@@ -25,10 +35,44 @@ export default function Modal({
   children,
   closeLabel,
   titleId,
+  descriptionId,
+  initialFocusRef,
+  closeOnOverlayClick = true,
   contentClassName,
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
+
+  const focusFirstInteractive = useCallback(() => {
+    const dialog = dialogRef.current;
+
+    if (!dialog) {
+      return;
+    }
+
+    const preferred = initialFocusRef?.current;
+
+    if (preferred && dialog.contains(preferred)) {
+      preferred.focus({ preventScroll: true });
+      return;
+    }
+
+    const focusable = Array.from(
+      dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTORS.join(',')),
+    ).filter(
+      (el) =>
+        !el.hasAttribute('disabled') &&
+        el.tabIndex !== -1 &&
+        !el.hasAttribute('data-modal-close'),
+    );
+
+    if (focusable.length > 0) {
+      focusable[0].focus({ preventScroll: true });
+      return;
+    }
+
+    dialog.focus({ preventScroll: true });
+  }, [initialFocusRef]);
 
   useEffect(() => {
     if (!open || typeof document === 'undefined') {
@@ -37,8 +81,7 @@ export default function Modal({
 
     previousActiveElement.current = document.activeElement as HTMLElement | null;
 
-    const dialog = dialogRef.current;
-    dialog?.focus({ preventScroll: true });
+    focusFirstInteractive();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -85,11 +128,26 @@ export default function Modal({
       document.removeEventListener('keydown', handleKeyDown);
       previousActiveElement.current?.focus?.({ preventScroll: true });
     };
-  }, [open, onClose]);
+  }, [focusFirstInteractive, onClose, open]);
 
   if (!open || typeof document === 'undefined') {
     return null;
   }
+
+  const handleOverlayPointerDown: PointerEventHandler<HTMLDivElement> = (
+    event,
+  ) => {
+    if (!closeOnOverlayClick) {
+      return;
+    }
+
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+
+    event.preventDefault();
+    onClose();
+  };
 
   const portalTarget = document.body;
   const mergedContentClassName =
@@ -97,12 +155,11 @@ export default function Modal({
 
   return createPortal(
     <>
-      <button
-        type="button"
-        tabIndex={-1}
-        onClick={onClose}
+      <div
+        role="presentation"
+        aria-hidden="true"
         className="fixed inset-0 z-40 bg-black/50"
-        aria-label={closeLabel}
+        onPointerDown={handleOverlayPointerDown}
       />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
@@ -110,9 +167,18 @@ export default function Modal({
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
+          aria-describedby={descriptionId}
           className={mergedContentClassName}
           tabIndex={-1}
         >
+          <button
+            type="button"
+            onClick={onClose}
+            className="sr-only focus:not-sr-only focus:absolute focus:right-4 focus:top-4 focus:rounded focus:bg-white focus:px-3 focus:py-1 focus:text-sm focus:font-medium focus:shadow focus:outline-none"
+            data-modal-close
+          >
+            {closeLabel}
+          </button>
           {children}
         </div>
       </div>
