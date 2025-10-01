@@ -2,9 +2,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import { describe, expect, it, vi } from 'vitest';
-import { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 
-import Modal from '../src/components/Modal';
+import Modal from '../Modal';
 
 describe('Modal', () => {
   it('renders dialog semantics with accessible labelling', async () => {
@@ -26,7 +26,10 @@ describe('Modal', () => {
 
     const dialog = screen.getByRole('dialog', { name: 'Example modal' });
     expect(dialog).toHaveAttribute('aria-describedby', 'modal-description');
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Confirm' })).toHaveFocus());
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Confirm' })).toHaveFocus(),
+    );
 
     const results = await axe(dialog.parentElement as HTMLElement);
     expect(results.violations).toHaveLength(0);
@@ -44,7 +47,9 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    await waitFor(() => expect(screen.getByLabelText('First input')).toHaveFocus());
+    await waitFor(() =>
+      expect(screen.getByLabelText('First input')).toHaveFocus(),
+    );
 
     await user.tab();
     expect(screen.getByRole('button', { name: 'Second button' })).toHaveFocus();
@@ -103,7 +108,9 @@ describe('Modal', () => {
 
     await user.keyboard('{Escape}');
 
-    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
+    );
     expect(launcher).toHaveFocus();
   });
 

@@ -126,7 +126,11 @@ export default function Modal({
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      previousActiveElement.current?.focus?.({ preventScroll: true });
+      const previous = previousActiveElement.current;
+      if (previous && previous.isConnected) {
+        previous.focus({ preventScroll: true });
+      }
+      previousActiveElement.current = null;
     };
   }, [focusFirstInteractive, onClose, open]);
 
