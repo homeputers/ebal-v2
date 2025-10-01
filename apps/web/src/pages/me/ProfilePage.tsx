@@ -6,7 +6,7 @@ import { isAxiosError } from 'axios';
 import { useTranslation } from 'react-i18next';
 import { PageHeading } from '@/components/layout/PageHeading';
 import { Link, useParams } from 'react-router-dom';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 import { AvatarUploader } from '@/features/me/components/AvatarUploader';
 import {

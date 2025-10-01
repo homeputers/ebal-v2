@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PageHeading } from '@/components/layout/PageHeading';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 import type { components } from '@/api/types';
 import {

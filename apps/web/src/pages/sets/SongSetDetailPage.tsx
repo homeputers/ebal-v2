@@ -19,7 +19,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import SongPicker from '@/components/pickers/SongPicker';
 import ArrangementPicker from '@/components/pickers/ArrangementPicker';
 import SetForm, { type SetFormValues } from '@/features/sets/SetForm';

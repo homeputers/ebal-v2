@@ -6,7 +6,7 @@ import { isAxiosError } from 'axios';
 import { useTranslation } from 'react-i18next';
 import { PageHeading } from '@/components/layout/PageHeading';
 import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 import { useAuth } from '@/features/auth/useAuth';
 import { useChangeEmail, useChangePassword } from '@/features/me/hooks';

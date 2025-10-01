@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { PageHeading } from '@/components/layout/PageHeading';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { useQuery } from '@tanstack/react-query';
 import type { components } from '../../api/types';
 import {
