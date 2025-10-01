@@ -168,11 +168,11 @@ export function SongPicker({ value, onChange, placeholder }: Props) {
           {!isLoading && !isError && options.length === 0 && (
             <div className="p-2 text-sm">{t('pickers.empty')}</div>
           )}
-          <ul
+          <div
             {...listProps}
             id={listboxId}
             role="listbox"
-            className="py-1 outline-none"
+            className="flex flex-col gap-1 py-1 px-1 outline-none"
           >
             {navigationItems.map((item) => {
               const optionProps = getOptionProps(item);
@@ -180,36 +180,39 @@ export function SongPicker({ value, onChange, placeholder }: Props) {
               const isSelected = value === item.value.id;
 
               return (
-                <li key={item.id} role="option" {...optionProps} className="px-1">
-                  <div
-                    className={`w-full cursor-pointer rounded px-2 py-2 text-left ${
-                      isActive ? 'bg-blue-500 text-white' : 'text-gray-900'
-                    } ${isSelected && !isActive ? 'font-medium' : ''}`.trim()}
-                  >
-                    <span>
-                      {item.value.title}{' '}
-                      {item.value.defaultKey && (
-                        <span
-                          className={isActive ? 'text-blue-100' : 'text-gray-500'}
-                        >
-                          ({item.value.defaultKey})
-                        </span>
-                      )}
-                    </span>
-                    {item.value.tags && item.value.tags.length > 0 && (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="option"
+                  {...optionProps}
+                  aria-selected={isSelected}
+                  className={`w-full rounded px-2 py-2 text-left ${
+                    isActive ? 'bg-blue-500 text-white' : 'text-gray-900'
+                  } ${isSelected && !isActive ? 'font-medium' : ''}`.trim()}
+                >
+                  <span>
+                    {item.value.title}{' '}
+                    {item.value.defaultKey && (
                       <span
-                        className={`block text-xs ${
-                          isActive ? 'text-blue-100' : 'text-gray-500'
-                        }`}
+                        className={isActive ? 'text-blue-100' : 'text-gray-500'}
                       >
-                        {item.value.tags.join(', ')}
+                        ({item.value.defaultKey})
                       </span>
                     )}
-                  </div>
-                </li>
+                  </span>
+                  {item.value.tags && item.value.tags.length > 0 && (
+                    <span
+                      className={`block text-xs ${
+                        isActive ? 'text-blue-100' : 'text-gray-500'
+                      }`}
+                    >
+                      {item.value.tags.join(', ')}
+                    </span>
+                  )}
+                </button>
               );
             })}
-          </ul>
+          </div>
         </div>
       )}
     </div>

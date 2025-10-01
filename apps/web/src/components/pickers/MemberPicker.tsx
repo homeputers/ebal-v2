@@ -188,11 +188,11 @@ export function MemberPicker({ value, onChange, placeholder, excludeIds }: Props
           {!isLoading && !isError && options.length === 0 && (
             <div className="p-2 text-sm">{t('list.empty')}</div>
           )}
-          <ul
+          <div
             {...listProps}
             id={listboxId}
             role="listbox"
-            className="py-1 outline-none"
+            className="flex flex-col gap-1 py-1 px-1 outline-none"
           >
             {navigationItems.map((item) => {
               const optionProps = getOptionProps(item);
@@ -200,27 +200,30 @@ export function MemberPicker({ value, onChange, placeholder, excludeIds }: Props
               const isSelected = value === item.value.id;
 
               return (
-                <li key={item.id} role="option" {...optionProps} className="px-1">
-                  <div
-                    className={`flex w-full cursor-pointer flex-col items-start rounded px-2 py-2 text-left ${
-                      isActive ? 'bg-blue-500 text-white' : 'text-gray-900'
-                    } ${isSelected && !isActive ? 'font-medium' : ''}`.trim()}
-                  >
-                    <span>{item.value.displayName}</span>
-                    {item.value.instruments && item.value.instruments.length > 0 && (
-                      <span
-                        className={`text-xs ${
-                          isActive ? 'text-blue-100' : 'text-gray-500'
-                        }`}
-                      >
-                        {item.value.instruments.join(', ')}
-                      </span>
-                    )}
-                  </div>
-                </li>
+                <button
+                  key={item.id}
+                  type="button"
+                  role="option"
+                  {...optionProps}
+                  aria-selected={isSelected}
+                  className={`flex w-full flex-col items-start rounded px-2 py-2 text-left ${
+                    isActive ? 'bg-blue-500 text-white' : 'text-gray-900'
+                  } ${isSelected && !isActive ? 'font-medium' : ''}`.trim()}
+                >
+                  <span>{item.value.displayName}</span>
+                  {item.value.instruments && item.value.instruments.length > 0 && (
+                    <span
+                      className={`text-xs ${
+                        isActive ? 'text-blue-100' : 'text-gray-500'
+                      }`}
+                    >
+                      {item.value.instruments.join(', ')}
+                    </span>
+                  )}
+                </button>
               );
             })}
-          </ul>
+          </div>
         </div>
       )}
     </div>

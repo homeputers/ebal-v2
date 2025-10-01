@@ -189,11 +189,11 @@ export function ArrangementPicker({ songId, value, onChange }: Props) {
           {!isLoading && !isError && options.length === 0 && (
             <div className="p-2 text-sm">{tArrangements('list.empty')}</div>
           )}
-          <ul
+          <div
             {...listProps}
             id={listboxId}
             role="listbox"
-            className="py-1 outline-none"
+            className="flex flex-col gap-1 py-1 px-1 outline-none"
           >
             {navigationItems.map((item) => {
               const optionProps = getOptionProps(item);
@@ -201,18 +201,21 @@ export function ArrangementPicker({ songId, value, onChange }: Props) {
               const isSelected = value === item.value.id;
 
               return (
-                <li key={item.id} role="option" {...optionProps} className="px-1">
-                  <div
-                    className={`w-full cursor-pointer rounded px-2 py-2 text-left ${
-                      isActive ? 'bg-blue-500 text-white' : 'text-gray-900'
-                    } ${isSelected && !isActive ? 'font-medium' : ''}`.trim()}
-                  >
-                    {formatLabel(tArrangements, item.value)}
-                  </div>
-                </li>
+                <button
+                  key={item.id}
+                  type="button"
+                  role="option"
+                  {...optionProps}
+                  aria-selected={isSelected}
+                  className={`w-full rounded px-2 py-2 text-left ${
+                    isActive ? 'bg-blue-500 text-white' : 'text-gray-900'
+                  } ${isSelected && !isActive ? 'font-medium' : ''}`.trim()}
+                >
+                  {formatLabel(tArrangements, item.value)}
+                </button>
               );
             })}
-          </ul>
+          </div>
         </div>
       )}
     </div>

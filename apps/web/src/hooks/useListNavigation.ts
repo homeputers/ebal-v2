@@ -6,6 +6,10 @@ import {
   useState,
 } from 'react';
 
+type ListNavigationOptionProps = React.HTMLAttributes<HTMLElement> & {
+  'data-active'?: string;
+};
+
 export type ListNavigationItem<T = unknown> = {
   id: string;
   text: string;
@@ -36,9 +40,7 @@ export interface UseListNavigationResult<T> {
     'aria-activedescendant'?: string;
     onKeyDown: (event: React.KeyboardEvent) => void;
   };
-  getOptionProps: (
-    item: ListNavigationItem<T>,
-  ) => React.HTMLAttributes<HTMLElement>;
+  getOptionProps: (item: ListNavigationItem<T>) => ListNavigationOptionProps;
   move: (intent: ListNavigationMoveIntent) => void;
   setActiveId: (id: string | null) => void;
   selectActive: (event?: React.KeyboardEvent | React.MouseEvent) => void;
@@ -96,13 +98,15 @@ export function useListNavigation<T>(
 ): UseListNavigationResult<T> {
   const {
     items,
-    selectedId = null,
+    selectedId,
     defaultActiveId = null,
     loop = true,
     typeaheadDelay = TYPEAHEAD_DEFAULT_DELAY,
     onSelect,
     onCancel,
   } = options;
+
+  const resolvedSelectedId = selectedId ?? null;
 
   const getIndexById = useCallback(
     (id: string | null | undefined) => {
@@ -116,7 +120,7 @@ export function useListNavigation<T>(
   );
 
   const findInitialIndex = useCallback(() => {
-    const preferredId = selectedId ?? defaultActiveId;
+    const preferredId = resolvedSelectedId ?? defaultActiveId;
     const preferredIndex = getIndexById(preferredId);
 
     if (preferredIndex !== -1 && !items[preferredIndex]?.disabled) {
@@ -124,7 +128,7 @@ export function useListNavigation<T>(
     }
 
     return findNextEnabledIndex(items, 0, 1, false);
-  }, [defaultActiveId, getIndexById, items, selectedId]);
+  }, [defaultActiveId, getIndexById, items, resolvedSelectedId]);
 
   const [activeIndex, setActiveIndex] = useState<number>(() => findInitialIndex());
 
@@ -335,16 +339,21 @@ export function useListNavigation<T>(
   );
 
   const getOptionProps = useCallback(
-    (item: ListNavigationItem<T>): React.HTMLAttributes<HTMLElement> => {
+    (item: ListNavigationItem<T>): ListNavigationOptionProps => {
       const index = getIndexById(item.id);
       const isActive = item.id === activeId;
-      const isSelected = item.id === selectedId;
+      const isSelected = item.id === resolvedSelectedId;
+      const manageSelectionState = selectedId !== undefined;
 
       return {
         id: item.id,
         tabIndex: -1,
         'data-active': isActive ? 'true' : undefined,
-        'aria-selected': isSelected ? 'true' : undefined,
+        'aria-selected': manageSelectionState
+          ? isSelected
+            ? 'true'
+            : 'false'
+          : undefined,
         'aria-disabled': item.disabled ? 'true' : undefined,
         onMouseEnter: () => {
           if (index !== -1 && !item.disabled) {
@@ -381,7 +390,14 @@ export function useListNavigation<T>(
         },
       };
     },
-    [activeId, getIndexById, onSelect, selectActive, selectedId],
+    [
+      activeId,
+      getIndexById,
+      onSelect,
+      selectActive,
+      selectedId,
+      resolvedSelectedId,
+    ],
   );
 
   const setActiveId = useCallback(

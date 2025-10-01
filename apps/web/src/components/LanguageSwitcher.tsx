@@ -46,7 +46,7 @@ export function LanguageSwitcher({
   const switcherName = useId();
   const dialogLabelId = `${switcherName}-dialog-label`;
   const listboxId = `${switcherName}-listbox`;
-  const listRef = useRef<HTMLUListElement | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
 
   const languages = useMemo(
     () => Array.from(new Set(SUPPORTED_LANGUAGES)),
@@ -242,13 +242,13 @@ export function LanguageSwitcher({
           <p id={dialogLabelId} className="sr-only">
             {t('language.select')}
           </p>
-          <ul
+          <div
             {...listProps}
             ref={listRef}
             id={listboxId}
             role="listbox"
             aria-labelledby={dialogLabelId}
-            className="space-y-1 px-1 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="flex flex-col gap-1 px-1 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {languageItems.map((item) => {
               const isSelected = item.id === selectedItemId;
@@ -256,11 +256,13 @@ export function LanguageSwitcher({
               const optionProps = getOptionProps(item);
 
               return (
-                <li
+                <button
                   key={item.id}
+                  type="button"
                   role="option"
                   {...optionProps}
-                  className={`flex cursor-pointer items-center justify-between rounded px-2 py-2 text-sm transition-colors ${
+                  aria-selected={isSelected}
+                  className={`flex w-full cursor-pointer items-center justify-between rounded px-2 py-2 text-left text-sm transition-colors ${
                     isActive
                       ? 'bg-muted text-foreground'
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -270,10 +272,10 @@ export function LanguageSwitcher({
                   {isSelected ? (
                     <span aria-hidden="true">{t('language.selectedIndicator')}</span>
                   ) : null}
-                </li>
+                </button>
               );
             })}
-          </ul>
+          </div>
         </div>
       ) : null}
     </div>

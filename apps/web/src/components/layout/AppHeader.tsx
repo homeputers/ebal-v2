@@ -32,7 +32,7 @@ export function AppHeader({
   const accountMenuButtonId = useId();
   const accountMenuDialogLabelId = `${accountMenuButtonId}-dialog-label`;
   const navigate = useNavigate();
-  const accountMenuListRef = useRef<HTMLUListElement | null>(null);
+  const accountMenuListRef = useRef<HTMLDivElement | null>(null);
 
   const profileHref = useMemo(
     () => buildLanguagePath(currentLanguage, 'me'),
@@ -231,12 +231,12 @@ export function AppHeader({
                       defaultValue: accountLabelValue,
                     })}
                   </p>
-                  <ul
+                  <div
                     {...accountMenuListProps}
                     ref={accountMenuListRef}
                     role="menu"
                     aria-labelledby={accountMenuDialogLabelId}
-                    className="py-1 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="flex flex-col gap-1 py-1 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     {accountMenuItems.map((item) => {
                       const optionProps = getAccountMenuOptionProps(item);
@@ -252,19 +252,18 @@ export function AppHeader({
                             : 'text-foreground hover:bg-muted';
 
                       return (
-                        <li key={item.id} role="none">
-                          <button
-                            type="button"
-                            role="menuitem"
-                            {...optionProps}
-                            className={`block w-full px-4 py-2 text-left text-sm transition-colors ${toneClassName}`.trim()}
-                          >
-                            {item.text}
-                          </button>
-                        </li>
+                        <button
+                          key={item.id}
+                          type="button"
+                          role="menuitem"
+                          {...optionProps}
+                          className={`block w-full px-4 py-2 text-left text-sm transition-colors ${toneClassName}`.trim()}
+                        >
+                          {item.text}
+                        </button>
                       );
                     })}
-                  </ul>
+                  </div>
                 </div>
               ) : null}
             </div>
