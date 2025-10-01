@@ -11,7 +11,8 @@
   },
   "table": {
     "name": "Name",
-    "members": "Members"
+    "members": "Members",
+    "caption": "Group results"
   },
   "modals": {
     "createTitle": "New Group",
@@ -30,6 +31,7 @@
     "selectMember": "Select member",
     "emptyMembers": "No members",
     "loadFailedMembers": "Failed to load members",
-    "removeMemberConfirm": "Remove member?"
+    "removeMemberConfirm": "Remove member?",
+    "membersTableCaption": "Members in this group"
   }
 }

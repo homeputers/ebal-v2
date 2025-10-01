@@ -11,7 +11,8 @@
   },
   "table": {
     "name": "Nombre",
-    "members": "Miembros"
+    "members": "Miembros",
+    "caption": "Resultados de grupos"
   },
   "modals": {
     "createTitle": "Nuevo grupo",
@@ -30,6 +31,7 @@
     "selectMember": "Seleccionar miembro",
     "emptyMembers": "Sin miembros",
     "loadFailedMembers": "No se pudieron cargar los miembros",
-    "removeMemberConfirm": "¿Quitar miembro?"
+    "removeMemberConfirm": "¿Quitar miembro?",
+    "membersTableCaption": "Miembros de este grupo"
   }
 }

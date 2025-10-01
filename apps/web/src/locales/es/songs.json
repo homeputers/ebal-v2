@@ -53,6 +53,9 @@
     "searchPlaceholder": "Buscar por título...",
     "empty": "No se encontraron canciones"
   },
+  "table": {
+    "caption": "Resultados de canciones"
+  },
   "validation": {
     "titleMin": "El título debe tener al menos 2 caracteres"
   },

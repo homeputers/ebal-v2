@@ -18,7 +18,8 @@
   },
   "table": {
     "startsAt": "Starts At",
-    "location": "Location"
+    "location": "Location",
+    "caption": "Service list"
   },
   "status": {
     "loadFailed": "Failed to load services."

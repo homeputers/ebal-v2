@@ -23,7 +23,8 @@
   },
   "table": {
     "name": "Nombre",
-    "items": "Elementos"
+    "items": "Elementos",
+    "caption": "Resultados de conjuntos de canciones"
   },
   "status": {
     "loadFailed": "No se pudieron cargar los conjuntos de canciones.",

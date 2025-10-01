@@ -54,7 +54,8 @@
   "table": {
     "key": "Tonalidad",
     "bpm": "PPM",
-    "meter": "Compás"
+    "meter": "Compás",
+    "caption": "Arreglos"
   },
   "list": {
     "empty": "No hay arreglos"

@@ -18,7 +18,8 @@
   },
   "table": {
     "startsAt": "Hora de inicio",
-    "location": "Ubicación"
+    "location": "Ubicación",
+    "caption": "Lista de servicios"
   },
   "status": {
     "loadFailed": "No se pudieron cargar los servicios."

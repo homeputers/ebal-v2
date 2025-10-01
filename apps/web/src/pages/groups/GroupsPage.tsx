@@ -99,17 +99,24 @@ export default function GroupsPage() {
         <div className="mt-4">
           {filtered.length > 0 ? (
             <table className="w-full border">
+              <caption className="sr-only">{t('table.caption')}</caption>
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="text-left p-2">{t('table.name')}</th>
-                  <th className="text-left p-2">{t('table.members')}</th>
-                  <th className="p-2 text-right">{tCommon('table.actions')}</th>
+                  <th scope="col" className="text-left p-2">
+                    {t('table.name')}
+                  </th>
+                  <th scope="col" className="text-left p-2">
+                    {t('table.members')}
+                  </th>
+                  <th scope="col" className="p-2 text-right">
+                    {tCommon('table.actions')}
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((g) => (
                   <tr key={g.id} className="border-t">
-                    <td className="p-2 align-top">
+                    <th scope="row" className="p-2 text-left font-normal align-top">
                       {editingId === g.id ? (
                         <GroupForm
                           defaultValues={{ name: g.name || '' }}
@@ -124,7 +131,7 @@ export default function GroupsPage() {
                           {g.name}
                         </Link>
                       )}
-                    </td>
+                    </th>
                     <td className="p-2 align-top">{g.memberIds?.length ?? 0}</td>
                     <td className="p-2 text-right align-top">
                       {editingId === g.id ? null : (
@@ -149,7 +156,9 @@ export default function GroupsPage() {
               </tbody>
             </table>
           ) : (
-            <div>{t('list.empty')}</div>
+            <div role="status" aria-live="polite">
+              {t('list.empty')}
+            </div>
           )}
 
           <div className="flex items-center gap-2 mt-4">

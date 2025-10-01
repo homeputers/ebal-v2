@@ -23,7 +23,8 @@
   },
   "table": {
     "name": "Name",
-    "items": "Items"
+    "items": "Items",
+    "caption": "Song sets results"
   },
   "status": {
     "loadFailed": "Failed to load song sets.",

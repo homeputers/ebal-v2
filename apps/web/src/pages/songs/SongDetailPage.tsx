@@ -129,21 +129,34 @@ export default function SongDetailPage() {
       </div>
       {arrangements && arrangements.length > 0 ? (
         <table className="w-full border">
+          <caption className="sr-only">{tArrangements('table.caption')}</caption>
           <thead>
             <tr className="bg-gray-50">
-              <th className="text-left p-2">{tArrangements('table.key')}</th>
-              <th className="text-left p-2">{tArrangements('table.bpm')}</th>
-              <th className="text-left p-2">{tArrangements('table.meter')}</th>
+              <th scope="col" className="text-left p-2">
+                {tArrangements('table.key')}
+              </th>
+              <th scope="col" className="text-left p-2">
+                {tArrangements('table.bpm')}
+              </th>
+              <th scope="col" className="text-left p-2">
+                {tArrangements('table.meter')}
+              </th>
               {canManageSongs && (
-                <th className="p-2 text-right">{tCommon('table.actions')}</th>
+                <th scope="col" className="p-2 text-right">
+                  {tCommon('table.actions')}
+                </th>
               )}
             </tr>
           </thead>
           <tbody>
             {arrangements.map((a) => (
               <tr key={a.id} className="border-t">
-                <td className="p-2">{a.key}</td>
-                <td className="p-2">{a.bpm != null ? formatBpm(a.bpm, i18n.language) : ''}</td>
+                <th scope="row" className="p-2 text-left font-normal">
+                  {a.key}
+                </th>
+                <td className="p-2">
+                  {a.bpm != null ? formatBpm(a.bpm, i18n.language) : ''}
+                </td>
                 <td className="p-2">{a.meter}</td>
                 {canManageSongs && (
                   <td className="p-2 text-right">
@@ -168,7 +181,7 @@ export default function SongDetailPage() {
           </tbody>
         </table>
       ) : (
-        <div>{tArrangements('list.empty')}</div>
+        <div role="status" aria-live="polite">{tArrangements('list.empty')}</div>
       )}
       {canManageSongs && (
         <>

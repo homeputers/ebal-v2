@@ -53,6 +53,9 @@
     "searchPlaceholder": "Search by title...",
     "empty": "No songs found"
   },
+  "table": {
+    "caption": "Songs results"
+  },
   "validation": {
     "titleMin": "Title must be at least 2 characters"
   },

@@ -127,17 +127,26 @@ export default function ServicesPage() {
       {!isLoading && services.length > 0 ? (
         <div className="mt-4">
           <table className="w-full border">
+            <caption className="sr-only">{t('table.caption')}</caption>
             <thead>
               <tr className="bg-gray-50">
-                <th className="text-left p-2">{t('table.startsAt')}</th>
-                <th className="text-left p-2">{t('table.location')}</th>
-                <th className="p-2 text-right">{tCommon('table.actions')}</th>
+                <th scope="col" className="text-left p-2">
+                  {t('table.startsAt')}
+                </th>
+                <th scope="col" className="text-left p-2">
+                  {t('table.location')}
+                </th>
+                <th scope="col" className="p-2 text-right">
+                  {tCommon('table.actions')}
+                </th>
               </tr>
             </thead>
             <tbody>
               {services.map((s) => (
                 <tr key={s.id} className="border-t">
-                  <td className="p-2">{s.startsAt ? formatDate(s.startsAt, i18n.language) : ''}</td>
+                  <th scope="row" className="p-2 text-left font-normal">
+                    {s.startsAt ? formatDate(s.startsAt, i18n.language) : ''}
+                  </th>
                   <td className="p-2">{s.location}</td>
                   <td className="p-2 text-right">
                     <div className="flex gap-2 justify-end">
@@ -205,7 +214,11 @@ export default function ServicesPage() {
           </div>
         </div>
       ) : (
-        !isLoading && <div>{t('list.empty')}</div>
+        !isLoading && (
+          <div role="status" aria-live="polite">
+            {t('list.empty')}
+          </div>
+        )
       )}
 
       {canManageServices ? (

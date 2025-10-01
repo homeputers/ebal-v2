@@ -129,11 +129,18 @@ export default function SongSetsPage() {
           {hasResults ? (
             <>
               <table className="w-full border">
+                <caption className="sr-only">{t('table.caption')}</caption>
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="text-left p-2">{t('table.name')}</th>
-                    <th className="text-left p-2">{t('table.items')}</th>
-                    <th className="p-2 text-right">{tCommon('table.actions')}</th>
+                    <th scope="col" className="text-left p-2">
+                      {t('table.name')}
+                    </th>
+                    <th scope="col" className="text-left p-2">
+                      {t('table.items')}
+                    </th>
+                    <th scope="col" className="p-2 text-right">
+                      {tCommon('table.actions')}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -146,7 +153,12 @@ export default function SongSetsPage() {
 
                     return (
                       <tr key={setId} className="border-t">
-                        <td className="p-2 align-top">{set.name}</td>
+                        <th
+                          scope="row"
+                          className="p-2 text-left font-normal align-top"
+                        >
+                          {set.name}
+                        </th>
                         <td className="p-2 align-top">{itemsCount ?? '—'}</td>
                         <td className="p-2 text-right align-top">
                           <div className="flex gap-2 justify-end">
@@ -203,7 +215,9 @@ export default function SongSetsPage() {
               </div>
             </>
           ) : (
-            <div>{t('list.empty')}</div>
+            <div role="status" aria-live="polite">
+              {t('list.empty')}
+            </div>
           )}
         </div>
       ) : null}

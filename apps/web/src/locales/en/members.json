@@ -41,7 +41,8 @@
   },
   "table": {
     "name": "Name",
-    "instruments": "Instruments"
+    "instruments": "Instruments",
+    "caption": "Members results"
   },
   "modals": {
     "createTitle": "New Member",

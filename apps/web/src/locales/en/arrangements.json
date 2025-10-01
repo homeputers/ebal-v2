@@ -54,7 +54,8 @@
   "table": {
     "key": "Key",
     "bpm": "BPM",
-    "meter": "Meter"
+    "meter": "Meter",
+    "caption": "Arrangements"
   },
   "list": {
     "empty": "No arrangements"
