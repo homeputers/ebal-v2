@@ -6,6 +6,7 @@ import App from './App';
 import i18n from './i18n';
 import './api/auth';
 import './index.css';
+import './lib/theme/contrastGuard';
 import zodErrorMap from './lib/zodErrorMap';
 
 z.setErrorMap(zodErrorMap);
