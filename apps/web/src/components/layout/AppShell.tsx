@@ -1,5 +1,14 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  type MouseEvent,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { AppHeader } from '@/components/layout/AppHeader';
 import { AppSideNav } from '@/components/layout/AppSideNav';
@@ -18,6 +27,8 @@ export function AppShell({ currentLanguage, children }: AppShellProps) {
   const { hasRole } = useAuth();
   const location = useLocation();
   const [isNavigationOpen, setNavigationOpen] = useState(false);
+  const { t } = useTranslation('common');
+  const mainRef = useRef<HTMLElement | null>(null);
 
   const navigationLinks: AppNavigationLink[] = useMemo(
     () => filterNavigationLinks(hasRole),
@@ -59,8 +70,25 @@ export function AppShell({ currentLanguage, children }: AppShellProps) {
     setNavigationOpen((value) => !value);
   };
 
+  const handleSkipToContent = useCallback(
+    (event: MouseEvent<HTMLAnchorElement>) => {
+      event.preventDefault();
+      mainRef.current?.focus();
+    },
+    [],
+  );
+
+  const currentYear = new Date().getFullYear();
+
   return (
     <div className="min-h-screen bg-background">
+      <a
+        href="#main-content"
+        onClick={handleSkipToContent}
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      >
+        {t('layout.skipToMainContent')}
+      </a>
       <div className="flex min-h-screen">
         <AppSideNav
           currentLanguage={currentLanguage}
@@ -75,7 +103,17 @@ export function AppShell({ currentLanguage, children }: AppShellProps) {
             onToggleNavigation={handleToggleNavigation}
             isNavigationOpen={isNavigationOpen}
           />
-          <main className="flex-1">{children}</main>
+          <main
+            ref={mainRef}
+            id="main-content"
+            tabIndex={-1}
+            className="flex-1 focus:outline-none"
+          >
+            {children}
+          </main>
+          <footer className="border-t border-border/60 bg-card/40 px-6 py-4 text-xs text-muted-foreground">
+            <p>{t('layout.footer.copyright', { year: currentYear, app: t('app.title') })}</p>
+          </footer>
         </div>
       </div>
     </div>
