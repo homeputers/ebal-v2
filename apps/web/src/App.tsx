@@ -5,7 +5,7 @@ import {
   Routes,
   useLocation,
 } from 'react-router-dom';
-import { lazy } from 'react';
+import { lazy, useEffect } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { LanguageGuard } from '@/components/LanguageGuard';
 import { queryClient } from '@/lib/queryClient';
@@ -13,6 +13,8 @@ import { Toaster } from 'sonner';
 import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute';
 import { RequireRole } from '@/features/auth/components/RequireRole';
 import { DEFAULT_LANGUAGE } from '@/i18n';
+import { LiveAnnouncer } from '@/components/a11y/LiveAnnouncer';
+import { setupAsyncStatusAnnouncements } from '@/lib/asyncStatusAnnouncements';
 
 const Members = lazy(() => import('@/routes/Members'));
 const Groups = lazy(() => import('@/routes/Groups'));
@@ -46,6 +48,12 @@ function ResetPasswordDeepLinkRedirect() {
 }
 
 export default function App() {
+  useEffect(() => {
+    const teardown = setupAsyncStatusAnnouncements(queryClient);
+
+    return teardown;
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
@@ -97,6 +105,7 @@ export default function App() {
         </Routes>
       </BrowserRouter>
       <Toaster />
+      <LiveAnnouncer />
     </QueryClientProvider>
   );
 }
