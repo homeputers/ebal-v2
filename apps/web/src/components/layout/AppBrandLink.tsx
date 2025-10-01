@@ -2,6 +2,8 @@ import type { ComponentProps } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
+import { VisuallyHidden } from '@/components/a11y/VisuallyHidden';
+
 type RouterLinkProps = ComponentProps<typeof Link>;
 
 type AppBrandLinkProps = {
@@ -48,7 +50,7 @@ export function AppBrandLink({
 
   return (
     <Link to={to} className={mergedClassName} aria-label={label} onClick={onClick}>
-      <span className="sr-only">{label}</span>
+      <VisuallyHidden>{label}</VisuallyHidden>
       <img src={logoSrc} alt="" aria-hidden="true" className={mergedImageClassName} />
       {showText ? (
         <span aria-hidden="true" className={mergedTextClassName}>

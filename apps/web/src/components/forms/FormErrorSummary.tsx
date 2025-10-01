@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import type { FieldValues, FieldErrors } from 'react-hook-form';
 
+import { VisuallyHidden } from '@/components/a11y/VisuallyHidden';
+
 import { fieldNameToId, flattenErrors } from '@/lib/formAccessibility';
 
 type FormErrorSummaryProps<TFieldValues extends FieldValues> = {
@@ -70,7 +72,7 @@ export function FormErrorSummary<TFieldValues extends FieldValues>({
               >
                 {linkText}
                 {itemLabel ? (
-                  <span className="sr-only">{`: ${message}`}</span>
+                  <VisuallyHidden>{`: ${message}`}</VisuallyHidden>
                 ) : null}
               </a>
             </li>

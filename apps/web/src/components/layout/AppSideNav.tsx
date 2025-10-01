@@ -259,6 +259,7 @@ export function AppSideNav({
                       viewBox="0 0 20 20"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
                     >
                       <path
                         d="M4 5.5L14.5 16M15.5 5.5L5 16"
