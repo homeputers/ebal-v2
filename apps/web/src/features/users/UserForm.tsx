@@ -13,6 +13,14 @@ import type { Role } from '@/api/auth';
 import type { CreateUserBody, UpdateUserBody } from '@/api/users';
 import { withFieldErrorPrefix } from '@/lib/zodErrorMap';
 import { ROLE_VALUES } from './constants';
+import { FormErrorSummary } from '@/components/forms/FormErrorSummary';
+import {
+  createOnInvalidFocus,
+  describedBy,
+  fieldErrorId,
+  fieldHelpTextId,
+  fieldNameToId,
+} from '@/lib/formAccessibility';
 
 const roleEnum = z.enum(ROLE_VALUES);
 
@@ -75,12 +83,14 @@ export function UserCreateForm({
   isSubmitting,
 }: UserCreateFormProps) {
   const { t } = useTranslation('adminUsers');
+  const { t: tCommon } = useTranslation('common');
 
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    setFocus,
+    formState: { errors, submitCount },
   } = useForm<CreateFormValues>({
     resolver: createResolver,
     defaultValues: {
@@ -93,23 +103,36 @@ export function UserCreateForm({
     },
   });
 
+  const showErrorSummary = submitCount > 0;
+
   return (
     <form
-      onSubmit={handleSubmit((values) => {
-        const payload: CreateUserBody = {
-          email: values.email.trim(),
-          displayName: values.displayName.trim(),
-          roles: values.roles as Role[],
-          isActive: values.isActive,
-          ...(values.temporaryPassword?.trim()
-            ? { temporaryPassword: values.temporaryPassword.trim() }
-            : {}),
-        };
+      onSubmit={handleSubmit(
+        (values) => {
+          const payload: CreateUserBody = {
+            email: values.email.trim(),
+            displayName: values.displayName.trim(),
+            roles: values.roles as Role[],
+            isActive: values.isActive,
+            ...(values.temporaryPassword?.trim()
+              ? { temporaryPassword: values.temporaryPassword.trim() }
+              : {}),
+          };
 
-        onSubmit(payload);
-      })}
+          onSubmit(payload);
+        },
+        createOnInvalidFocus(setFocus),
+      )}
       className="space-y-4"
+      noValidate
     >
+      {showErrorSummary ? (
+        <FormErrorSummary
+          errors={errors}
+          title={tCommon('forms.errorSummary.title')}
+          description={tCommon('forms.errorSummary.description')}
+        />
+      ) : null}
       <div>
         <label className="block text-sm font-medium" htmlFor="email">
           {t('form.email')}
@@ -119,9 +142,13 @@ export function UserCreateForm({
           type="email"
           {...register('email')}
           className="mt-1 w-full rounded border p-2"
+          aria-invalid={Boolean(errors.email)}
+          aria-describedby={describedBy('email', { includeError: Boolean(errors.email) })}
         />
         {errors.email ? (
-          <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+          <p id={fieldErrorId('email')} className="mt-1 text-sm text-red-600">
+            {errors.email.message}
+          </p>
         ) : null}
       </div>
 
@@ -133,9 +160,13 @@ export function UserCreateForm({
           id="displayName"
           {...register('displayName')}
           className="mt-1 w-full rounded border p-2"
+          aria-invalid={Boolean(errors.displayName)}
+          aria-describedby={describedBy('displayName', {
+            includeError: Boolean(errors.displayName),
+          })}
         />
         {errors.displayName ? (
-          <p className="mt-1 text-sm text-red-600">
+          <p id={fieldErrorId('displayName')} className="mt-1 text-sm text-red-600">
             {errors.displayName.message}
           </p>
         ) : null}
@@ -163,12 +194,20 @@ export function UserCreateForm({
           autoComplete="new-password"
           {...register('temporaryPassword')}
           className="mt-1 w-full rounded border p-2"
+          aria-invalid={Boolean(errors.temporaryPassword)}
+          aria-describedby={describedBy('temporaryPassword', {
+            includeError: Boolean(errors.temporaryPassword),
+            extraIds: [fieldHelpTextId('temporaryPassword')],
+          })}
         />
-        <p className="mt-1 text-xs text-gray-600">
+        <p id={fieldHelpTextId('temporaryPassword')} className="mt-1 text-xs text-gray-600">
           {t('form.temporaryPasswordHelp')}
         </p>
         {errors.temporaryPassword ? (
-          <p className="mt-1 text-sm text-red-600">
+          <p
+            id={fieldErrorId('temporaryPassword')}
+            className="mt-1 text-sm text-red-600"
+          >
             {errors.temporaryPassword.message}
           </p>
         ) : null}
@@ -187,30 +226,45 @@ export function UserEditForm({
   isSubmitting,
 }: UserEditFormProps) {
   const { t } = useTranslation('adminUsers');
+  const { t: tCommon } = useTranslation('common');
 
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    setFocus,
+    formState: { errors, submitCount },
   } = useForm<EditFormValues>({
     resolver: editResolver,
     defaultValues,
   });
 
+  const showErrorSummary = submitCount > 0;
+
   return (
     <form
-      onSubmit={handleSubmit((values) => {
-        const payload: UpdateUserBody = {
-          displayName: values.displayName.trim(),
-          roles: values.roles as Role[],
-          isActive: values.isActive,
-        };
+      onSubmit={handleSubmit(
+        (values) => {
+          const payload: UpdateUserBody = {
+            displayName: values.displayName.trim(),
+            roles: values.roles as Role[],
+            isActive: values.isActive,
+          };
 
-        onSubmit(payload);
-      })}
+          onSubmit(payload);
+        },
+        createOnInvalidFocus(setFocus),
+      )}
       className="space-y-4"
+      noValidate
     >
+      {showErrorSummary ? (
+        <FormErrorSummary
+          errors={errors}
+          title={tCommon('forms.errorSummary.title')}
+          description={tCommon('forms.errorSummary.description')}
+        />
+      ) : null}
       <div>
         <label className="block text-sm font-medium" htmlFor="email">
           {t('form.email')}
@@ -232,9 +286,13 @@ export function UserEditForm({
           id="displayName"
           {...register('displayName')}
           className="mt-1 w-full rounded border p-2"
+          aria-invalid={Boolean(errors.displayName)}
+          aria-describedby={describedBy('displayName', {
+            includeError: Boolean(errors.displayName),
+          })}
         />
         {errors.displayName ? (
-          <p className="mt-1 text-sm text-red-600">
+          <p id={fieldErrorId('displayName')} className="mt-1 text-sm text-red-600">
             {errors.displayName.message}
           </p>
         ) : null}
@@ -267,10 +325,17 @@ function RoleSelector<TFieldValues extends { roles: Role[] }>({
   error,
 }: RoleSelectorProps<TFieldValues>) {
   const { t } = useTranslation('adminUsers');
+  const fieldId = fieldNameToId('roles');
+  const errorId = fieldErrorId('roles');
 
   return (
-    <div>
-      <p className="text-sm font-medium">{t('form.roles')}</p>
+    <fieldset
+      id={fieldId}
+      className="space-y-2"
+      aria-invalid={Boolean(error)}
+      aria-describedby={describedBy('roles', { includeError: Boolean(error) })}
+    >
+      <legend className="text-sm font-medium">{t('form.roles')}</legend>
       <Controller
         control={control}
         name={'roles' as Path<TFieldValues>}
@@ -308,8 +373,12 @@ function RoleSelector<TFieldValues extends { roles: Role[] }>({
           );
         }}
       />
-      {error ? <p className="mt-1 text-sm text-red-600">{error}</p> : null}
-    </div>
+      {error ? (
+        <p id={errorId} className="text-sm text-red-600">
+          {error}
+        </p>
+      ) : null}
+    </fieldset>
   );
 }
 

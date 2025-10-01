@@ -10,12 +10,15 @@ import { toast } from 'sonner';
 import { AuthPageLayout } from '@/pages/auth/AuthPageLayout';
 import { buildLanguagePath } from '@/pages/auth/utils';
 import { useResetPassword } from '@/features/auth/hooks';
+import { FormErrorSummary } from '@/components/forms/FormErrorSummary';
+import { createOnInvalidFocus, describedBy, fieldErrorId, fieldHelpTextId } from '@/lib/formAccessibility';
 
 const MIN_PASSWORD_LENGTH = 8;
 
 export default function ResetPasswordPage() {
   const { t } = useTranslation('auth');
   const { t: tValidation } = useTranslation('validation');
+  const { t: tCommon } = useTranslation('common');
   const params = useParams();
   const language = params.lang;
   const navigate = useNavigate();
@@ -63,7 +66,8 @@ export default function ResetPasswordPage() {
     watch,
     setError,
     clearErrors,
-    formState: { errors, isSubmitting },
+    setFocus,
+    formState: { errors, isSubmitting, submitCount },
   } = useForm<ResetPasswordForm>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -72,6 +76,9 @@ export default function ResetPasswordPage() {
       confirmPassword: '',
     },
   });
+
+  const showErrorSummary = submitCount > 0;
+  const helpTextId = fieldHelpTextId('resetPasswordHelp');
 
   const tokenValue = watch('token') ?? '';
   const trimmedTokenValue = tokenValue.trim();
@@ -103,61 +110,66 @@ export default function ResetPasswordPage() {
     }
   }, [tokenValue, invalidTokenValue, clearErrors]);
 
-  const onSubmit = handleSubmit(async (values) => {
-    const rawToken = values.token;
-    const normalizedToken = rawToken.trim();
+  const onSubmit = handleSubmit(
+    async (values) => {
+      const rawToken = values.token;
+      const normalizedToken = rawToken.trim();
 
-    if (!normalizedToken) {
-      toast.error(resetLinkWarningMessage);
-      setError('token', { type: 'manual', message: resetLinkWarningMessage });
-      return;
-    }
-
-    try {
-      await resetPasswordMutation.mutateAsync({
-        token: normalizedToken,
-        newPassword: values.newPassword,
-      });
-      toast.success(t('resetPassword.notifications.success'));
-      reset({
-        token: initialToken,
-        newPassword: '',
-        confirmPassword: '',
-      });
-      navigate(buildLanguagePath(language, 'login'));
-    } catch (error) {
-      let responseMessage: string | null = null;
-      let fallbackMessage = t('resetPassword.notifications.error');
-
-      if (isAxiosError(error)) {
-        const status = error.response?.status ?? 0;
-        if ([400, 404, 410].includes(status)) {
-          const attemptedToken = rawToken;
-          setHasInvalidTokenError(true);
-          setInvalidTokenValue(attemptedToken);
-          setAllowManualTokenEntry(true);
-          setError('token', { type: 'manual', message: resetLinkWarningMessage });
-          fallbackMessage = resetLinkWarningMessage;
-        }
-
-        const data = error.response?.data as
-          | {
-              detail?: unknown;
-              message?: unknown;
-              error?: unknown;
-            }
-          | undefined;
-
-        const detailMessage = typeof data?.detail === 'string' ? data.detail : null;
-        const message = typeof data?.message === 'string' ? data.message : null;
-        const errorMessage = typeof data?.error === 'string' ? data.error : null;
-
-        responseMessage = detailMessage ?? message ?? errorMessage;
+      if (!normalizedToken) {
+        toast.error(resetLinkWarningMessage);
+        setError('token', { type: 'manual', message: resetLinkWarningMessage });
+        setFocus('token');
+        return;
       }
 
-      toast.error(responseMessage ?? fallbackMessage);
-    }
-  });
+      try {
+        await resetPasswordMutation.mutateAsync({
+          token: normalizedToken,
+          newPassword: values.newPassword,
+        });
+        toast.success(t('resetPassword.notifications.success'));
+        reset({
+          token: initialToken,
+          newPassword: '',
+          confirmPassword: '',
+        });
+        navigate(buildLanguagePath(language, 'login'));
+      } catch (error) {
+        let responseMessage: string | null = null;
+        let fallbackMessage = t('resetPassword.notifications.error');
+
+        if (isAxiosError(error)) {
+          const status = error.response?.status ?? 0;
+          if ([400, 404, 410].includes(status)) {
+            const attemptedToken = rawToken;
+            setHasInvalidTokenError(true);
+            setInvalidTokenValue(attemptedToken);
+            setAllowManualTokenEntry(true);
+            setError('token', { type: 'manual', message: resetLinkWarningMessage });
+            setFocus('token');
+            fallbackMessage = resetLinkWarningMessage;
+          }
+
+          const data = error.response?.data as
+            | {
+                detail?: unknown;
+                message?: unknown;
+                error?: unknown;
+              }
+            | undefined;
+
+          const detailMessage = typeof data?.detail === 'string' ? data.detail : null;
+          const message = typeof data?.message === 'string' ? data.message : null;
+          const errorMessage = typeof data?.error === 'string' ? data.error : null;
+
+          responseMessage = detailMessage ?? message ?? errorMessage;
+        }
+
+        toast.error(responseMessage ?? fallbackMessage);
+      }
+    },
+    createOnInvalidFocus(setFocus),
+  );
 
   return (
     <AuthPageLayout
@@ -181,6 +193,13 @@ export default function ResetPasswordPage() {
         </div>
       ) : null}
       <form className="mt-4 space-y-4" onSubmit={onSubmit} noValidate>
+        {showErrorSummary ? (
+          <FormErrorSummary
+            errors={errors}
+            title={tCommon('forms.errorSummary.title')}
+            description={tCommon('forms.errorSummary.description')}
+          />
+        ) : null}
         {allowManualTokenEntry ? (
           <div>
             <label className="block text-sm font-medium text-gray-700" htmlFor="token">
@@ -192,8 +211,16 @@ export default function ResetPasswordPage() {
               autoComplete="off"
               className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...register('token')}
+              aria-invalid={Boolean(errors.token)}
+              aria-describedby={describedBy('token', {
+                includeError: Boolean(errors.token),
+              })}
             />
-            {errors.token ? <p className="mt-1 text-sm text-red-600">{errors.token.message}</p> : null}
+            {errors.token ? (
+              <p id={fieldErrorId('token')} className="mt-1 text-sm text-red-600">
+                {errors.token.message}
+              </p>
+            ) : null}
           </div>
         ) : (
           <input type="hidden" {...register('token')} />
@@ -208,9 +235,15 @@ export default function ResetPasswordPage() {
             autoComplete="new-password"
             className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             {...register('newPassword')}
+            aria-invalid={Boolean(errors.newPassword)}
+            aria-describedby={describedBy('newPassword', {
+              includeError: Boolean(errors.newPassword),
+            })}
           />
           {errors.newPassword ? (
-            <p className="mt-1 text-sm text-red-600">{errors.newPassword.message}</p>
+            <p id={fieldErrorId('newPassword')} className="mt-1 text-sm text-red-600">
+              {errors.newPassword.message}
+            </p>
           ) : null}
         </div>
         <div>
@@ -223,9 +256,16 @@ export default function ResetPasswordPage() {
             autoComplete="new-password"
             className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             {...register('confirmPassword')}
+            aria-invalid={Boolean(errors.confirmPassword)}
+            aria-describedby={describedBy('confirmPassword', {
+              includeError: Boolean(errors.confirmPassword),
+              extraIds: [helpTextId],
+            })}
           />
           {errors.confirmPassword ? (
-            <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+            <p id={fieldErrorId('confirmPassword')} className="mt-1 text-sm text-red-600">
+              {errors.confirmPassword.message}
+            </p>
           ) : null}
         </div>
         <button
@@ -235,7 +275,7 @@ export default function ResetPasswordPage() {
         >
           {t('resetPassword.actions.submit')}
         </button>
-        <p className="text-xs text-gray-500">{t('resetPassword.helpText')}</p>
+        <p id={helpTextId} className="text-xs text-gray-500">{t('resetPassword.helpText')}</p>
       </form>
     </AuthPageLayout>
   );

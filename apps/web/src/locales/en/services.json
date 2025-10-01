@@ -36,12 +36,14 @@
   },
   "plan": {
     "addItemTitle": "Add Item",
+    "typeLabel": "Item type",
     "itemTypes": {
       "song": "Song",
       "reading": "Reading",
       "note": "Note",
       "itemFallback": "Item"
     },
+    "notesLabel": "Notes",
     "notesPlaceholder": "Notes",
     "title": "Plan",
     "empty": "No plan items",

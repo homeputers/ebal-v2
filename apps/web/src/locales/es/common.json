@@ -70,5 +70,11 @@
   },
   "errors": {
     "generic": "Algo salió mal."
+  },
+  "forms": {
+    "errorSummary": {
+      "title": "Corrige los campos resaltados",
+      "description": "Selecciona un enlace para ir al campo con el problema."
+    }
   }
 }

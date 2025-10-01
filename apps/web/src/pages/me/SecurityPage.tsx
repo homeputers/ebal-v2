@@ -10,6 +10,8 @@ import { toast } from 'sonner';
 import { useAuth } from '@/features/auth/useAuth';
 import { useChangeEmail, useChangePassword } from '@/features/me/hooks';
 import { DEFAULT_LANGUAGE } from '@/i18n';
+import { FormErrorSummary } from '@/components/forms/FormErrorSummary';
+import { createOnInvalidFocus, describedBy, fieldErrorId, fieldNameToId } from '@/lib/formAccessibility';
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -25,6 +27,7 @@ type EmailFormValues = {
 
 export default function SecurityPage() {
   const { t } = useTranslation('me');
+  const { t: tCommon } = useTranslation('common');
   const { t: tValidation } = useTranslation('validation');
   const navigate = useNavigate();
   const params = useParams<{ lang?: string }>();
@@ -72,9 +75,14 @@ export default function SecurityPage() {
   const {
     register: registerPassword,
     handleSubmit: handlePasswordSubmit,
-    formState: { errors: passwordErrors, isSubmitting: isPasswordSubmitting },
+    formState: {
+      errors: passwordErrors,
+      isSubmitting: isPasswordSubmitting,
+      submitCount: passwordSubmitCount,
+    },
     setError: setPasswordError,
     reset: resetPasswordForm,
+    setFocus: setPasswordFocus,
   } = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
@@ -86,9 +94,14 @@ export default function SecurityPage() {
   const {
     register: registerEmail,
     handleSubmit: handleEmailSubmit,
-    formState: { errors: emailErrors, isSubmitting: isEmailSubmitting },
+    formState: {
+      errors: emailErrors,
+      isSubmitting: isEmailSubmitting,
+      submitCount: emailSubmitCount,
+    },
     setError: setEmailError,
     reset: resetEmailForm,
+    setFocus: setEmailFocus,
   } = useForm<EmailFormValues>({
     resolver: zodResolver(emailSchema),
     defaultValues: {
@@ -97,68 +110,85 @@ export default function SecurityPage() {
     },
   });
 
-  const onPasswordSubmit = handlePasswordSubmit(async (values) => {
-    try {
-      await changePasswordMutation.mutateAsync({
-        currentPassword: values.currentPassword,
-        newPassword: values.newPassword,
-      });
-      resetPasswordForm();
-      toast.success(t('security.password.success'));
-      logout();
-      navigate(`/${language}/login`, { replace: true });
-    } catch (error) {
-      if (isAxiosError(error)) {
-        if (error.response?.status === 401) {
-          const message = t('security.password.invalidCredentials');
-          setPasswordError('currentPassword', { type: 'server', message });
-          toast.error(message);
+  const showPasswordSummary = passwordSubmitCount > 0;
+  const showEmailSummary = emailSubmitCount > 0;
+
+  const onPasswordSubmit = handlePasswordSubmit(
+    async (values) => {
+      try {
+        await changePasswordMutation.mutateAsync({
+          currentPassword: values.currentPassword,
+          newPassword: values.newPassword,
+        });
+        resetPasswordForm();
+        toast.success(t('security.password.success'));
+        logout();
+        navigate(`/${language}/login`, { replace: true });
+      } catch (error) {
+        if (isAxiosError(error)) {
+          if (error.response?.status === 401) {
+            const message = t('security.password.invalidCredentials');
+            setPasswordError('currentPassword', { type: 'server', message });
+            toast.error(message);
+            return;
+          }
+
+          const responseData = error.response?.data as
+            | { detail?: string; message?: string; error?: string }
+            | undefined;
+          const problemDetail = responseData?.detail ?? responseData?.message ?? responseData?.error ?? null;
+
+          toast.error(problemDetail ?? t('security.password.error'));
           return;
         }
 
-        const responseData = error.response?.data as
-          | { detail?: string; message?: string; error?: string }
-          | undefined;
-        const problemDetail = responseData?.detail ?? responseData?.message ?? responseData?.error ?? null;
-
-        toast.error(problemDetail ?? t('security.password.error'));
-        return;
+        toast.error(t('security.password.error'));
       }
+    },
+    createOnInvalidFocus(setPasswordFocus),
+  );
 
-      toast.error(t('security.password.error'));
-    }
-  });
+  const onEmailSubmit = handleEmailSubmit(
+    async (values) => {
+      setEmailNotice(null);
+      try {
+        await changeEmailMutation.mutateAsync({
+          currentPassword: values.currentPassword,
+          newEmail: values.newEmail,
+        });
+        resetEmailForm();
+        setEmailNotice(t('security.email.success', { email: values.newEmail }));
+      } catch (error) {
+        if (isAxiosError(error)) {
+          if (error.response?.status === 401) {
+            const message = t('security.email.invalidCredentials');
+            setEmailError('currentPassword', { type: 'server', message });
+            toast.error(message);
+            return;
+          }
 
-  const onEmailSubmit = handleEmailSubmit(async (values) => {
-    setEmailNotice(null);
-    try {
-      await changeEmailMutation.mutateAsync({
-        currentPassword: values.currentPassword,
-        newEmail: values.newEmail,
-      });
-      resetEmailForm();
-      setEmailNotice(t('security.email.success', { email: values.newEmail }));
-    } catch (error) {
-      if (isAxiosError(error)) {
-        if (error.response?.status === 401) {
-          const message = t('security.email.invalidCredentials');
-          setEmailError('currentPassword', { type: 'server', message });
-          toast.error(message);
+          const responseData = error.response?.data as
+            | { detail?: string; message?: string; error?: string }
+            | undefined;
+          const problemDetail = responseData?.detail ?? responseData?.message ?? responseData?.error ?? null;
+
+          toast.error(problemDetail ?? t('security.email.error'));
           return;
         }
 
-        const responseData = error.response?.data as
-          | { detail?: string; message?: string; error?: string }
-          | undefined;
-        const problemDetail = responseData?.detail ?? responseData?.message ?? responseData?.error ?? null;
-
-        toast.error(problemDetail ?? t('security.email.error'));
-        return;
+        toast.error(t('security.email.error'));
       }
+    },
+    createOnInvalidFocus(setEmailFocus),
+  );
 
-      toast.error(t('security.email.error'));
-    }
-  });
+  const emailFieldId = (field: keyof EmailFormValues) => fieldNameToId(`email-${field}`);
+  const emailFieldErrorId = (field: keyof EmailFormValues) => fieldErrorId(`email-${field}`);
+  const emailDescribedBy = (field: keyof EmailFormValues) =>
+    describedBy(`email-${field}`, {
+      includeError: Boolean(emailErrors[field]),
+    });
+  const mapEmailFieldId = (name: string) => fieldNameToId(`email-${name}`);
 
   return (
     <div className="space-y-8 p-6">
@@ -169,6 +199,13 @@ export default function SecurityPage() {
 
       <div className="grid gap-8 lg:grid-cols-2">
         <form className="space-y-4 rounded border border-gray-200 p-6 shadow-sm" onSubmit={onPasswordSubmit} noValidate>
+          {showPasswordSummary ? (
+            <FormErrorSummary
+              errors={passwordErrors}
+              title={tCommon('forms.errorSummary.title')}
+              description={tCommon('forms.errorSummary.description')}
+            />
+          ) : null}
           <div>
             <h2 className="text-lg font-semibold">{t('security.password.title')}</h2>
             <p className="text-sm text-gray-600">{t('security.password.description')}</p>
@@ -183,9 +220,15 @@ export default function SecurityPage() {
               autoComplete="current-password"
               className="mt-1 w-full rounded border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...registerPassword('currentPassword')}
+              aria-invalid={Boolean(passwordErrors.currentPassword)}
+              aria-describedby={describedBy('currentPassword', {
+                includeError: Boolean(passwordErrors.currentPassword),
+              })}
             />
             {passwordErrors.currentPassword ? (
-              <p className="mt-1 text-sm text-red-600">{passwordErrors.currentPassword.message}</p>
+              <p id={fieldErrorId('currentPassword')} className="mt-1 text-sm text-red-600">
+                {passwordErrors.currentPassword.message}
+              </p>
             ) : null}
           </div>
           <div>
@@ -198,9 +241,15 @@ export default function SecurityPage() {
               autoComplete="new-password"
               className="mt-1 w-full rounded border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...registerPassword('newPassword')}
+              aria-invalid={Boolean(passwordErrors.newPassword)}
+              aria-describedby={describedBy('newPassword', {
+                includeError: Boolean(passwordErrors.newPassword),
+              })}
             />
             {passwordErrors.newPassword ? (
-              <p className="mt-1 text-sm text-red-600">{passwordErrors.newPassword.message}</p>
+              <p id={fieldErrorId('newPassword')} className="mt-1 text-sm text-red-600">
+                {passwordErrors.newPassword.message}
+              </p>
             ) : null}
           </div>
           <button
@@ -215,38 +264,69 @@ export default function SecurityPage() {
         </form>
 
         <form className="space-y-4 rounded border border-gray-200 p-6 shadow-sm" onSubmit={onEmailSubmit} noValidate>
+          {showEmailSummary ? (
+            <FormErrorSummary
+              errors={emailErrors}
+              title={tCommon('forms.errorSummary.title')}
+              description={tCommon('forms.errorSummary.description')}
+              getFieldId={mapEmailFieldId}
+              getItemLabel={(name) => {
+                if (name === 'currentPassword') {
+                  return t('security.email.fields.currentPassword');
+                }
+                if (name === 'newEmail') {
+                  return t('security.email.fields.newEmail');
+                }
+                return undefined;
+              }}
+            />
+          ) : null}
           <div>
             <h2 className="text-lg font-semibold">{t('security.email.title')}</h2>
             <p className="text-sm text-gray-600">{t('security.email.description')}</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700" htmlFor="currentEmailPassword">
+            <label
+              className="block text-sm font-medium text-gray-700"
+              htmlFor={emailFieldId('currentPassword')}
+            >
               {t('security.email.fields.currentPassword')}
             </label>
             <input
-              id="currentEmailPassword"
+              id={emailFieldId('currentPassword')}
               type="password"
               autoComplete="current-password"
               className="mt-1 w-full rounded border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...registerEmail('currentPassword')}
+              aria-invalid={Boolean(emailErrors.currentPassword)}
+              aria-describedby={emailDescribedBy('currentPassword')}
             />
             {emailErrors.currentPassword ? (
-              <p className="mt-1 text-sm text-red-600">{emailErrors.currentPassword.message}</p>
+              <p id={emailFieldErrorId('currentPassword')} className="mt-1 text-sm text-red-600">
+                {emailErrors.currentPassword.message}
+              </p>
             ) : null}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700" htmlFor="newEmail">
+            <label
+              className="block text-sm font-medium text-gray-700"
+              htmlFor={emailFieldId('newEmail')}
+            >
               {t('security.email.fields.newEmail')}
             </label>
             <input
-              id="newEmail"
+              id={emailFieldId('newEmail')}
               type="email"
               autoComplete="email"
               className="mt-1 w-full rounded border border-gray-300 p-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...registerEmail('newEmail')}
+              aria-invalid={Boolean(emailErrors.newEmail)}
+              aria-describedby={emailDescribedBy('newEmail')}
             />
             {emailErrors.newEmail ? (
-              <p className="mt-1 text-sm text-red-600">{emailErrors.newEmail.message}</p>
+              <p id={emailFieldErrorId('newEmail')} className="mt-1 text-sm text-red-600">
+                {emailErrors.newEmail.message}
+              </p>
             ) : null}
           </div>
           <button
