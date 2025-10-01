@@ -120,14 +120,22 @@ describe('LanguageSwitcher', () => {
     });
     const englishOption = screen.getByRole('option', { name: 'English' });
     const spanishOption = screen.getByRole('option', { name: 'Spanish' });
+    const listbox = screen.getByRole('listbox');
 
-    await waitFor(() => expect(englishOption).toHaveFocus());
+    await waitFor(() => expect(listbox).toHaveFocus());
+    expect(listbox).toHaveAttribute('aria-activedescendant', englishOption.id);
+
+    await user.tab();
+    expect(englishOption).toHaveFocus();
 
     await user.tab();
     expect(spanishOption).toHaveFocus();
 
-    await user.tab();
+    await user.tab({ shift: true });
     expect(englishOption).toHaveFocus();
+
+    await user.tab({ shift: true });
+    expect(listbox).toHaveFocus();
 
     const results = await axe(dialog);
     expect(results.violations).toHaveLength(0);
