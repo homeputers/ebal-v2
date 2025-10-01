@@ -173,6 +173,23 @@ describe('AppShell', () => {
     expect(activeLink).toHaveAttribute('aria-current', 'page');
   });
 
+  it('allows skipping directly to the main content', async () => {
+    await renderAppShell('en');
+
+    const user = userEvent.setup();
+
+    await user.tab();
+    const skipLink = screen.getByRole('link', { name: 'Skip to main content' });
+    expect(skipLink).toHaveFocus();
+    expect(skipLink).toHaveAttribute('href', '#main-content');
+
+    await user.keyboard('{Enter}');
+
+    const main = screen.getByRole('main');
+    expect(main).toHaveAttribute('id', 'main-content');
+    expect(main).toHaveFocus();
+  });
+
   it('opens the account menu from the header when authenticated', async () => {
     setIsAuthenticated(true);
     mockUseAuth.mockClear();

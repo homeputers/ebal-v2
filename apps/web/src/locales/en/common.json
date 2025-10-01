@@ -87,5 +87,11 @@
       "title": "Please fix the highlighted fields",
       "description": "Select a link below to jump to the problem field."
     }
+  },
+  "layout": {
+    "skipToMainContent": "Skip to main content",
+    "footer": {
+      "copyright": "© {{year}} {{app}}"
+    }
   }
 }
