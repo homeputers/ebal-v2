@@ -1,6 +1,7 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { I18nextProvider } from 'react-i18next';
+import { axe } from 'vitest-axe';
 
 const { mockNavigate } = vi.hoisted(() => ({
   mockNavigate: vi.fn(),
@@ -104,5 +105,47 @@ describe('LanguageSwitcher', () => {
     const button = screen.getByRole('button', { name: ariaLabel });
 
     expect(button).toHaveTextContent(label);
+  });
+
+  it('applies dialog semantics and traps focus while open', async () => {
+    const user = userEvent.setup();
+
+    renderLanguageSwitcher('en');
+
+    const trigger = screen.getByRole('button', { name: /Change language/i });
+    await user.click(trigger);
+
+    const dialog = await screen.findByRole('dialog', {
+      name: /Select language/i,
+    });
+    const englishOption = screen.getByRole('option', { name: 'English' });
+    const spanishOption = screen.getByRole('option', { name: 'Spanish' });
+    const listbox = screen.getByRole('listbox');
+
+    await waitFor(() => expect(listbox).toHaveFocus());
+    expect(listbox).toHaveAttribute('aria-activedescendant', englishOption.id);
+
+    await user.tab();
+    expect(englishOption).toHaveFocus();
+
+    await user.tab();
+    expect(spanishOption).toHaveFocus();
+
+    await user.tab({ shift: true });
+    expect(englishOption).toHaveFocus();
+
+    await user.tab({ shift: true });
+    expect(listbox).toHaveFocus();
+
+    const results = await axe(dialog);
+    expect(results.violations).toHaveLength(0);
+
+    await user.keyboard('{Escape}');
+
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog', { name: /Select language/i })).not.toBeInTheDocument(),
+    );
+
+    expect(trigger).toHaveFocus();
   });
 });

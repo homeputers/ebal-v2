@@ -30,6 +30,7 @@ export function AppBrandLink({
 }: AppBrandLinkProps) {
   const { t } = useTranslation('common');
   const label = ariaLabel ?? t('app.title');
+  const brandText = t('app.brandInitials', { defaultValue: 'EBaL' });
 
   const baseClassName =
     'inline-flex items-center gap-2 text-foreground transition-colors hover:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background';
@@ -51,7 +52,7 @@ export function AppBrandLink({
       <img src={logoSrc} alt="" aria-hidden="true" className={mergedImageClassName} />
       {showText ? (
         <span aria-hidden="true" className={mergedTextClassName}>
-          EBaL
+          {brandText}
         </span>
       ) : null}
     </Link>

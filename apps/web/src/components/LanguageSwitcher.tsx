@@ -40,6 +40,8 @@ export function LanguageSwitcher({
   const { close, isOpen, toggle, triggerRef, popoverRef } =
     useHeaderPopover<HTMLDivElement>();
   const switcherName = useId();
+  const dialogLabelId = `${switcherName}-dialog-label`;
+  const listboxId = `${switcherName}-listbox`;
 
   const languages = useMemo(
     () => Array.from(new Set(SUPPORTED_LANGUAGES)),
@@ -155,7 +157,7 @@ export function LanguageSwitcher({
       <button
         ref={triggerRef}
         type="button"
-        aria-haspopup="listbox"
+        aria-haspopup="dialog"
         aria-expanded={isOpen}
         aria-label={triggerLabel}
         className={triggerClassName}
@@ -187,38 +189,50 @@ export function LanguageSwitcher({
       {isOpen ? (
         <div
           ref={popoverRef}
-          role="listbox"
-          aria-label={t('language.select')}
-          aria-activedescendant={`${switcherName}-${currentLanguage}`}
-          className="absolute right-0 z-50 mt-2 w-40 overflow-hidden rounded-md border border-border bg-card py-1 shadow-lg focus:outline-none"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={dialogLabelId}
+          className="absolute right-0 z-50 mt-2 w-40 overflow-hidden rounded-md border border-border bg-card py-2 shadow-lg focus:outline-none"
           tabIndex={-1}
         >
-          {languages.map((language) => {
-            const isSelected = language === currentLanguage;
-            const optionId = `${switcherName}-${language}`;
+          <p id={dialogLabelId} className="sr-only">
+            {t('language.select')}
+          </p>
+          <div
+            id={listboxId}
+            role="listbox"
+            aria-labelledby={dialogLabelId}
+            aria-activedescendant={`${switcherName}-${currentLanguage}`}
+            tabIndex={0}
+            className="space-y-1"
+          >
+            {languages.map((language) => {
+              const isSelected = language === currentLanguage;
+              const optionId = `${switcherName}-${language}`;
 
-            return (
-              <div key={language} role="none" className="px-1">
-                <button
-                  type="button"
-                  id={optionId}
-                  role="option"
-                  aria-selected={isSelected}
-                  className={`flex w-full items-center justify-between rounded px-2 py-2 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                    isSelected
-                      ? 'bg-muted font-medium text-foreground'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
-                  onClick={() => handleSelect(language)}
-                >
-                  <span>{getLanguageLabel(language)}</span>
-                  {isSelected ? (
-                    <span aria-hidden="true">{t('language.selectedIndicator')}</span>
-                  ) : null}
-                </button>
-              </div>
-            );
-          })}
+              return (
+                <div key={language} role="none" className="px-1">
+                  <button
+                    type="button"
+                    id={optionId}
+                    role="option"
+                    aria-selected={isSelected}
+                    className={`flex w-full items-center justify-between rounded px-2 py-2 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                      isSelected
+                        ? 'bg-muted font-medium text-foreground'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    }`}
+                    onClick={() => handleSelect(language)}
+                  >
+                    <span>{getLanguageLabel(language)}</span>
+                    {isSelected ? (
+                      <span aria-hidden="true">{t('language.selectedIndicator')}</span>
+                    ) : null}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         </div>
       ) : null}
     </div>

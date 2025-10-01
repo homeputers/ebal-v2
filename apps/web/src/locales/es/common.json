@@ -1,6 +1,7 @@
 {
   "app": {
-    "title": "Every Breath and Life"
+    "title": "Every Breath and Life",
+    "brandInitials": "EBaL"
   },
   "nav": {
     "songs": "Canciones",
