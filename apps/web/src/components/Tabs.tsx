@@ -2,6 +2,7 @@ import {
   KeyboardEvent,
   ReactNode,
   useCallback,
+  useEffect,
   useId,
   useMemo,
   useRef,
@@ -83,17 +84,39 @@ export function Tabs({
     return firstEnabledIndex;
   }, [currentTabId, firstEnabledIndex, tabs]);
 
-  const [focusedTabId, setFocusedTabId] = useState<string | null>(() => {
+  const selectedTabId = useMemo(() => {
     const selectedTab = tabs[selectedIndex];
 
     if (selectedTab && !selectedTab.disabled) {
       return selectedTab.id;
     }
 
+    return null;
+  }, [selectedIndex, tabs]);
+
+  const [focusedTabId, setFocusedTabId] = useState<string | null>(() => {
+    if (selectedTabId) {
+      return selectedTabId;
+    }
+
     const fallback = tabs.find((tab) => !tab.disabled);
 
     return fallback?.id ?? null;
   });
+
+  useEffect(() => {
+    setFocusedTabId((previousFocused) => {
+      if (!selectedTabId) {
+        return null;
+      }
+
+      if (previousFocused === selectedTabId) {
+        return previousFocused;
+      }
+
+      return selectedTabId;
+    });
+  }, [selectedTabId]);
 
   const resolvedFocusedTabId = useMemo(() => {
     if (
@@ -103,24 +126,14 @@ export function Tabs({
       return focusedTabId;
     }
 
-    const selectedTab = tabs[selectedIndex];
-
-    if (selectedTab && !selectedTab.disabled) {
-      return selectedTab.id;
+    if (selectedTabId) {
+      return selectedTabId;
     }
 
     const fallback = tabs.find((tab) => !tab.disabled);
 
     return fallback?.id ?? null;
-  }, [focusedTabId, selectedIndex, tabs]);
-
-  const focusedIndex = useMemo(() => {
-    if (!resolvedFocusedTabId) {
-      return -1;
-    }
-
-    return tabs.findIndex((tab) => tab.id === resolvedFocusedTabId);
-  }, [resolvedFocusedTabId, tabs]);
+  }, [focusedTabId, selectedTabId, tabs]);
 
   const focusTab = useCallback(
     (index: number) => {
@@ -186,7 +199,7 @@ export function Tabs({
         case ' ': {
           const tab = tabs[index];
 
-          if (!tab?.disabled && tab.id !== currentTabId) {
+          if (!tab?.disabled && tab.id !== selectedTabId) {
             event.preventDefault();
             onTabChange(tab.id);
           }
@@ -202,18 +215,18 @@ export function Tabs({
         focusTab(nextIndex);
         const nextTab = tabs[nextIndex];
 
-        if (nextTab && !nextTab.disabled && nextTab.id !== currentTabId) {
+        if (nextTab && !nextTab.disabled && nextTab.id !== selectedTabId) {
           onTabChange(nextTab.id);
         }
       }
     },
     [
-      currentTabId,
       firstEnabledIndex,
       focusTab,
       lastEnabledIndex,
       moveFocus,
       onTabChange,
+      selectedTabId,
       tabs,
     ],
   );
@@ -278,7 +291,7 @@ export function Tabs({
         {tabs.map((tab, index) => {
           const tabId = `${generatedId}-tab-${tab.id}`;
           const panelId = `${generatedId}-panel-${tab.id}`;
-          const isSelected = tab.id === currentTabId;
+          const isSelected = tab.id === selectedTabId;
           const isDisabled = Boolean(tab.disabled);
           const isFocused = tab.id === resolvedFocusedTabId;
 
@@ -303,7 +316,7 @@ export function Tabs({
                 isDisabled,
               })}
               onClick={() => {
-                if (isDisabled || tab.id === currentTabId) {
+                if (isDisabled || tab.id === selectedTabId) {
                   return;
                 }
 
@@ -321,7 +334,7 @@ export function Tabs({
         {tabs.map((tab) => {
           const tabId = `${generatedId}-tab-${tab.id}`;
           const panelId = `${generatedId}-panel-${tab.id}`;
-          const isSelected = tab.id === currentTabId;
+          const isSelected = tab.id === selectedTabId;
 
           return (
             <div
@@ -331,7 +344,7 @@ export function Tabs({
               aria-labelledby={tabId}
               hidden={!isSelected}
               className={getPanelClassName(tab, isSelected)}
-              tabIndex={0}
+              {...(isSelected ? { tabIndex: 0 } : {})}
             >
               {isSelected ? tab.content : null}
             </div>

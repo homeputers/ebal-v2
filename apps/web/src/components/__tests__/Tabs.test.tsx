@@ -6,28 +6,39 @@ import { TabDefinition, Tabs } from '../Tabs';
 
 type ExampleTabsProps = {
   onTabChange?: (tabId: string) => void;
+  initialTabId?: string;
+  disabledTabIds?: string[];
 };
 
-function ExampleTabs({ onTabChange }: ExampleTabsProps) {
+function ExampleTabs({
+  onTabChange,
+  initialTabId,
+  disabledTabIds = [],
+}: ExampleTabsProps) {
   const tabs: TabDefinition[] = [
     {
       id: 'general',
       label: 'General',
       content: <div>General content</div>,
+      disabled: disabledTabIds.includes('general'),
     },
     {
       id: 'permissions',
       label: 'Permissions',
       content: <div>Permissions content</div>,
+      disabled: disabledTabIds.includes('permissions'),
     },
     {
       id: 'notifications',
       label: 'Notifications',
       content: <div>Notifications content</div>,
+      disabled: disabledTabIds.includes('notifications'),
     },
   ];
 
-  const [currentTabId, setCurrentTabId] = useState(tabs[0].id);
+  const [currentTabId, setCurrentTabId] = useState(
+    initialTabId ?? tabs[0].id,
+  );
 
   const handleTabChange = (tabId: string) => {
     onTabChange?.(tabId);
@@ -118,5 +129,42 @@ describe('Tabs', () => {
 
     expect(permissionsPanel).toBeVisible();
     expect(generalPanel).not.toBeVisible();
+  });
+
+  it('falls back to the first enabled tab when the current tab is missing', () => {
+    render(<ExampleTabs initialTabId="missing" />);
+
+    const generalTab = screen.getByRole('tab', { name: 'General' });
+    const permissionsTab = screen.getByRole('tab', { name: 'Permissions' });
+
+    expect(generalTab).toHaveAttribute('aria-selected', 'true');
+    expect(generalTab).toHaveAttribute('tabindex', '0');
+    expect(permissionsTab).toHaveAttribute('aria-selected', 'false');
+    expect(permissionsTab).toHaveAttribute('tabindex', '-1');
+  });
+
+  it('ignores disabled tabs when determining the selected tab', () => {
+    render(
+      <ExampleTabs initialTabId="general" disabledTabIds={['general']} />,
+    );
+
+    const generalTab = screen.getByRole('tab', { name: 'General' });
+    const permissionsTab = screen.getByRole('tab', { name: 'Permissions' });
+
+    expect(generalTab).toHaveAttribute('aria-disabled', 'true');
+    expect(generalTab).toHaveAttribute('tabindex', '-1');
+    expect(permissionsTab).toHaveAttribute('aria-selected', 'true');
+    expect(permissionsTab).toHaveAttribute('tabindex', '0');
+  });
+
+  it('does not emit onTabChange when clicking the active tab', () => {
+    const onTabChange = vi.fn();
+
+    render(<ExampleTabs onTabChange={onTabChange} />);
+
+    const generalTab = screen.getByRole('tab', { name: 'General' });
+    fireEvent.click(generalTab);
+
+    expect(onTabChange).not.toHaveBeenCalled();
   });
 });
