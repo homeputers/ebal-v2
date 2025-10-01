@@ -57,6 +57,17 @@ export default function Modal({
       return;
     }
 
+    const autoFocusCandidate = dialog.querySelector<HTMLElement>('[data-autofocus]');
+
+    if (
+      autoFocusCandidate &&
+      !autoFocusCandidate.hasAttribute('disabled') &&
+      autoFocusCandidate.tabIndex !== -1
+    ) {
+      autoFocusCandidate.focus({ preventScroll: true });
+      return;
+    }
+
     const focusable = Array.from(
       dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTORS.join(',')),
     ).filter(

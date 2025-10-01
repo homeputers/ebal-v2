@@ -43,6 +43,7 @@ type EditFormValues = z.infer<typeof editSchema>;
 type BaseFormProps = {
   onCancel?: () => void;
   isSubmitting?: boolean;
+  autoFocusFirstField?: boolean;
 };
 
 type UserCreateFormProps = BaseFormProps & {
@@ -81,6 +82,7 @@ export function UserCreateForm({
   onSubmit,
   onCancel,
   isSubmitting,
+  autoFocusFirstField = false,
 }: UserCreateFormProps) {
   const { t } = useTranslation('adminUsers');
   const { t: tCommon } = useTranslation('common');
@@ -141,6 +143,7 @@ export function UserCreateForm({
           id="email"
           type="email"
           {...register('email')}
+          data-autofocus={autoFocusFirstField ? 'true' : undefined}
           className="mt-1 w-full rounded border p-2"
           aria-invalid={Boolean(errors.email)}
           aria-describedby={describedBy('email', { includeError: Boolean(errors.email) })}
@@ -224,6 +227,7 @@ export function UserEditForm({
   onSubmit,
   onCancel,
   isSubmitting,
+  autoFocusFirstField = false,
 }: UserEditFormProps) {
   const { t } = useTranslation('adminUsers');
   const { t: tCommon } = useTranslation('common');
@@ -285,6 +289,7 @@ export function UserEditForm({
         <input
           id="displayName"
           {...register('displayName')}
+          data-autofocus={autoFocusFirstField ? 'true' : undefined}
           className="mt-1 w-full rounded border p-2"
           aria-invalid={Boolean(errors.displayName)}
           aria-describedby={describedBy('displayName', {

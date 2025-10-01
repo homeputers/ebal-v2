@@ -36,6 +36,27 @@ describe('Modal', () => {
     expect(results.violations).toHaveLength(0);
   });
 
+  it('focuses the element marked with data-autofocus when opening', async () => {
+    render(
+      <Modal
+        open
+        onClose={() => undefined}
+        closeLabel="Close dialog"
+        titleId="modal-title"
+      >
+        <h2 id="modal-title">Focus target</h2>
+        <button type="button" data-autofocus>
+          Preferred
+        </button>
+        <button type="button">Secondary</button>
+      </Modal>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Preferred' })).toHaveFocus(),
+    );
+  });
+
   it('traps focus within the modal', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();

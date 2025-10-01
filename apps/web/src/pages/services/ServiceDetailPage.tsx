@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
+import { PageHeading } from '@/components/layout/PageHeading';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import type { components } from '../../api/types';
@@ -151,11 +152,11 @@ export default function ServiceDetailPage() {
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold">
+          <PageHeading autoFocus className="text-xl font-semibold">
             {service.startsAt
               ? formatDate(service.startsAt, i18n.language)
               : t('fallback.title')}
-          </h1>
+          </PageHeading>
           {service.location && <div>{service.location}</div>}
         </div>
         <div className="flex gap-2">
@@ -375,6 +376,7 @@ export default function ServiceDetailPage() {
           }}
           onSubmit={handleServiceUpdate}
           onCancel={() => setEditingService(false)}
+          autoFocusFirstField
         />
       </Modal>
     </div>

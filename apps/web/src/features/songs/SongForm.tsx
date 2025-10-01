@@ -23,15 +23,19 @@ export type SongFormValues = z.infer<typeof schema>;
 
 type FieldName = keyof SongFormValues;
 
+type SongFormProps = {
+  defaultValues?: SongFormValues;
+  onSubmit: (values: components['schemas']['SongRequest']) => void;
+  onCancel?: () => void;
+  autoFocusFirstField?: boolean;
+};
+
 export function SongForm({
   defaultValues,
   onSubmit,
   onCancel,
-}: {
-  defaultValues?: SongFormValues;
-  onSubmit: (values: components['schemas']['SongRequest']) => void;
-  onCancel?: () => void;
-}) {
+  autoFocusFirstField = false,
+}: SongFormProps) {
   const { t } = useTranslation('songs');
   const { t: tCommon } = useTranslation('common');
 
@@ -103,6 +107,7 @@ export function SongForm({
           })}
           placeholder={titleField.placeholder}
           {...register('title')}
+          data-autofocus={autoFocusFirstField ? 'true' : undefined}
           className="border p-2 rounded w-full"
         />
         {titleField.helpText ? (

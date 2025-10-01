@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { PageHeading } from '@/components/layout/PageHeading';
 
 type AuthPageLayoutProps = {
   title: string;
@@ -18,7 +19,9 @@ export function AuthPageLayout({
       <div className="w-full max-w-md space-y-6">
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">{title}</h1>
+            <PageHeading autoFocus className="text-2xl font-semibold text-gray-900">
+              {title}
+            </PageHeading>
             {description ? (
               <p className="mt-2 text-sm text-gray-600">{description}</p>
             ) : null}

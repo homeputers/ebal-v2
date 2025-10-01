@@ -21,15 +21,19 @@ const schema = z.object({
 
 export type ArrangementFormValues = z.infer<typeof schema>;
 
+type ArrangementFormProps = {
+  defaultValues?: ArrangementFormValues;
+  onSubmit: (values: components['schemas']['ArrangementRequest']) => void;
+  onCancel?: () => void;
+  autoFocusFirstField?: boolean;
+};
+
 export function ArrangementForm({
   defaultValues,
   onSubmit,
   onCancel,
-}: {
-  defaultValues?: ArrangementFormValues;
-  onSubmit: (values: components['schemas']['ArrangementRequest']) => void;
-  onCancel?: () => void;
-}) {
+  autoFocusFirstField = false,
+}: ArrangementFormProps) {
   const { t } = useTranslation('arrangements');
   const { t: tCommon } = useTranslation('common');
 
@@ -84,6 +88,7 @@ export function ArrangementForm({
             <input
               id="key"
               {...register('key')}
+              data-autofocus={autoFocusFirstField ? 'true' : undefined}
               className="border p-2 rounded w-full"
               aria-invalid={Boolean(errors.key)}
               aria-describedby={describedBy('key', { includeError: Boolean(errors.key) })}

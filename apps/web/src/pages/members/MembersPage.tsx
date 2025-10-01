@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PageHeading } from '@/components/layout/PageHeading';
 import type { components } from '../../api/types';
 import {
   useMembersList,
@@ -75,7 +76,9 @@ export default function MembersPage() {
     <div className="p-4">
       <div className="mb-4">
         <div className="flex items-baseline justify-between gap-2">
-          <h1 className="text-xl font-semibold">{t('page.title')}</h1>
+          <PageHeading autoFocus className="text-xl font-semibold">
+            {t('page.title')}
+          </PageHeading>
           {shouldShowCount ? (
             <span className="text-sm text-gray-600">
               {t('count', { count: memberCount })}
@@ -177,7 +180,11 @@ export default function MembersPage() {
         <h2 id={createTitleId} className="text-lg font-semibold mb-2">
           {t('modals.createTitle')}
         </h2>
-        <MemberForm onSubmit={handleCreate} onCancel={() => setCreating(false)} />
+        <MemberForm
+          onSubmit={handleCreate}
+          onCancel={() => setCreating(false)}
+          autoFocusFirstField
+        />
       </Modal>
       <Modal
         open={!!editing}
@@ -200,6 +207,7 @@ export default function MembersPage() {
             }}
             onSubmit={(vals) => handleUpdate(editing.id!, vals)}
             onCancel={() => setEditing(null)}
+            autoFocusFirstField
           />
         )}
       </Modal>

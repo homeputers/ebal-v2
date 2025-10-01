@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PageHeading } from '@/components/layout/PageHeading';
 import { toast } from 'sonner';
 
 import type { CreateUserBody } from '@/api/users';
@@ -26,7 +27,9 @@ export default function UserCreatePage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">{t('page.createTitle')}</h1>
+          <PageHeading autoFocus className="text-2xl font-semibold">
+            {t('page.createTitle')}
+          </PageHeading>
           <p className="text-sm text-gray-600">{t('create.heading')}</p>
         </div>
         <button
@@ -42,6 +45,7 @@ export default function UserCreatePage() {
         onSubmit={handleSubmit}
         onCancel={() => navigate('..')}
         isSubmitting={createMutation.isPending}
+        autoFocusFirstField
       />
     </div>
   );
