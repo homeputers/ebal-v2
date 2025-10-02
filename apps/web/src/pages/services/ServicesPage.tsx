@@ -63,6 +63,9 @@ export default function ServicesPage() {
   >(null);
   const createTitleId = useId();
   const editTitleId = useId();
+  const searchInputId = useId();
+  const fromFilterId = useId();
+  const toFilterId = useId();
 
   const canManageServices = hasRole('ADMIN') || hasRole('PLANNER');
 
@@ -136,19 +139,31 @@ export default function ServicesPage() {
         {t('page.title')}
       </PageHeading>
       <div className="flex flex-wrap items-end gap-2 mb-4">
+        <label className="sr-only" htmlFor={searchInputId}>
+          {t('list.searchLabel')}
+        </label>
         <input
+          id={searchInputId}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t('list.searchPlaceholder')}
           className="border p-2 rounded w-full max-w-sm"
         />
+        <label className="sr-only" htmlFor={fromFilterId}>
+          {t('list.fromDateLabel')}
+        </label>
         <input
+          id={fromFilterId}
           type="date"
           value={fromParam}
           onChange={(e) => handleDateChange('from', e.target.value)}
           className="border p-2 rounded"
         />
+        <label className="sr-only" htmlFor={toFilterId}>
+          {t('list.toDateLabel')}
+        </label>
         <input
+          id={toFilterId}
           type="date"
           value={toParam}
           onChange={(e) => handleDateChange('to', e.target.value)}

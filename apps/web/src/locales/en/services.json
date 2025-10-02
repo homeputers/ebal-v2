@@ -13,7 +13,10 @@
     "planView": "Plan View"
   },
   "list": {
+    "searchLabel": "Search services",
     "searchPlaceholder": "Search...",
+    "fromDateLabel": "From date",
+    "toDateLabel": "To date",
     "empty": "No services found",
     "deleteConfirm": "Are you sure you want to delete this service? This action cannot be undone."
   },

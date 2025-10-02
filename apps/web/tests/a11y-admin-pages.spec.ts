@@ -280,7 +280,7 @@ test.describe('Admin surface accessibility', () => {
     await runCriticalAxeAudit(page);
 
     await page.keyboard.press('Tab');
-    await expect(page.getByRole('button', { name: 'Edit' })).toBeFocused();
+    await expect(page.getByRole('button', { name: 'Edit' }).first()).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(page.getByRole('button', { name: 'New Arrangement' })).toBeFocused();
   });
@@ -322,12 +322,10 @@ test.describe('Admin surface accessibility', () => {
     await expect(page.getByPlaceholder('Search...')).toBeFocused();
 
     await page.keyboard.press('Tab');
-    const fromDateInput = page.locator('input[type="date"]').first();
-    await expect(fromDateInput).toBeFocused();
+    await expect(page.getByLabel('From date')).toBeFocused();
 
     await page.keyboard.press('Tab');
-    const toDateInput = page.locator('input[type="date"]').nth(1);
-    await expect(toDateInput).toBeFocused();
+    await expect(page.getByLabel('To date')).toBeFocused();
 
     await page.keyboard.press('Tab');
     await expect(page.getByRole('button', { name: 'New Service' })).toBeFocused();
