@@ -6,6 +6,7 @@
     "new": "New Group"
   },
   "list": {
+    "searchLabel": "Search groups",
     "searchPlaceholder": "Search by name...",
     "empty": "No groups found",
     "deleteConfirm": "Are you sure you want to delete this group? This action cannot be undone."

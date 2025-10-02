@@ -18,6 +18,7 @@
     "nameLabel": "Name"
   },
   "list": {
+    "searchLabel": "Search song sets",
     "searchPlaceholder": "Search by name...",
     "empty": "No song sets found"
   },

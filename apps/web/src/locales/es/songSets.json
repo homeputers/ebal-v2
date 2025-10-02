@@ -18,6 +18,7 @@
     "nameLabel": "Nombre"
   },
   "list": {
+    "searchLabel": "Buscar repertorios",
     "searchPlaceholder": "Buscar por nombre...",
     "empty": "No se encontraron conjuntos de canciones"
   },

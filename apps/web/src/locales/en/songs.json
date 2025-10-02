@@ -50,6 +50,7 @@
     "editTitle": "Edit Song"
   },
   "list": {
+    "searchLabel": "Search songs",
     "searchPlaceholder": "Search by title...",
     "empty": "No songs found",
     "deleteConfirm": "Are you sure you want to delete this song? This action cannot be undone."

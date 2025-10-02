@@ -36,6 +36,7 @@
     "new": "Nuevo miembro"
   },
   "list": {
+    "searchLabel": "Buscar miembros",
     "searchPlaceholder": "Buscar por nombre...",
     "empty": "No se encontraron miembros",
     "deleteConfirm": "¿Estás seguro de que deseas eliminar este miembro? Esta acción no se puede deshacer."

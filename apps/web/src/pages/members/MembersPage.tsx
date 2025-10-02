@@ -79,6 +79,13 @@ export default function MembersPage() {
 
   const createTitleId = useId();
   const editTitleId = useId();
+  const searchInputId = useId();
+  const searchLabel =
+    t('list.searchLabel', {
+      defaultValue: t('list.searchPlaceholder', {
+        defaultValue: tCommon('actions.search', { defaultValue: 'Search members' }),
+      }),
+    }) || t('list.searchPlaceholder');
 
   return (
     <div className="p-4">
@@ -95,13 +102,18 @@ export default function MembersPage() {
         </div>
       </div>
       <div className="flex items-center gap-2 mb-4">
+        <label className="sr-only" htmlFor={searchInputId}>
+          {searchLabel}
+        </label>
         <input
+          id={searchInputId}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t('list.searchPlaceholder')}
           className="border p-2 rounded w-full max-w-sm"
         />
         <button
+          type="button"
           onClick={() => setCreating(true)}
           className="px-4 py-2 bg-blue-500 text-white rounded"
         >
@@ -140,12 +152,14 @@ export default function MembersPage() {
                         <div className="flex gap-2 justify-end">
                           <button
                             className="px-2 py-1 text-sm bg-gray-200 rounded"
+                            type="button"
                             onClick={() => setEditing(m)}
                           >
                             {tCommon('actions.edit')}
                           </button>
                           <button
                             className="px-2 py-1 text-sm bg-red-500 text-white rounded"
+                            type="button"
                             onClick={() => m.id && handleDelete(m.id)}
                           >
                             {tCommon('actions.delete')}
@@ -160,6 +174,7 @@ export default function MembersPage() {
                 <button
                   className="px-3 py-1 border rounded disabled:opacity-50"
                   disabled={pageParam === 0}
+                  type="button"
                   onClick={() => goToPage(Math.max(0, pageParam - 1))}
                 >
                   {tCommon('pagination.previous')}
@@ -177,6 +192,7 @@ export default function MembersPage() {
                     data.totalPages !== undefined &&
                     data.number + 1 >= data.totalPages
                   }
+                  type="button"
                   onClick={() => goToPage(pageParam + 1)}
                 >
                   {tCommon('pagination.next')}
