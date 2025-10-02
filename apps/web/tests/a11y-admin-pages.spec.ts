@@ -377,7 +377,8 @@ test.describe('Admin surface accessibility', () => {
     await expect(menu).toHaveAttribute('aria-activedescendant', logoutItemId!);
 
     await page.keyboard.press('ArrowUp');
-    await expect(menu).toHaveAttribute('aria-activedescendant', changePasswordItemId!);
+    // The account menu stops looping upward, so pressing ArrowUp from the last item returns focus to the first option.
+    await expect(menu).toHaveAttribute('aria-activedescendant', profileItemId!);
 
     await page.keyboard.press('Escape');
     await expect(accountMenuTrigger).toBeFocused();
