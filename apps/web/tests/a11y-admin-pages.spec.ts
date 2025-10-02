@@ -355,20 +355,29 @@ test.describe('Admin surface accessibility', () => {
     });
     await accountMenuTrigger.click();
 
+    const menu = page.getByRole('menu');
+    await expect(menu).toBeFocused();
+
     const profileItem = page.getByRole('menuitem', { name: 'Profile' });
     await expect(profileItem).toBeVisible();
-    await expect(profileItem).toHaveAttribute('data-active', 'true');
+    const profileItemId = await profileItem.getAttribute('id');
+    expect(profileItemId).toBeTruthy();
+    await expect(menu).toHaveAttribute('aria-activedescendant', profileItemId!);
 
     await page.keyboard.press('ArrowDown');
     const changePasswordItem = page.getByRole('menuitem', { name: 'Change password' });
-    await expect(changePasswordItem).toHaveAttribute('data-active', 'true');
+    const changePasswordItemId = await changePasswordItem.getAttribute('id');
+    expect(changePasswordItemId).toBeTruthy();
+    await expect(menu).toHaveAttribute('aria-activedescendant', changePasswordItemId!);
 
     await page.keyboard.press('ArrowDown');
     const logoutItem = page.getByRole('menuitem', { name: 'Log out' });
-    await expect(logoutItem).toHaveAttribute('data-active', 'true');
+    const logoutItemId = await logoutItem.getAttribute('id');
+    expect(logoutItemId).toBeTruthy();
+    await expect(menu).toHaveAttribute('aria-activedescendant', logoutItemId!);
 
     await page.keyboard.press('ArrowUp');
-    await expect(changePasswordItem).toHaveAttribute('data-active', 'true');
+    await expect(menu).toHaveAttribute('aria-activedescendant', changePasswordItemId!);
 
     await page.keyboard.press('Escape');
     await expect(accountMenuTrigger).toBeFocused();
