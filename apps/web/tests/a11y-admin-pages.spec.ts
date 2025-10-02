@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page, type Route } from '@playwright/test';
+import { expect, test, type Locator, type Page, type Route } from '@playwright/test';
 
 type Json = Record<string, unknown> | Array<unknown>;
 
@@ -87,6 +87,20 @@ function assertNoCriticalViolations(results: Awaited<ReturnType<AxeBuilder['anal
 async function runCriticalAxeAudit(page: Page) {
   const results = await new AxeBuilder({ page }).analyze();
   assertNoCriticalViolations(results);
+}
+
+async function tabUntilFocused(page: Page, locator: Locator, maxPresses = 10) {
+  for (let attempt = 0; attempt < maxPresses; attempt += 1) {
+    await page.keyboard.press('Tab');
+
+    const isFocused = await locator.evaluate((node) => node === document.activeElement);
+
+    if (isFocused) {
+      return;
+    }
+  }
+
+  throw new Error('Unable to reach the requested focus target via Tab navigation.');
 }
 
 test.describe('Admin surface accessibility', () => {
@@ -318,16 +332,16 @@ test.describe('Admin surface accessibility', () => {
 
     await runCriticalAxeAudit(page);
 
-    await page.keyboard.press('Tab');
+    await tabUntilFocused(page, page.getByPlaceholder('Search...'));
     await expect(page.getByPlaceholder('Search...')).toBeFocused();
 
-    await page.keyboard.press('Tab');
+    await tabUntilFocused(page, page.getByLabel('From date'));
     await expect(page.getByLabel('From date')).toBeFocused();
 
-    await page.keyboard.press('Tab');
+    await tabUntilFocused(page, page.getByLabel('To date'));
     await expect(page.getByLabel('To date')).toBeFocused();
 
-    await page.keyboard.press('Tab');
+    await tabUntilFocused(page, page.getByRole('button', { name: 'New Service' }));
     await expect(page.getByRole('button', { name: 'New Service' })).toBeFocused();
 
     const accountMenuTrigger = page.getByRole('button', {
