@@ -6,6 +6,7 @@
     "new": "Nuevo grupo"
   },
   "list": {
+    "searchLabel": "Buscar grupos",
     "searchPlaceholder": "Buscar por nombre...",
     "empty": "No se encontraron grupos",
     "deleteConfirm": "¿Estás seguro de que deseas eliminar este grupo? Esta acción no se puede deshacer."

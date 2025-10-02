@@ -50,6 +50,7 @@
     "editTitle": "Editar canción"
   },
   "list": {
+    "searchLabel": "Buscar canciones",
     "searchPlaceholder": "Buscar por título...",
     "empty": "No se encontraron canciones",
     "deleteConfirm": "¿Estás seguro de que deseas eliminar esta canción? Esta acción no se puede deshacer."

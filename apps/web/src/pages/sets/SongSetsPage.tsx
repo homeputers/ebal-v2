@@ -70,6 +70,13 @@ export default function SongSetsPage() {
   const [editing, setEditing] = useState<{ id: string; name: string } | null>(null);
   const createTitleId = useId();
   const editTitleId = useId();
+  const searchInputId = useId();
+  const searchLabel =
+    t('list.searchLabel', {
+      defaultValue: t('list.searchPlaceholder', {
+        defaultValue: tCommon('actions.search', { defaultValue: 'Search song sets' }),
+      }),
+    }) || t('list.searchPlaceholder');
 
   const handleCreate = (values: SetFormValues) => {
     createMut.mutate(values, {
@@ -117,13 +124,18 @@ export default function SongSetsPage() {
         {t('page.title')}
       </PageHeading>
       <div className="flex items-center gap-2 mb-4">
+        <label className="sr-only" htmlFor={searchInputId}>
+          {searchLabel}
+        </label>
         <input
+          id={searchInputId}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t('list.searchPlaceholder')}
           className="border p-2 rounded w-full max-w-sm"
         />
         <button
+          type="button"
           onClick={() => setCreating(true)}
           className="px-4 py-2 bg-blue-500 text-white rounded"
         >
@@ -172,24 +184,26 @@ export default function SongSetsPage() {
                         <td className="p-2 align-top">{itemsCount ?? '—'}</td>
                         <td className="p-2 text-right align-top">
                           <div className="flex gap-2 justify-end">
-                            <Link
-                              to={setId}
-                              className="px-2 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200"
-                            >
-                              {tCommon('actions.open')}
-                            </Link>
-                            <button
-                              className="px-2 py-1 text-sm bg-gray-200 rounded"
-                              onClick={() => setEditing({ id: setId, name: set.name ?? '' })}
-                            >
-                              {tCommon('actions.edit')}
-                            </button>
-                            <button
-                              className="px-2 py-1 text-sm bg-red-500 text-white rounded"
-                              onClick={() => handleDelete(setId)}
-                            >
-                              {tCommon('actions.delete')}
-                            </button>
+                          <Link
+                            to={setId}
+                            className="px-2 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200"
+                          >
+                            {tCommon('actions.open')}
+                          </Link>
+                          <button
+                            className="px-2 py-1 text-sm bg-gray-200 rounded"
+                            type="button"
+                            onClick={() => setEditing({ id: setId, name: set.name ?? '' })}
+                          >
+                            {tCommon('actions.edit')}
+                          </button>
+                          <button
+                            className="px-2 py-1 text-sm bg-red-500 text-white rounded"
+                            type="button"
+                            onClick={() => handleDelete(setId)}
+                          >
+                            {tCommon('actions.delete')}
+                          </button>
                           </div>
                         </td>
                       </tr>
@@ -201,6 +215,7 @@ export default function SongSetsPage() {
                 <button
                   className="px-3 py-1 border rounded disabled:opacity-50"
                   disabled={pageParam === 0}
+                  type="button"
                   onClick={() => goToPage(pageParam - 1)}
                 >
                   {tCommon('pagination.previous')}
@@ -218,6 +233,7 @@ export default function SongSetsPage() {
                     data.totalPages !== undefined &&
                     data.number + 1 >= data.totalPages
                   }
+                  type="button"
                   onClick={() => goToPage(pageParam + 1)}
                 >
                   {tCommon('pagination.next')}

@@ -179,6 +179,7 @@ export default function ServicesPage() {
         />
         {canManageServices ? (
           <button
+            type="button"
             onClick={() => setCreating(true)}
             className="px-4 py-2 bg-blue-500 text-white rounded"
           >
@@ -234,12 +235,14 @@ export default function ServicesPage() {
                             <>
                               <button
                                 className="px-2 py-1 text-sm bg-gray-200 rounded"
+                                type="button"
                                 onClick={() => setEditing(s)}
                               >
                                 {tCommon('actions.edit')}
                               </button>
                               <button
                                 className="px-2 py-1 text-sm bg-red-500 text-white rounded"
+                                type="button"
                                 onClick={() => s.id && handleDelete(s.id)}
                               >
                                 {tCommon('actions.delete')}
@@ -256,6 +259,7 @@ export default function ServicesPage() {
                 <button
                   className="px-3 py-1 border rounded disabled:opacity-50"
                   disabled={pageParam === 0}
+                  type="button"
                   onClick={() => goToPage(Math.max(0, pageParam - 1))}
                 >
                   {tCommon('pagination.previous')}
@@ -273,6 +277,7 @@ export default function ServicesPage() {
                     data?.totalPages !== undefined &&
                     data.number + 1 >= data.totalPages
                   }
+                  type="button"
                   onClick={() => goToPage(pageParam + 1)}
                 >
                   {tCommon('pagination.next')}

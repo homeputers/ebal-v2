@@ -61,6 +61,13 @@ export default function SongsPage() {
   const [editing, setEditing] = useState<Song | null>(null);
   const createTitleId = useId();
   const editTitleId = useId();
+  const searchInputId = useId();
+  const searchLabel =
+    t('list.searchLabel', {
+      defaultValue: t('list.searchPlaceholder', {
+        defaultValue: tCommon('actions.search', { defaultValue: 'Search' }),
+      }),
+    }) || t('list.searchPlaceholder');
 
   const canManageSongs = hasRole('ADMIN') || hasRole('PLANNER');
 
@@ -98,7 +105,11 @@ export default function SongsPage() {
         {t('page.title')}
       </PageHeading>
       <div className="flex items-center gap-2 mb-4">
+        <label className="sr-only" htmlFor={searchInputId}>
+          {searchLabel}
+        </label>
         <input
+          id={searchInputId}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t('list.searchPlaceholder')}
@@ -106,6 +117,7 @@ export default function SongsPage() {
         />
         {canManageSongs && (
           <button
+            type="button"
             onClick={() => setCreating(true)}
             className="px-4 py-2 bg-blue-500 text-white rounded"
           >
@@ -118,6 +130,7 @@ export default function SongsPage() {
           {tags.map((t) => (
             <button
               key={t}
+              type="button"
               onClick={() => {
                 const params = new URLSearchParams(searchParams);
                 if (tagParam === t) params.delete('tag');
@@ -176,17 +189,19 @@ export default function SongsPage() {
                       {canManageSongs && (
                         <td className="p-2 text-right">
                           <div className="flex gap-2 justify-end">
-                            <button
-                              className="px-2 py-1 text-sm bg-gray-200 rounded"
-                              onClick={() => setEditing(s)}
-                            >
-                              {tCommon('actions.edit')}
-                            </button>
-                            <button
-                              className="px-2 py-1 text-sm bg-red-500 text-white rounded"
-                              onClick={() => s.id && handleDelete(s.id)}
-                            >
-                              {tCommon('actions.delete')}
+                          <button
+                            className="px-2 py-1 text-sm bg-gray-200 rounded"
+                            type="button"
+                            onClick={() => setEditing(s)}
+                          >
+                            {tCommon('actions.edit')}
+                          </button>
+                          <button
+                            className="px-2 py-1 text-sm bg-red-500 text-white rounded"
+                            type="button"
+                            onClick={() => s.id && handleDelete(s.id)}
+                          >
+                            {tCommon('actions.delete')}
                             </button>
                           </div>
                         </td>
@@ -199,6 +214,7 @@ export default function SongsPage() {
                 <button
                   className="px-3 py-1 border rounded disabled:opacity-50"
                   disabled={pageParam === 0}
+                  type="button"
                   onClick={() => goToPage(Math.max(0, pageParam - 1))}
                 >
                   {tCommon('pagination.previous')}
@@ -216,6 +232,7 @@ export default function SongsPage() {
                     data.totalPages !== undefined &&
                     data.number + 1 >= data.totalPages
                   }
+                  type="button"
                   onClick={() => goToPage(pageParam + 1)}
                 >
                   {tCommon('pagination.next')}
