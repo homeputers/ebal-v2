@@ -161,6 +161,7 @@ test.describe('Admin surface accessibility', () => {
 
     await page.keyboard.press('Escape');
     await expect(createMemberDialog).toBeHidden();
+    await expect(newMemberButton).toBeFocused();
 
     await newMemberButton.click();
     await expect(createMemberDialog).toBeVisible();
@@ -398,5 +399,6 @@ test.describe('Admin surface accessibility', () => {
     await expect(createSetDialog).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(createSetDialog).toBeHidden();
+    await expect(newSetButton).toBeFocused();
   });
 });
