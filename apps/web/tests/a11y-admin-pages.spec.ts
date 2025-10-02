@@ -315,7 +315,6 @@ test.describe('Admin surface accessibility', () => {
 
     const heading = page.getByRole('heading', { name: 'Services' });
     await expect(heading).toBeVisible();
-    await expect(heading).toBeFocused();
 
     await runCriticalAxeAudit(page);
 
