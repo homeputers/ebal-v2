@@ -1,3 +1,19 @@
+## [0.5.1](https://github.com/homeputers/ebal-v2/compare/v0.5.0...v0.5.1) (2025-10-02)
+
+### Features
+
+* add accessible tabs component ([#155](https://github.com/homeputers/ebal-v2/issues/155)) ([cdec4e3](https://github.com/homeputers/ebal-v2/commit/cdec4e37345f0eded415e9abd35c3f629a7a53a9))
+* add contrast guard for theme tokens ([#161](https://github.com/homeputers/ebal-v2/issues/161)) ([b09fdd7](https://github.com/homeputers/ebal-v2/commit/b09fdd742a1bbf3c217811cfb21976e274ae5600))
+* enhance form accessibility and error summaries ([#157](https://github.com/homeputers/ebal-v2/issues/157)) ([b5801a2](https://github.com/homeputers/ebal-v2/commit/b5801a279b02e1753c1b697f995539af84ce55bd))
+* **web:** add accessible toast announcer ([#160](https://github.com/homeputers/ebal-v2/issues/160)) ([8b3330d](https://github.com/homeputers/ebal-v2/commit/8b3330db20951924efa33f24c088e2108d1b58c5))
+* **web:** add async status live announcer ([#159](https://github.com/homeputers/ebal-v2/issues/159)) ([0cb9b4b](https://github.com/homeputers/ebal-v2/commit/0cb9b4bcd86b4185d423a0884e8463aa8fef1b3c))
+* **web:** add page focus patterns ([#158](https://github.com/homeputers/ebal-v2/issues/158)) ([e17d050](https://github.com/homeputers/ebal-v2/commit/e17d050794da83b6370952d4d6729c0f62fde99f))
+* **web:** add skip link and footer landmark ([#162](https://github.com/homeputers/ebal-v2/issues/162)) ([58ca9fd](https://github.com/homeputers/ebal-v2/commit/58ca9fdc0586af2d4b17022c11e4577566c0eaff))
+* **web:** improve alt handling and hidden text ([#164](https://github.com/homeputers/ebal-v2/issues/164)) ([104be6b](https://github.com/homeputers/ebal-v2/commit/104be6b7ca6a914ea7705f40099bdcadbe97b34e))
+* **web:** improve table semantics and empty state announcements ([#163](https://github.com/homeputers/ebal-v2/issues/163)) ([39867c9](https://github.com/homeputers/ebal-v2/commit/39867c911a4d6beb26a607423f8aafaaf157fbac))
+* **web:** respect reduced motion preference ([#165](https://github.com/homeputers/ebal-v2/issues/165)) ([1819f10](https://github.com/homeputers/ebal-v2/commit/1819f10a19e97a52ee3278e4e4664a6c62258960))
+* **web:** unify menu and picker accessibility ([#156](https://github.com/homeputers/ebal-v2/issues/156)) ([9116992](https://github.com/homeputers/ebal-v2/commit/9116992051ca2480f6448accd338057e8ab83da8))
+* **web:** unify overlay dialog semantics ([#154](https://github.com/homeputers/ebal-v2/issues/154)) ([58e3c09](https://github.com/homeputers/ebal-v2/commit/58e3c0909e22f49f81e85ad5d017d07a21f0e549))
 ## [0.5.0](https://github.com/homeputers/ebal-v2/compare/v0.4.1...v0.5.0) (2025-10-01)
 
 ### Features
