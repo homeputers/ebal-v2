@@ -66,6 +66,7 @@ export default function ServicesPage() {
   const searchInputId = useId();
   const fromFilterId = useId();
   const toFilterId = useId();
+  const [shouldAutoFocusHeading, setShouldAutoFocusHeading] = useState(true);
 
   const canManageServices = hasRole('ADMIN') || hasRole('PLANNER');
 
@@ -133,9 +134,16 @@ export default function ServicesPage() {
   }, [fromDate, i18n.language, queryParam, services, toDate]);
   const hasResults = filteredServices.length > 0;
 
+  useEffect(() => {
+    setShouldAutoFocusHeading(false);
+  }, []);
+
   return (
     <div className="p-4">
-      <PageHeading autoFocus className="text-xl font-semibold mb-4">
+      <PageHeading
+        autoFocus={shouldAutoFocusHeading}
+        className="text-xl font-semibold mb-4"
+      >
         {t('page.title')}
       </PageHeading>
       <div className="flex flex-wrap items-end gap-2 mb-4">
