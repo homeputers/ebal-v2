@@ -12,6 +12,7 @@
     "lint": "yarn workspace web lint",
     "lint:a11y": "yarn workspace web lint:a11y",
     "typecheck": "yarn workspace web typecheck",
+    "test:a11y:e2e": "yarn workspace web test:a11y:e2e",
     "i18n:scan": "yarn workspace web i18n:scan",
     "format": "prettier --write . --config packages/config/prettier.cjs",
     "prepare": "husky install"

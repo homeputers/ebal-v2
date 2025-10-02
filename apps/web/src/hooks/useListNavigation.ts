@@ -355,6 +355,9 @@ export function useListNavigation<T>(
             : 'false'
           : undefined,
         'aria-disabled': item.disabled ? 'true' : undefined,
+        onKeyDown: (event) => {
+          handleKeyDown(event);
+        },
         onMouseEnter: () => {
           if (index !== -1 && !item.disabled) {
             setActiveIndex(index);
@@ -393,6 +396,7 @@ export function useListNavigation<T>(
     [
       activeId,
       getIndexById,
+      handleKeyDown,
       onSelect,
       selectActive,
       selectedId,

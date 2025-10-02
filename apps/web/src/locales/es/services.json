@@ -13,7 +13,10 @@
     "planView": "Vista del plan"
   },
   "list": {
+    "searchLabel": "Buscar servicios",
     "searchPlaceholder": "Buscar...",
+    "fromDateLabel": "Desde (fecha)",
+    "toDateLabel": "Hasta (fecha)",
     "empty": "No se encontraron servicios",
     "deleteConfirm": "¿Estás seguro de que deseas eliminar este servicio? Esta acción no se puede deshacer."
   },

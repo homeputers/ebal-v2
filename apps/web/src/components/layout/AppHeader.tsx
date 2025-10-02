@@ -30,6 +30,13 @@ export function AppHeader({
   const { t } = useTranslation('common');
   const { logout, me, isAuthenticated } = useAuth();
   const accountMenu = useHeaderPopover<HTMLDivElement>();
+  const {
+    close: closeAccountMenu,
+    isOpen: isAccountMenuOpen,
+    toggle: toggleAccountMenu,
+    triggerRef: accountMenuTriggerRef,
+    popoverRef: accountMenuPopoverRef,
+  } = accountMenu;
   const accountMenuButtonId = useId();
   const accountMenuDialogLabelId = `${accountMenuButtonId}-dialog-label`;
   const navigate = useNavigate();
@@ -51,8 +58,8 @@ export function AppHeader({
 
   const handleLogout = useCallback(() => {
     logout();
-    accountMenu.close({ focusTrigger: true });
-  }, [accountMenu, logout]);
+    closeAccountMenu({ focusTrigger: true });
+  }, [closeAccountMenu, logout]);
 
   const accountMenuActions = useMemo(
     () => [
@@ -61,7 +68,7 @@ export function AppHeader({
         label: t('nav.profile'),
         tone: 'default' as const,
         onSelect: () => {
-          accountMenu.close({ focusTrigger: true });
+          closeAccountMenu({ focusTrigger: true });
           navigate(profileHref);
         },
       },
@@ -70,7 +77,7 @@ export function AppHeader({
         label: t('nav.changePassword'),
         tone: 'default' as const,
         onSelect: () => {
-          accountMenu.close({ focusTrigger: true });
+          closeAccountMenu({ focusTrigger: true });
           navigate(changePasswordHref);
         },
       },
@@ -82,9 +89,9 @@ export function AppHeader({
       },
     ],
     [
-      accountMenu,
       accountMenuButtonId,
       changePasswordHref,
+      closeAccountMenu,
       handleLogout,
       navigate,
       profileHref,
@@ -111,11 +118,11 @@ export function AppHeader({
     items: accountMenuItems,
     loop: false,
     onSelect: (item) => item.value.onSelect(),
-    onCancel: () => accountMenu.close({ focusTrigger: true }),
+    onCancel: () => closeAccountMenu({ focusTrigger: true }),
   });
 
   useEffect(() => {
-    if (!accountMenu.isOpen) {
+    if (!isAccountMenuOpen) {
       return;
     }
 
@@ -130,7 +137,7 @@ export function AppHeader({
     if (firstId) {
       setActiveAccountMenuId(firstId);
     }
-  }, [accountMenu.isOpen, accountMenuItems, setActiveAccountMenuId]);
+  }, [accountMenuItems, isAccountMenuOpen, setActiveAccountMenuId]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/95 text-foreground shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/80 print:hidden">
@@ -181,17 +188,17 @@ export function AppHeader({
           {isAuthenticated ? (
             <div className="relative">
               <button
-                ref={accountMenu.triggerRef}
+                ref={accountMenuTriggerRef}
                 id={accountMenuButtonId}
                 type="button"
                 aria-haspopup="dialog"
-                aria-expanded={accountMenu.isOpen}
+                aria-expanded={isAccountMenuOpen}
                 aria-label={t('nav.accountMenuLabel', {
                   value: accountLabelValue,
                   defaultValue: accountLabelValue,
                 })}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border/60 bg-muted text-foreground transition transition-base hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                onClick={accountMenu.toggle}
+                onClick={toggleAccountMenu}
               >
                 <VisuallyHidden>{accountLabelValue}</VisuallyHidden>
                 <span aria-hidden="true" className="block h-5 w-5">
@@ -219,9 +226,9 @@ export function AppHeader({
                   </svg>
                 </span>
               </button>
-              {accountMenu.isOpen ? (
+              {isAccountMenuOpen ? (
                 <div
-                  ref={accountMenu.popoverRef}
+                  ref={accountMenuPopoverRef}
                   role="dialog"
                   aria-modal="true"
                   aria-labelledby={accountMenuDialogLabelId}
