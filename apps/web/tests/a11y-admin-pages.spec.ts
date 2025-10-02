@@ -364,23 +364,23 @@ test.describe('Admin surface accessibility', () => {
     expect(profileItemId).toBeTruthy();
     await expect(menu).toHaveAttribute('aria-activedescendant', profileItemId!);
 
-    await page.keyboard.press('ArrowDown');
+    await menu.press('ArrowDown');
     const changePasswordItem = page.getByRole('menuitem', { name: 'Change password' });
     const changePasswordItemId = await changePasswordItem.getAttribute('id');
     expect(changePasswordItemId).toBeTruthy();
     await expect(menu).toHaveAttribute('aria-activedescendant', changePasswordItemId!);
 
-    await page.keyboard.press('ArrowDown');
+    await menu.press('ArrowDown');
     const logoutItem = page.getByRole('menuitem', { name: 'Log out' });
     const logoutItemId = await logoutItem.getAttribute('id');
     expect(logoutItemId).toBeTruthy();
     await expect(menu).toHaveAttribute('aria-activedescendant', logoutItemId!);
 
-    await page.keyboard.press('ArrowUp');
+    await menu.press('ArrowUp');
     // The account menu stops looping upward, so pressing ArrowUp from the last item returns focus to the first option.
     await expect(menu).toHaveAttribute('aria-activedescendant', profileItemId!);
 
-    await page.keyboard.press('Escape');
+    await menu.press('Escape');
     await expect(accountMenuTrigger).toBeFocused();
   });
 
