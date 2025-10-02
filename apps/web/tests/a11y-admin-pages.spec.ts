@@ -89,7 +89,13 @@ async function runCriticalAxeAudit(page: Page) {
   assertNoCriticalViolations(results);
 }
 
-async function tabUntilFocused(page: Page, locator: Locator, maxPresses = 10) {
+async function tabUntilFocused(page: Page, locator: Locator, maxPresses = 25) {
+  const isAlreadyFocused = await locator.evaluate((node) => node === document.activeElement);
+
+  if (isAlreadyFocused) {
+    return;
+  }
+
   for (let attempt = 0; attempt < maxPresses; attempt += 1) {
     await page.keyboard.press('Tab');
 
