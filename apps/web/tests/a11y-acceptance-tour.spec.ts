@@ -283,7 +283,7 @@ test.describe('Accessibility acceptance tour', () => {
 
     const waitForCreateSubmission = async (key: 'Enter' | 'Space') => {
       const previousSubmissionCount = createServiceSubmissions;
-      await page.keyboard.press(key);
+      await saveButton.press(key);
 
       await expect
         .poll(
