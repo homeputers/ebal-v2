@@ -265,9 +265,8 @@ test.describe('Accessibility acceptance tour', () => {
     await expect(startsAtField).toBeFocused();
     await page.keyboard.type('2024-06-09T09:00');
 
-    await page.keyboard.press('Tab');
-
     const locationField = createDialog.getByLabel('Location');
+    await tabUntilFocused(page, locationField);
     await expect(locationField).toBeFocused();
     await page.keyboard.type('Main Campus Sanctuary');
 
