@@ -1,0 +1,50 @@
+---
+title: "Manual del editor de arreglos"
+description: "Crea partituras precisas con vistas previas ChordPro en vivo y herramientas de transposición."
+sidebar:
+  group: Manuales
+  label: "Editor de arreglos"
+  order: 3
+---
+> TODO: Traducir el contenido restante al español.
+
+# Arrangement Editor
+
+## Overview
+The Arrangement Editor is where you capture the musical specifics for each song version. It pairs a structured form for key, tempo, and meter with a live ChordPro preview that mirrors what musicians will see in services, sets, and printouts.
+
+## Prerequisites
+- Admin or Planner role with access to song management.
+- A song selected so you can create or edit its arrangements.
+
+## Step-by-step
+1. **Set the musical key.** Enter the base key (e.g., `G`) to define the arrangement’s starting point.
+2. **Add tempo and meter.** Optionally include BPM (30–300) and a meter such as `4/4` or `6/8` to inform rehearsal pacing.
+3. **Paste ChordPro lyrics.** Use the lyrics textarea for chords like `[G]` inline with lyrics. The editor normalizes line endings automatically.
+4. **Check the preview.** Watch the right-hand pane as you type to confirm chords align above lyrics or inline based on your layout selection.
+5. **Use transpose controls.** Test different keys with the **Transpose Up/Down** buttons; the preview updates instantly without altering the stored chart.
+6. **Switch sharps/flats.** Toggle between enharmonic spellings to suit your team’s preference, especially when testing transpositions.
+7. **Adjust layout.** Choose **Above** to show chords above lyrics (default) or **Inline** to embed them directly in the text.
+8. **Save the arrangement.** Submit the form to make the arrangement available in services, song sets, and plan exports.
+
+> _Screenshot placeholder: arrangement editor._
+
+## Examples
+- **Simple verse with directive:**
+  ```chordpro
+  {title: Great Is Thy Faithfulness}
+  {comment: Verse 1}
+  [C]Great is Thy [F]faithfulness, [C]O God my [G]Father
+  ```
+- **Preview testing:** Transpose the chart up two semitones to verify Bb instruments still read comfortable shapes.
+
+## Tips & Best Practices
+- Keep one arrangement per distinct key or instrumentation so transposition history stays clear.
+- Use `{comment:}` blocks for band cues and `{title:}` for section headers; the preview renders both.
+- Remember that transpose and sharp/flat toggles are for preview only—stored data remains in the key you set.
+- If you copy lyrics from another source, double-check spacing; empty lines show as intentional breaks in the preview.
+
+## Related
+- [Songs & Arrangements Manual](./songs-arrangements)
+- [Song Sets Manual](./song-sets)
+- [Services Manual](./services)
