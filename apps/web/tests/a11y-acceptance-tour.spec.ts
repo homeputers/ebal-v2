@@ -251,12 +251,10 @@ test.describe('Accessibility acceptance tour', () => {
 
     await page.goto('/en/services');
 
-    const servicesHeading = page.getByRole('heading', { name: 'Services' });
-    await expect(servicesHeading).toBeVisible();
+    const newServiceButton = page.getByRole('button', { name: 'New Service' });
+    await expect(newServiceButton).toBeVisible();
 
     await runCriticalAxeAudit(page);
-
-    const newServiceButton = page.getByRole('button', { name: 'New Service' });
     await tabUntilFocused(page, newServiceButton);
     await page.keyboard.press('Enter');
 
