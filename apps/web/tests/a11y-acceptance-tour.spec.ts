@@ -1,4 +1,4 @@
-import { errors, expect, test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import {
   createPagedResponse,
   fulfillJson,
@@ -91,6 +91,9 @@ test.describe('Accessibility acceptance tour', () => {
       },
     ];
 
+    let createServiceSubmissions = 0;
+    let lastCreateServicePayload: { startsAt: string; location?: string | null } | null = null;
+
     await page.route(/\/api\/v1\/services(?:\?.*)?$/, async (route) => {
       const request = route.request();
       const url = new URL(request.url());
@@ -108,6 +111,8 @@ test.describe('Accessibility acceptance tour', () => {
           location: payload.location ?? null,
         };
         services.splice(0, services.length, created);
+        lastCreateServicePayload = payload;
+        createServiceSubmissions += 1;
         await fulfillJson(route, created, 201);
         return;
       }
@@ -276,27 +281,35 @@ test.describe('Accessibility acceptance tour', () => {
 
     await tabUntilFocused(page, saveButton);
 
-    const waitForCreateResponse = (key: 'Enter' | 'Space') =>
-      Promise.all([
-        page.waitForResponse(
-          (response) =>
-            response.request().method() === 'POST' && response.url().includes('/api/v1/services'),
-        ),
-        saveButton.press(key),
-      ]).then(([response]) => response);
+    const waitForCreateSubmission = async (key: 'Enter' | 'Space') => {
+      const previousSubmissionCount = createServiceSubmissions;
+      await page.keyboard.press(key);
 
-    let submittedCreateResponse;
+      await expect
+        .poll(
+          () => createServiceSubmissions,
+          { timeout: 4000, message: `Service creation not triggered via ${key}` },
+        )
+        .toBeGreaterThan(previousSubmissionCount);
+
+      expect(lastCreateServicePayload).not.toBeNull();
+
+      return lastCreateServicePayload!;
+    };
+
+    let submittedCreatePayload: { startsAt: string; location?: string | null };
 
     try {
-      submittedCreateResponse = await waitForCreateResponse('Enter');
+      submittedCreatePayload = await waitForCreateSubmission('Enter');
     } catch (error) {
-      if (!(error instanceof errors.TimeoutError)) {
+      if (!(error instanceof Error) || !error.message.includes('Service creation not triggered')) {
         throw error;
       }
 
-      submittedCreateResponse = await waitForCreateResponse('Space');
+      submittedCreatePayload = await waitForCreateSubmission('Space');
     }
-    expect(submittedCreateResponse.request().postDataJSON()).toMatchObject({
+
+    expect(submittedCreatePayload).toMatchObject({
       startsAt: expect.stringContaining('2024-06-09T09:00'),
       location: 'Main Campus Sanctuary',
     });
