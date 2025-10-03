@@ -410,7 +410,34 @@ test.describe('Accessibility acceptance tour', () => {
 
     const typeSelect = page.getByLabel('Item type');
     await tabUntilFocused(page, typeSelect);
-    await page.keyboard.press('Home');
+    const readTypeValue = async () => {
+      return typeSelect.evaluate((element: HTMLSelectElement) => element.value);
+    };
+
+    const ensureSongSelected = async () => {
+      if ((await readTypeValue()) === 'song') {
+        return;
+      }
+
+      const tryDirection = async (key: 'ArrowUp' | 'ArrowDown') => {
+        for (let attempt = 0; attempt < 5; attempt += 1) {
+          await typeSelect.press(key);
+          if ((await readTypeValue()) === 'song') {
+            return true;
+          }
+        }
+
+        return false;
+      };
+
+      if (await tryDirection('ArrowUp')) {
+        return;
+      }
+
+      await tryDirection('ArrowDown');
+    };
+
+    await ensureSongSelected();
     await expect(typeSelect).toHaveValue('song');
 
     const songCombobox = page.getByRole('combobox', { name: 'Song' });
