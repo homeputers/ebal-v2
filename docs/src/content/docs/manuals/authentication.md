@@ -1,3 +1,10 @@
+---
+title: "Authentication & Authorization"
+description: "Configure security, understand role capabilities, and validate session flows."
+sidebar:
+  label: "Authentication"
+---
+
 # Authentication & Authorization
 
 This document covers how authentication is configured, which roles can access specific APIs, and how to verify session flows end-to-end.

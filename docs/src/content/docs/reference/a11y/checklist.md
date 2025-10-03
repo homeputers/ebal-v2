@@ -1,3 +1,10 @@
+---
+title: "Accessibility Checklists"
+description: "Quick reference to review critical accessibility behaviors before shipping."
+sidebar:
+  label: "Checklists"
+---
+
 # Accessibility Checklists
 
 Use these quick-reference checklists during reviews to cover critical accessibility behaviors before a feature ships.

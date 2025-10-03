@@ -1,3 +1,10 @@
+---
+title: "Web Internationalization Design"
+description: "Architecture and migration plan for bringing i18n to the React front-end."
+sidebar:
+  label: "Web i18n design"
+---
+
 # Web Internationalization Design Doc
 
 ## Overview

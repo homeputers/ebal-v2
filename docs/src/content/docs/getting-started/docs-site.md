@@ -1,3 +1,11 @@
+---
+title: "Ebal v2 Documentation Site"
+description: "Install dependencies and run the Astro + Starlight documentation locally."
+sidebar:
+  label: "Docs site"
+  order: 10
+---
+
 # Ebal v2 Documentation Site
 
 This directory hosts the Astro + Starlight documentation site for Every Breath And Life (Ebal) v2. The site is file-system driven, so the sidebar automatically reflects the structure under `src/content/docs`.

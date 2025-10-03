@@ -1,3 +1,10 @@
+---
+title: "Accessibility Linting Baseline"
+description: "Understand the shared JSX a11y lint rules and how to run the checks locally."
+sidebar:
+  label: "Linting baseline"
+---
+
 # Accessibility linting baseline
 
 We use [`eslint-plugin-jsx-a11y`](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y) to enforce web accessibility affordances in React code. The shared ESLint preset (`packages/config/eslint.cjs`) now extends `plugin:jsx-a11y/strict`, which surfaces high-impact issues without requiring component refactors.

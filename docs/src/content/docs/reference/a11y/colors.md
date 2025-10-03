@@ -1,3 +1,10 @@
+---
+title: "Color Contrast Guard"
+description: "Verify theme token pairings meet WCAG contrast requirements during development."
+sidebar:
+  label: "Color contrast"
+---
+
 # Color contrast guard
 
 Our design tokens rely on paired foreground/background colors. During development we automatically verify that the pairings satisfy WCAG 2.1 AA contrast for normal text.
