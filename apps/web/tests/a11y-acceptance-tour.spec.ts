@@ -653,7 +653,7 @@ test.describe('Accessibility acceptance tour', () => {
     await page.keyboard.press('Enter');
 
     await page.waitForURL(/\/print$/);
-    const printHeading = page.getByRole('heading', { name: 'Service Plan' });
+    const printHeading = page.getByRole('heading', { name: /Order of service/i });
     await expect(printHeading).toBeVisible();
     await runCriticalAxeAudit(page);
 
