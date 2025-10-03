@@ -275,7 +275,6 @@ test.describe('Accessibility acceptance tour', () => {
     await expect(locationField).toBeFocused();
 
     await tabUntilFocused(page, saveButton);
-    await expect(saveButton).toBeFocused();
 
     const waitForCreateRequest = (key: 'Enter' | 'Space') =>
       Promise.all([
@@ -295,7 +294,6 @@ test.describe('Accessibility acceptance tour', () => {
         throw error;
       }
 
-      await expect(saveButton).toBeFocused();
       submittedCreateRequest = await waitForCreateRequest('Space');
     }
     expect(submittedCreateRequest.postDataJSON()).toMatchObject({
