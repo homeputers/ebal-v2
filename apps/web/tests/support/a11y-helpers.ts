@@ -119,6 +119,22 @@ function resolveTabOptions(
   return { maxPresses, direction, fallbackDirection };
 }
 
+async function isLocatorFocused(locator: Locator) {
+  const handle = await locator.elementHandle();
+
+  if (!handle) {
+    return false;
+  }
+
+  const result = await handle.evaluate(
+    (element) => element === element.ownerDocument?.activeElement,
+  );
+
+  await handle.dispose();
+
+  return result;
+}
+
 async function attemptFocus(
   page: Page,
   locator: Locator,
@@ -130,7 +146,7 @@ async function attemptFocus(
   for (let attempt = 0; attempt < maxPresses; attempt += 1) {
     await page.keyboard.press(key);
 
-    const isFocused = await locator.isFocused();
+    const isFocused = await isLocatorFocused(locator);
 
     if (isFocused) {
       return true;
@@ -145,7 +161,9 @@ export async function tabUntilFocused(
   locator: Locator,
   maxPressesOrOptions?: number | TabUntilFocusedOptions,
 ) {
-  const isAlreadyFocused = await locator.isFocused();
+  await locator.waitFor({ state: 'attached' });
+
+  const isAlreadyFocused = await isLocatorFocused(locator);
 
   if (isAlreadyFocused) {
     return;
