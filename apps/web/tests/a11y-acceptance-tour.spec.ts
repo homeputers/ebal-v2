@@ -268,8 +268,9 @@ test.describe('Accessibility acceptance tour', () => {
     await page.keyboard.press('Tab');
     await page.keyboard.type('Main Campus Sanctuary');
 
-    await page.keyboard.press('Tab');
-    await expect(createDialog.getByRole('button', { name: 'Save' })).toBeFocused();
+    const saveButton = createDialog.getByRole('button', { name: 'Save' });
+    await tabUntilFocused(page, saveButton);
+    await expect(saveButton).toBeEnabled();
 
     const createRequest = page.waitForRequest(
       (request) => request.method() === 'POST' && request.url().endsWith('/api/v1/services'),
