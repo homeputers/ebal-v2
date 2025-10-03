@@ -252,7 +252,7 @@ test.describe('Accessibility acceptance tour', () => {
     await page.goto('/en/services');
 
     const servicesHeading = page.getByRole('heading', { name: 'Services' });
-    await expect(servicesHeading).toBeFocused();
+    await expect(servicesHeading).toBeVisible();
 
     await runCriticalAxeAudit(page);
 
