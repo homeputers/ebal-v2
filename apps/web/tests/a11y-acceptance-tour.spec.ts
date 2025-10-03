@@ -91,7 +91,7 @@ test.describe('Accessibility acceptance tour', () => {
       },
     ];
 
-    await page.route('**/api/v1/services', async (route) => {
+    await page.route(/\/api\/v1\/services(?:\?.*)?$/, async (route) => {
       const request = route.request();
       const url = new URL(request.url());
 
@@ -115,7 +115,7 @@ test.describe('Accessibility acceptance tour', () => {
       await route.fallback();
     });
 
-    await page.route(`**/api/v1/services/${serviceId}`, async (route) => {
+    await page.route(new RegExp(`/api/v1/services/${serviceId}(?:\\?.*)?$`), async (route) => {
       const service = services.find((s) => s.id === serviceId);
       if (!service) {
         await route.fulfill({ status: 404 });
@@ -125,7 +125,7 @@ test.describe('Accessibility acceptance tour', () => {
       await fulfillJson(route, service);
     });
 
-    await page.route(`**/api/v1/services/${serviceId}/plan-items`, async (route) => {
+    await page.route(new RegExp(`/api/v1/services/${serviceId}/plan-items(?:\\?.*)?$`), async (route) => {
       const request = route.request();
 
       if (request.method() === 'GET') {
@@ -157,7 +157,7 @@ test.describe('Accessibility acceptance tour', () => {
       await route.fallback();
     });
 
-    await page.route('**/api/v1/songs/arrangements/**', async (route) => {
+    await page.route(/\/api\/v1\/songs\/arrangements\/[^/?#]+(?:\?.*)?$/, async (route) => {
       const match = route.request().url().match(/arrangements\/([^/?#]+)/);
       const arrangement = match ? arrangementById[match[1]] : undefined;
       if (!arrangement) {
@@ -168,14 +168,14 @@ test.describe('Accessibility acceptance tour', () => {
       await fulfillJson(route, arrangement);
     });
 
-    await page.route('**/api/v1/songs/**/arrangements', async (route) => {
+    await page.route(/\/api\/v1\/songs\/[^/?#]+\/arrangements(?:\?.*)?$/, async (route) => {
       const match = route.request().url().match(/songs\/([^/?#]+)\/arrangements/);
       const songId = match ? match[1] : undefined;
       const arrangements = (songId && arrangementsBySongId[songId]) || [];
       await fulfillJson(route, arrangements);
     });
 
-    await page.route('**/api/v1/songs/**', async (route) => {
+    await page.route(/\/api\/v1\/songs(?:\/[^/?#]+)?(?:\?.*)?$/, async (route) => {
       const url = new URL(route.request().url());
       const { pathname } = url;
 
@@ -197,7 +197,7 @@ test.describe('Accessibility acceptance tour', () => {
       await fulfillJson(route, song);
     });
 
-    await page.route('**/api/v1/song-sets', async (route) => {
+    await page.route(/\/api\/v1\/song-sets(?:\?.*)?$/, async (route) => {
       const request = route.request();
       const url = new URL(request.url());
 
@@ -209,7 +209,7 @@ test.describe('Accessibility acceptance tour', () => {
       await route.fallback();
     });
 
-    await page.route('**/api/v1/song-sets/*', async (route) => {
+    await page.route(/\/api\/v1\/song-sets\/[^/?#]+(?:\/items(?:\/reorder)?)?(?:\?.*)?$/, async (route) => {
       const request = route.request();
       const url = new URL(request.url());
       const match = url.pathname.match(/\/song-sets\/([^/]+)(?:\/items.*)?$/);
