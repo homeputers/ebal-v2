@@ -270,9 +270,10 @@ test.describe('Accessibility acceptance tour', () => {
 
     const saveButton = createDialog.getByRole('button', { name: 'Save' });
     await expect(saveButton).toBeEnabled();
+    await tabUntilFocused(page, saveButton, 40);
 
     const createRequest = page.waitForRequest(
-      (request) => request.method() === 'POST' && request.url().endsWith('/api/v1/services'),
+      (request) => request.method() === 'POST' && request.url().includes('/api/v1/services'),
     );
     await page.keyboard.press('Enter');
 
