@@ -284,7 +284,19 @@ test.describe('Accessibility acceptance tour', () => {
 
     const waitForCreateSubmission = async (key: 'Enter' | 'Space') => {
       const previousSubmissionCount = createServiceSubmissions;
-      await saveButton.press(key);
+
+      await tabUntilFocused(page, saveButton);
+      await expect
+        .poll(
+          async () =>
+            saveButton.evaluate(
+              (element) => element === element.ownerDocument?.activeElement,
+            ),
+          { timeout: 2000, message: 'Save button not focused before submission' },
+        )
+        .toBeTruthy();
+
+      await page.keyboard.press(key);
 
       await expect
         .poll(
