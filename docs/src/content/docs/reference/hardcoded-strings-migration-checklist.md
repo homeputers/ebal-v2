@@ -1,3 +1,10 @@
+---
+title: "Hardcoded Strings Migration Checklist"
+description: "Copy-ready PR template to track progress while replacing hardcoded UI strings."
+sidebar:
+  label: "i18n checklist"
+---
+
 # Hardcoded Strings Migration Checklist PR Template
 
 Use this template in pull requests that track removing hardcoded strings from the user interface. Copy the Markdown block below into the PR description and update the checkbox status as features are completed.

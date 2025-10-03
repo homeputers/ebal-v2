@@ -1,3 +1,10 @@
+---
+title: "Production Deployment Guide"
+description: "Deploy the EBAL web and API containers to production environments."
+sidebar:
+  label: "Deploy to production"
+---
+
 # Production Deployment Guide
 
 This guide describes how to deploy the Every Breath And Life (EBAL) application to production environments using the published Docker images for the web front-end and API. Follow the platform-specific instructions that match your target host.

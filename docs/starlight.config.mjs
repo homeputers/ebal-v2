@@ -8,6 +8,10 @@ export default {
   customCss: ['./src/styles/global.css'],
   sidebar: [
     {
+      label: 'Getting Started',
+      autogenerate: { directory: 'getting-started' }
+    },
+    {
       label: 'Manuals',
       autogenerate: { directory: 'manuals' }
     },

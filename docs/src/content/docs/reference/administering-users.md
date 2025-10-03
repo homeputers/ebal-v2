@@ -1,3 +1,10 @@
+---
+title: "Administering Users"
+description: "Manage accounts through the admin API endpoints without touching the database."
+sidebar:
+  label: "Admin users"
+---
+
 # Administering Users
 
 The `/api/v1/admin/users` endpoints allow administrators to manage accounts without touching the database directly. All requests require a bearer token with the `ADMIN` role and use the JSON models generated from `spec/openapi.yaml`.
