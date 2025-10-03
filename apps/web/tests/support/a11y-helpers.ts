@@ -93,24 +93,84 @@ export async function runCriticalAxeAudit(page: Page) {
   assertNoCriticalViolations(results);
 }
 
-export async function tabUntilFocused(page: Page, locator: Locator, maxPresses = 25) {
+type TabDirection = 'forward' | 'backward';
+
+type TabUntilFocusedOptions = {
+  maxPresses?: number;
+  direction?: TabDirection;
+  fallbackDirection?: TabDirection | null;
+};
+
+function resolveTabOptions(
+  maxPressesOrOptions?: number | TabUntilFocusedOptions,
+): Required<Omit<TabUntilFocusedOptions, 'fallbackDirection'>> & {
+  fallbackDirection: TabDirection | null;
+} {
+  if (typeof maxPressesOrOptions === 'number') {
+    return { maxPresses: maxPressesOrOptions, direction: 'forward', fallbackDirection: 'backward' };
+  }
+
+  const {
+    maxPresses = 25,
+    direction = 'forward',
+    fallbackDirection = direction === 'forward' ? 'backward' : null,
+  } = maxPressesOrOptions ?? {};
+
+  return { maxPresses, direction, fallbackDirection };
+}
+
+async function attemptFocus(
+  page: Page,
+  locator: Locator,
+  direction: TabDirection,
+  maxPresses: number,
+) {
+  const key = direction === 'forward' ? 'Tab' : 'Shift+Tab';
+
+  for (let attempt = 0; attempt < maxPresses; attempt += 1) {
+    await page.keyboard.press(key);
+
+    const isFocused = await locator.evaluate((node) => node === document.activeElement);
+
+    if (isFocused) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export async function tabUntilFocused(
+  page: Page,
+  locator: Locator,
+  maxPressesOrOptions?: number | TabUntilFocusedOptions,
+) {
   const isAlreadyFocused = await locator.evaluate((node) => node === document.activeElement);
 
   if (isAlreadyFocused) {
     return;
   }
 
-  for (let attempt = 0; attempt < maxPresses; attempt += 1) {
-    await page.keyboard.press('Tab');
+  const { maxPresses, direction, fallbackDirection } = resolveTabOptions(maxPressesOrOptions);
 
-    const isFocused = await locator.evaluate((node) => node === document.activeElement);
+  const reached = await attemptFocus(page, locator, direction, maxPresses);
 
-    if (isFocused) {
+  if (reached) {
+    return;
+  }
+
+  if (fallbackDirection) {
+    const fallbackReached = await attemptFocus(page, locator, fallbackDirection, maxPresses);
+
+    if (fallbackReached) {
       return;
     }
   }
 
-  throw new Error('Unable to reach the requested focus target via Tab navigation.');
+  const directionsTried = [direction, fallbackDirection].filter(Boolean).join(', ');
+  throw new Error(
+    `Unable to reach the requested focus target via keyboard navigation (attempted: ${directionsTried}).`,
+  );
 }
 
 export type { Json };
