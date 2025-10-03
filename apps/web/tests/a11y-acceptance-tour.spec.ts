@@ -274,7 +274,7 @@ test.describe('Accessibility acceptance tour', () => {
     await expect(saveButton).toBeEnabled();
     await expect(locationField).toBeFocused();
 
-    await page.keyboard.press('Tab');
+    await tabUntilFocused(page, saveButton);
     await expect(saveButton).toBeFocused();
 
     const waitForCreateRequest = (key: 'Enter' | 'Space') =>
