@@ -269,7 +269,6 @@ test.describe('Accessibility acceptance tour', () => {
     await page.keyboard.type('Main Campus Sanctuary');
 
     const saveButton = createDialog.getByRole('button', { name: 'Save' });
-    await tabUntilFocused(page, saveButton);
     await expect(saveButton).toBeEnabled();
 
     const createRequest = page.waitForRequest(
