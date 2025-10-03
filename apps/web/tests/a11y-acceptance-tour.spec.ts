@@ -657,8 +657,8 @@ test.describe('Accessibility acceptance tour', () => {
     await expect(printHeading).toBeVisible();
     await runCriticalAxeAudit(page);
 
-    const exportButton = page.getByRole('button', { name: 'Export PDF' });
-    await tabUntilFocused(page, exportButton);
+    const printButton = page.getByRole('button', { name: /print/i });
+    await tabUntilFocused(page, printButton);
     await page.keyboard.press('Enter');
 
     await expect(page.getByText('Living Hope')).toBeVisible();
