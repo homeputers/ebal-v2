@@ -280,9 +280,8 @@ test.describe('Accessibility acceptance tour', () => {
       Promise.all([
         page.waitForRequest(
           (request) => request.method() === 'POST' && request.url().includes('/api/v1/services'),
-          { timeout: 5000 },
         ),
-        page.keyboard.press(key),
+        saveButton.press(key),
       ]).then(([request]) => request);
 
     let submittedCreateRequest;
