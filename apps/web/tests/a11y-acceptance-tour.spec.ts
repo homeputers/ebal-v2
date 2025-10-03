@@ -415,14 +415,23 @@ test.describe('Accessibility acceptance tour', () => {
     };
 
     const ensureSongSelected = async () => {
+      await expect(typeSelect).toBeFocused();
+
       if ((await readTypeValue()) === 'song') {
+        return;
+      }
+
+      const tryRead = async () => (await readTypeValue()) === 'song';
+
+      await typeSelect.press('Home');
+      if (await tryRead()) {
         return;
       }
 
       const tryDirection = async (key: 'ArrowUp' | 'ArrowDown') => {
         for (let attempt = 0; attempt < 5; attempt += 1) {
           await typeSelect.press(key);
-          if ((await readTypeValue()) === 'song') {
+          if (await tryRead()) {
             return true;
           }
         }
@@ -434,7 +443,11 @@ test.describe('Accessibility acceptance tour', () => {
         return;
       }
 
-      await tryDirection('ArrowDown');
+      if (await tryDirection('ArrowDown')) {
+        return;
+      }
+
+      await typeSelect.press('KeyS');
     };
 
     await ensureSongSelected();
