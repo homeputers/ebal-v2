@@ -296,7 +296,8 @@ test.describe('Accessibility acceptance tour', () => {
         )
         .toBeTruthy();
 
-      await saveButton.press(key);
+      const keyToPress = key === 'Space' ? 'Space' : key;
+      await page.keyboard.press(keyToPress);
 
       await expect
         .poll(
