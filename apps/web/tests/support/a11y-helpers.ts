@@ -130,7 +130,7 @@ async function attemptFocus(
   for (let attempt = 0; attempt < maxPresses; attempt += 1) {
     await page.keyboard.press(key);
 
-    const isFocused = await locator.evaluate((node) => node === document.activeElement);
+    const isFocused = await locator.isFocused();
 
     if (isFocused) {
       return true;
@@ -145,7 +145,7 @@ export async function tabUntilFocused(
   locator: Locator,
   maxPressesOrOptions?: number | TabUntilFocusedOptions,
 ) {
-  const isAlreadyFocused = await locator.evaluate((node) => node === document.activeElement);
+  const isAlreadyFocused = await locator.isFocused();
 
   if (isAlreadyFocused) {
     return;
