@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "scripts": {
+    "playwright": "yarn workspace web playwright",
     "dev": "yarn workspace web dev",
     "build": "yarn workspace web build",
     "preview": "yarn workspace web preview",
