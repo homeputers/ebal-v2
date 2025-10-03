@@ -274,12 +274,15 @@ test.describe('Accessibility acceptance tour', () => {
     await expect(saveButton).toBeEnabled();
     await expect(locationField).toBeFocused();
 
-    const createRequest = page.waitForRequest(
-      (request) => request.method() === 'POST' && request.url().includes('/api/v1/services'),
-    );
-    await page.keyboard.press('Enter');
+    await tabUntilFocused(page, saveButton, { direction: 'backward', fallbackDirection: 'forward' });
+    await expect(saveButton).toBeFocused();
 
-    const submittedCreateRequest = await createRequest;
+    const [submittedCreateRequest] = await Promise.all([
+      page.waitForRequest(
+        (request) => request.method() === 'POST' && request.url().includes('/api/v1/services'),
+      ),
+      page.keyboard.press('Enter'),
+    ]);
     expect(submittedCreateRequest.postDataJSON()).toMatchObject({
       startsAt: expect.stringContaining('2024-06-09T09:00'),
       location: 'Main Campus Sanctuary',
