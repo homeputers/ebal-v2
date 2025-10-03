@@ -274,7 +274,7 @@ test.describe('Accessibility acceptance tour', () => {
     await expect(saveButton).toBeEnabled();
     await expect(locationField).toBeFocused();
 
-    await tabUntilFocused(page, saveButton, { direction: 'backward', fallbackDirection: 'forward' });
+    await page.keyboard.press('Tab');
     await expect(saveButton).toBeFocused();
 
     const waitForCreateRequest = (key: 'Enter' | 'Space') =>
@@ -283,7 +283,7 @@ test.describe('Accessibility acceptance tour', () => {
           (request) => request.method() === 'POST' && request.url().includes('/api/v1/services'),
           { timeout: 5000 },
         ),
-        saveButton.press(key),
+        page.keyboard.press(key),
       ]).then(([request]) => request);
 
     let submittedCreateRequest;
