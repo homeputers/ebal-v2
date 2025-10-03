@@ -146,10 +146,14 @@ async function attemptFocus(
   for (let attempt = 0; attempt < maxPresses; attempt += 1) {
     await page.keyboard.press(key);
 
-    const isFocused = await isLocatorFocused(locator);
+    for (let waitAttempt = 0; waitAttempt < 5; waitAttempt += 1) {
+      const isFocused = await isLocatorFocused(locator);
 
-    if (isFocused) {
-      return true;
+      if (isFocused) {
+        return true;
+      }
+
+      await page.waitForTimeout(50);
     }
   }
 
