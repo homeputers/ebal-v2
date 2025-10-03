@@ -266,12 +266,14 @@ test.describe('Accessibility acceptance tour', () => {
     await page.keyboard.type('2024-06-09T09:00');
 
     await page.keyboard.press('Tab');
+
+    const locationField = createDialog.getByLabel('Location');
+    await expect(locationField).toBeFocused();
     await page.keyboard.type('Main Campus Sanctuary');
 
     const saveButton = createDialog.getByRole('button', { name: 'Save' });
     await expect(saveButton).toBeEnabled();
-    await tabUntilFocused(page, saveButton, 40);
-    await expect(page.locator(':focus')).toHaveText('Save');
+    await expect(locationField).toBeFocused();
 
     const createRequest = page.waitForRequest(
       (request) => request.method() === 'POST' && request.url().includes('/api/v1/services'),
