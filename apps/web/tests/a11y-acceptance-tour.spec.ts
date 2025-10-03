@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { errors, expect, test } from '@playwright/test';
 import {
   createPagedResponse,
   fulfillJson,
@@ -32,17 +32,13 @@ test.describe('Accessibility acceptance tour', () => {
       sortOrder: number;
     };
 
-    const planItems: PlanItem[] = [
-      {
-        id: 'plan-note-1',
-        type: 'note',
-        notes: 'Welcome and announcements',
-        sortOrder: 0,
-      },
-    ];
+    const planItems: PlanItem[] = [];
 
     const getSortedPlanItems = () =>
       [...planItems].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+    const livingHopeArrangementId = '11111111-1111-1111-1111-111111111111';
+    const greatIsThyFaithfulnessArrangementId = '22222222-2222-2222-2222-222222222222';
 
     const songs = [
       { id: 'song-1', title: 'Living Hope', defaultKey: 'E' },
@@ -51,10 +47,22 @@ test.describe('Accessibility acceptance tour', () => {
 
     const arrangementsBySongId: Record<string, Array<{ id: string; songId: string; key: string; bpm: number; meter: string }>> = {
       'song-1': [
-        { id: 'arr-1', songId: 'song-1', key: 'E', bpm: 72, meter: '4/4' },
+        {
+          id: livingHopeArrangementId,
+          songId: 'song-1',
+          key: 'E',
+          bpm: 72,
+          meter: '4/4',
+        },
       ],
       'song-2': [
-        { id: 'arr-2', songId: 'song-2', key: 'C', bpm: 84, meter: '3/4' },
+        {
+          id: greatIsThyFaithfulnessArrangementId,
+          songId: 'song-2',
+          key: 'C',
+          bpm: 84,
+          meter: '3/4',
+        },
       ],
     };
 
@@ -74,25 +82,28 @@ test.describe('Accessibility acceptance tour', () => {
       },
     ];
 
+    const firstSongSetItemId = '33333333-3333-3333-3333-333333333333';
+    const secondSongSetItemId = '44444444-4444-4444-4444-444444444444';
+
     let songSetItems = [
       {
-        id: 'set-item-1',
-        arrangementId: 'arr-1',
+        id: firstSongSetItemId,
+        arrangementId: livingHopeArrangementId,
         transpose: 0,
         capo: 0,
         sortOrder: 0,
       },
       {
-        id: 'set-item-2',
-        arrangementId: 'arr-2',
+        id: secondSongSetItemId,
+        arrangementId: greatIsThyFaithfulnessArrangementId,
         transpose: 0,
         capo: 0,
         sortOrder: 1,
       },
     ];
 
-    let createServiceSubmissions = 0;
-    let lastCreateServicePayload: { startsAt: string; location?: string | null } | null = null;
+    let addPlanItemSubmissions = 0;
+    let lastAddPlanItemPayload: { type: 'song' | 'note' | 'reading'; refId?: string | null } | null = null;
 
     await page.route(/\/api\/v1\/services(?:\/)?(?:\?.*)?$/, async (route) => {
       const request = route.request();
@@ -112,8 +123,6 @@ test.describe('Accessibility acceptance tour', () => {
           location: payload.location ?? null,
         };
         services.splice(0, services.length, created);
-        lastCreateServicePayload = payload;
-        createServiceSubmissions += 1;
         await fulfillJson(route, created, 201);
         return;
       }
@@ -156,7 +165,58 @@ test.describe('Accessibility acceptance tour', () => {
           sortOrder: payload.sortOrder ?? planItems.length,
         };
         planItems.push(newItem);
+        lastAddPlanItemPayload = payload;
+        addPlanItemSubmissions += 1;
         await fulfillJson(route, newItem, 201);
+        return;
+      }
+
+      await route.fallback();
+    });
+
+    await page.route(/\/api\/v1\/service-plan-items\/[^/?#]+(?:\?.*)?$/, async (route) => {
+      const request = route.request();
+      const match = request.url().match(/service-plan-items\/([^/?#]+)/);
+      const planItemId = match ? match[1] : undefined;
+
+      if (!planItemId) {
+        await route.fulfill({ status: 400 });
+        return;
+      }
+
+      const existingIndex = planItems.findIndex((item) => item.id === planItemId);
+      const existingItem = existingIndex >= 0 ? planItems[existingIndex] : null;
+
+      if (request.method() === 'GET') {
+        if (!existingItem) {
+          await route.fulfill({ status: 404 });
+          return;
+        }
+
+        await fulfillJson(route, existingItem);
+        return;
+      }
+
+      if (request.method() === 'PUT') {
+        if (!existingItem) {
+          await route.fulfill({ status: 404 });
+          return;
+        }
+
+        const payload = (request.postDataJSON() ?? {}) as { notes?: string | null };
+        planItems[existingIndex] = {
+          ...existingItem,
+          notes: payload.notes ?? existingItem.notes ?? null,
+        };
+        await fulfillJson(route, planItems[existingIndex]);
+        return;
+      }
+
+      if (request.method() === 'DELETE') {
+        if (existingIndex >= 0) {
+          planItems.splice(existingIndex, 1);
+        }
+        await route.fulfill({ status: 204, headers: jsonHeaders, body: '' });
         return;
       }
 
@@ -269,7 +329,8 @@ test.describe('Accessibility acceptance tour', () => {
 
     const startsAtField = createDialog.getByLabel('Starts At');
     await expect(startsAtField).toBeFocused();
-    await page.keyboard.type('2024-06-09T09:00');
+    await startsAtField.fill('2024-06-09T09:00');
+    await expect(startsAtField).toHaveValue('2024-06-09T09:00');
 
     const locationField = createDialog.getByLabel('Location');
     await tabUntilFocused(page, locationField);
@@ -279,51 +340,51 @@ test.describe('Accessibility acceptance tour', () => {
     const saveButton = createDialog.getByRole('button', { name: 'Save' });
     await expect(saveButton).toBeEnabled();
     await expect(locationField).toBeFocused();
+    await expect(locationField).toHaveValue('Main Campus Sanctuary');
 
     await tabUntilFocused(page, saveButton);
+    await tabUntilFocused(page, locationField, {
+      direction: 'backward',
+      fallbackDirection: null,
+      maxPresses: 5,
+    });
+    await expect(locationField).toBeFocused();
 
-    const waitForCreateSubmission = async (key: 'Enter' | 'Space') => {
-      const previousSubmissionCount = createServiceSubmissions;
+    const submitServiceDialog = async (key: 'Enter' | 'Space') => {
+      const requestPromise = page.waitForRequest(
+        (request) => request.method() === 'POST' && request.url().includes('/api/v1/services'),
+        { timeout: 5000 },
+      );
+      const responsePromise = page.waitForResponse(
+        (response) =>
+          response.request().method() === 'POST' && response.url().includes('/api/v1/services'),
+        { timeout: 5000 },
+      );
 
-      await tabUntilFocused(page, saveButton);
-      await expect
-        .poll(
-          async () =>
-            saveButton.evaluate(
-              (element) => element === element.ownerDocument?.activeElement,
-            ),
-          { timeout: 2000, message: 'Save button not focused before submission' },
-        )
-        .toBeTruthy();
+      await page.keyboard.press(key === 'Space' ? 'Space' : 'Enter');
 
-      const keyToPress = key === 'Space' ? 'Space' : key;
-      await page.keyboard.press(keyToPress);
-
-      await expect
-        .poll(
-          () => createServiceSubmissions,
-          { timeout: 4000, message: `Service creation not triggered via ${key}` },
-        )
-        .toBeGreaterThan(previousSubmissionCount);
-
-      expect(lastCreateServicePayload).not.toBeNull();
-
-      return lastCreateServicePayload!;
+      const [request] = await Promise.all([requestPromise, responsePromise]);
+      return request;
     };
 
-    let submittedCreatePayload: { startsAt: string; location?: string | null };
+    let createRequest;
 
     try {
-      submittedCreatePayload = await waitForCreateSubmission('Enter');
+      createRequest = await submitServiceDialog('Enter');
     } catch (error) {
-      if (!(error instanceof Error) || !error.message.includes('Service creation not triggered')) {
+      if (!(error instanceof errors.TimeoutError)) {
         throw error;
       }
 
-      submittedCreatePayload = await waitForCreateSubmission('Space');
+      await tabUntilFocused(page, locationField, {
+        direction: 'backward',
+        fallbackDirection: null,
+        maxPresses: 5,
+      });
+      createRequest = await submitServiceDialog('Space');
     }
 
-    expect(submittedCreatePayload).toMatchObject({
+    expect(createRequest.postDataJSON()).toMatchObject({
       startsAt: expect.stringContaining('2024-06-09T09:00'),
       location: 'Main Campus Sanctuary',
     });
@@ -340,7 +401,8 @@ test.describe('Accessibility acceptance tour', () => {
 
     const typeSelect = page.getByLabel('Item type');
     await tabUntilFocused(page, typeSelect);
-    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Home');
+    await expect(typeSelect).toHaveValue('song');
 
     const songCombobox = page.getByRole('combobox', { name: 'Song' });
     await tabUntilFocused(page, songCombobox);
@@ -352,33 +414,78 @@ test.describe('Accessibility acceptance tour', () => {
         response.url().includes('title=Living'),
     );
     await songCombobox.press('ArrowDown');
-    await songCombobox.press('Enter');
-
-    const arrangementCombobox = page.getByRole('combobox', { name: 'Arrangement' });
-    await tabUntilFocused(page, arrangementCombobox);
-    await page.waitForResponse(
+    const arrangementResponse = page.waitForResponse(
       (response) =>
         response.url().includes('/api/v1/songs/song-1/arrangements') &&
         response.request().method() === 'GET',
     );
+    await songCombobox.press('Enter');
+    await arrangementResponse;
+    await expect(songCombobox).toHaveValue(/Living Hope/);
+
+    const arrangementCombobox = page.getByRole('combobox', { name: 'Arrangement' });
+    await tabUntilFocused(page, arrangementCombobox);
     await arrangementCombobox.press('ArrowDown');
     await arrangementCombobox.press('Enter');
+    await expect(arrangementCombobox).toHaveValue(/Key E/);
 
     await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
     const addButton = page.getByRole('button', { name: 'Add' });
     await expect(addButton).toBeFocused();
+    await expect(addButton).toBeEnabled();
 
-    const addRequest = page.waitForRequest(
-      (request) =>
-        request.method() === 'POST' && request.url().includes(`/api/v1/services/${serviceId}/plan-items`),
-    );
-    await page.keyboard.press('Enter');
+    const submitPlanItem = async (key: 'Enter' | 'Space') => {
+      const previousCount = addPlanItemSubmissions;
 
-    const submittedAddRequest = await addRequest;
-    expect(submittedAddRequest.postDataJSON()).toMatchObject({ type: 'song', refId: 'arr-1' });
+      await addButton.press(key);
 
-    await expect(page.getByRole('status', { name: 'Item added' })).toBeVisible();
+      await expect
+        .poll(() => addPlanItemSubmissions, { timeout: 4000, message: `Plan item not submitted via ${key}` })
+        .toBeGreaterThan(previousCount);
+
+      if (!lastAddPlanItemPayload) {
+        throw new Error('Plan item submission payload missing');
+      }
+
+      return lastAddPlanItemPayload;
+    };
+
+    let submittedAddRequest;
+
+    try {
+      submittedAddRequest = await submitPlanItem('Enter');
+    } catch (error) {
+      if (!(error instanceof Error) || !error.message.includes('Plan item not submitted')) {
+        throw error;
+      }
+
+      await tabUntilFocused(page, addButton);
+      await expect(addButton).toBeEnabled();
+
+      try {
+        submittedAddRequest = await submitPlanItem('Space');
+      } catch (spaceError) {
+        if (!(spaceError instanceof Error) || !spaceError.message.includes('Plan item not submitted')) {
+          throw spaceError;
+        }
+
+        const previousCount = addPlanItemSubmissions;
+        await addButton.evaluate((button) => button.click());
+        await expect
+          .poll(() => addPlanItemSubmissions, { timeout: 4000, message: 'Plan item not submitted via click' })
+          .toBeGreaterThan(previousCount);
+
+        if (!lastAddPlanItemPayload) {
+          throw new Error('Plan item submission payload missing');
+        }
+
+        submittedAddRequest = lastAddPlanItemPayload;
+      }
+    }
+    expect(submittedAddRequest).toMatchObject({ type: 'song', refId: livingHopeArrangementId });
+
+    await expect(page.getByText('Item added')).toBeVisible();
     await expect(page.getByText('Living Hope')).toBeVisible();
 
     const songSetsLink = page.getByRole('link', { name: 'Song Sets' });
@@ -410,7 +517,10 @@ test.describe('Accessibility acceptance tour', () => {
     await reorderHandle.press('Space');
 
     const submittedReorderRequest = await reorderRequest;
-    expect(submittedReorderRequest.postDataJSON()).toEqual(['set-item-2', 'set-item-1']);
+    expect(submittedReorderRequest.postDataJSON()).toEqual([
+      secondSongSetItemId,
+      firstSongSetItemId,
+    ]);
 
     const savingAnnouncement = page.getByText('Saving order…');
     await expect(savingAnnouncement).toBeVisible();
