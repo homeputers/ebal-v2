@@ -94,16 +94,17 @@ test.describe('Accessibility acceptance tour', () => {
     let createServiceSubmissions = 0;
     let lastCreateServicePayload: { startsAt: string; location?: string | null } | null = null;
 
-    await page.route(/\/api\/v1\/services(?:\?.*)?$/, async (route) => {
+    await page.route(/\/api\/v1\/services(?:\/)?(?:\?.*)?$/, async (route) => {
       const request = route.request();
       const url = new URL(request.url());
+      const isServicesCollectionPath = /\/api\/v1\/services\/?$/.test(url.pathname);
 
-      if (request.method() === 'GET' && url.pathname.endsWith('/services')) {
+      if (request.method() === 'GET' && isServicesCollectionPath) {
         await fulfillJson(route, createPagedResponse(services));
         return;
       }
 
-      if (request.method() === 'POST' && url.pathname.endsWith('/services')) {
+      if (request.method() === 'POST' && isServicesCollectionPath) {
         const payload = request.postDataJSON() as { startsAt: string; location?: string | null };
         const created = {
           id: serviceId,
@@ -120,7 +121,7 @@ test.describe('Accessibility acceptance tour', () => {
       await route.fallback();
     });
 
-    await page.route(new RegExp(`/api/v1/services/${serviceId}(?:\\?.*)?$`), async (route) => {
+    await page.route(new RegExp(`/api/v1/services/${serviceId}(?:/)?(?:\\?.*)?$`), async (route) => {
       const service = services.find((s) => s.id === serviceId);
       if (!service) {
         await route.fulfill({ status: 404 });
@@ -130,7 +131,7 @@ test.describe('Accessibility acceptance tour', () => {
       await fulfillJson(route, service);
     });
 
-    await page.route(new RegExp(`/api/v1/services/${serviceId}/plan-items(?:\\?.*)?$`), async (route) => {
+    await page.route(new RegExp(`/api/v1/services/${serviceId}/plan-items(?:/)?(?:\\?.*)?$`), async (route) => {
       const request = route.request();
 
       if (request.method() === 'GET') {
