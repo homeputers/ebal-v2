@@ -276,26 +276,27 @@ test.describe('Accessibility acceptance tour', () => {
 
     await tabUntilFocused(page, saveButton);
 
-    const waitForCreateRequest = (key: 'Enter' | 'Space') =>
+    const waitForCreateResponse = (key: 'Enter' | 'Space') =>
       Promise.all([
-        page.waitForRequest(
-          (request) => request.method() === 'POST' && request.url().includes('/api/v1/services'),
+        page.waitForResponse(
+          (response) =>
+            response.request().method() === 'POST' && response.url().includes('/api/v1/services'),
         ),
         saveButton.press(key),
-      ]).then(([request]) => request);
+      ]).then(([response]) => response);
 
-    let submittedCreateRequest;
+    let submittedCreateResponse;
 
     try {
-      submittedCreateRequest = await waitForCreateRequest('Enter');
+      submittedCreateResponse = await waitForCreateResponse('Enter');
     } catch (error) {
       if (!(error instanceof errors.TimeoutError)) {
         throw error;
       }
 
-      submittedCreateRequest = await waitForCreateRequest('Space');
+      submittedCreateResponse = await waitForCreateResponse('Space');
     }
-    expect(submittedCreateRequest.postDataJSON()).toMatchObject({
+    expect(submittedCreateResponse.request().postDataJSON()).toMatchObject({
       startsAt: expect.stringContaining('2024-06-09T09:00'),
       location: 'Main Campus Sanctuary',
     });
