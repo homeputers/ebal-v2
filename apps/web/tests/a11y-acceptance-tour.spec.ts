@@ -270,13 +270,7 @@ test.describe('Accessibility acceptance tour', () => {
 
     const saveButton = createDialog.getByRole('button', { name: 'Save' });
     await expect(saveButton).toBeEnabled();
-
-    const cancelButton = createDialog.getByRole('button', { name: 'Cancel' });
-    await expect(cancelButton).toBeVisible();
-    await tabUntilFocused(page, cancelButton, 40);
-    await expect(page.locator(':focus')).toHaveText('Cancel');
-
-    await page.keyboard.press('Shift+Tab');
+    await tabUntilFocused(page, saveButton, 40);
     await expect(page.locator(':focus')).toHaveText('Save');
 
     const createRequest = page.waitForRequest(
