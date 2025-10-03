@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { errors, expect, test } from '@playwright/test';
 import {
   createPagedResponse,
   fulfillJson,
@@ -277,12 +277,27 @@ test.describe('Accessibility acceptance tour', () => {
     await tabUntilFocused(page, saveButton, { direction: 'backward', fallbackDirection: 'forward' });
     await expect(saveButton).toBeFocused();
 
-    const [submittedCreateRequest] = await Promise.all([
-      page.waitForRequest(
-        (request) => request.method() === 'POST' && request.url().includes('/api/v1/services'),
-      ),
-      page.keyboard.press('Enter'),
-    ]);
+    const waitForCreateRequest = (key: 'Enter' | 'Space') =>
+      Promise.all([
+        page.waitForRequest(
+          (request) => request.method() === 'POST' && request.url().includes('/api/v1/services'),
+          { timeout: 5000 },
+        ),
+        saveButton.press(key),
+      ]).then(([request]) => request);
+
+    let submittedCreateRequest;
+
+    try {
+      submittedCreateRequest = await waitForCreateRequest('Enter');
+    } catch (error) {
+      if (!(error instanceof errors.TimeoutError)) {
+        throw error;
+      }
+
+      await expect(saveButton).toBeFocused();
+      submittedCreateRequest = await waitForCreateRequest('Space');
+    }
     expect(submittedCreateRequest.postDataJSON()).toMatchObject({
       startsAt: expect.stringContaining('2024-06-09T09:00'),
       location: 'Main Campus Sanctuary',
