@@ -4,7 +4,7 @@ description: "Configura la seguridad, comprende las capacidades de los roles y v
 sidebar:
   label: "Autenticación"
 ---
-> TODO: Traducir el contenido restante al español.
+> TODO: translate body
 
 # Authentication & Authorization
 

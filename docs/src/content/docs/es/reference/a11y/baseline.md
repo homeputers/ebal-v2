@@ -4,7 +4,7 @@ description: "Comprende las reglas compartidas de linting JSX a11y y cómo ejecu
 sidebar:
   label: "Línea base de linting"
 ---
-> TODO: Traducir el contenido restante al español.
+> TODO: translate body
 
 # Accessibility linting baseline
 
