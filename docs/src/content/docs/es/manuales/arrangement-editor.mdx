@@ -1,0 +1,49 @@
+---
+title: "Manual del editor de arreglos"
+description: "Crea partituras precisas con vistas previas ChordPro en vivo y herramientas de transposición."
+sidebar:
+  group: Manuales
+  label: "Editor de arreglos"
+  order: 3
+---
+
+# Editor de arreglos
+
+## Descripción general
+El editor de arreglos es donde capturas los detalles musicales de cada versión de una canción. Combina un formulario estructurado para tonalidad, tempo y métrica con una vista previa ChordPro en vivo que refleja lo que verán los músicos en servicios, conjuntos e impresiones.
+
+## Requisitos previos
+- Rol de Administrador o Planificador con acceso a la gestión de canciones.
+- Una canción seleccionada para poder crear o editar sus arreglos.
+
+## Paso a paso
+1. **Define la tonalidad.** Ingresa la tonalidad base (por ejemplo, `G`) para establecer el punto de partida del arreglo.
+2. **Agrega tempo y métrica.** Incluye opcionalmente el BPM (30–300) y una métrica como `4/4` o `6/8` para informar el ritmo del ensayo.
+3. **Pega las letras en ChordPro.** Usa el área de texto para escribir acordes como `[G]` en línea con las letras. El editor normaliza los saltos de línea automáticamente.
+4. **Revisa la vista previa.** Observa el panel derecho mientras escribes para confirmar que los acordes se alinean sobre las letras o en línea según el diseño elegido.
+5. **Usa los controles de transposición.** Prueba diferentes tonalidades con los botones **Transponer arriba/abajo**; la vista previa se actualiza al instante sin modificar la partitura guardada.
+6. **Alterna sostenidos/bemoles.** Cambia entre grafías enarmónicas según la preferencia de tu equipo, especialmente al probar transposiciones.
+7. **Ajusta el diseño.** Elige **Arriba** para mostrar los acordes sobre las letras (predeterminado) o **En línea** para integrarlos directamente en el texto.
+8. **Guarda el arreglo.** Envía el formulario para que el arreglo esté disponible en servicios, conjuntos de canciones y exportaciones de planes.
+
+> _Marcador de posición de captura: editor de arreglos._
+
+## Ejemplos
+- **Verso simple con indicación:**
+  ```chordpro
+  {title: Great Is Thy Faithfulness}
+  {comment: Verse 1}
+  [C]Great is Thy [F]faithfulness, [C]O God my [G]Father
+  ```
+- **Prueba de vista previa:** Transpone la partitura dos semitonos arriba para verificar que los instrumentos en Bb mantengan formas cómodas.
+
+## Consejos y buenas prácticas
+- Mantén un arreglo por tonalidad o instrumentación distinta para que el historial de transposición sea claro.
+- Usa bloques `{comment:}` para indicaciones de la banda y `{title:}` para encabezados de sección; la vista previa renderiza ambos.
+- Recuerda que los toggles de transposición y sostenidos/bemoles son solo de vista previa: los datos guardados permanecen en la tonalidad definida.
+- Si copias letras desde otra fuente, revisa el espaciado; las líneas vacías se muestran como cortes intencionales en la vista previa.
+
+## Relacionados
+- [Manual de Canciones y Arreglos](./songs-arrangements)
+- [Manual de Conjuntos de Canciones](./song-sets)
+- [Manual de Servicios](./services)
