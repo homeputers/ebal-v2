@@ -24,7 +24,7 @@ const sidebarEn = [
 const sidebarEs = [
   {
     label: 'Primeros pasos',
-    autogenerate: { directory: 'getting-started' }
+    autogenerate: { directory: 'primeros-pasos' }
   },
   {
     label: 'Manuales',
@@ -32,11 +32,11 @@ const sidebarEs = [
   },
   {
     label: 'Guías prácticas',
-    autogenerate: { directory: 'how-to' }
+    autogenerate: { directory: 'guias-practicas' }
   },
   {
     label: 'Referencia',
-    autogenerate: { directory: 'reference' }
+    autogenerate: { directory: 'referencia' }
   }
 ];
 
