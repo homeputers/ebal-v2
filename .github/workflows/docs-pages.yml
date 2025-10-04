@@ -1,0 +1,75 @@
+name: Deploy Docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+          cache-dependency-path: docs/yarn.lock
+
+      - name: Install dependencies
+        working-directory: ./docs
+        run: yarn --frozen-lockfile || yarn
+
+      - name: Determine Astro base and site
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER}"
+          repo="${GITHUB_REPOSITORY#${owner}/}"
+          if [[ "${repo}" == "${owner}.github.io" ]]; then
+            base="/"
+            site="https://${owner}.github.io"
+          else
+            base="/${repo}"
+            site="https://${owner}.github.io/${repo}"
+          fi
+          echo "ASTRO_BASE=${base}" >> "$GITHUB_ENV"
+          echo "ASTRO_SITE=${site}" >> "$GITHUB_ENV"
+          echo "Configured ASTRO_BASE=${base} and ASTRO_SITE=${site}"
+
+      - name: Build docs
+        working-directory: ./docs
+        run: yarn build
+
+      - name: Disable Jekyll processing
+        run: touch docs/dist/.nojekyll
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs/dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
