@@ -2,7 +2,7 @@ import { defaultSiteLocale, siteLocaleMeta } from './src/config/siteMeta.js';
 
 const defaultLocale = defaultSiteLocale;
 
-const sidebarEn = [
+export const sidebarEn = [
   {
     label: 'Getting Started',
     autogenerate: { directory: 'getting-started' }
@@ -21,7 +21,7 @@ const sidebarEn = [
   }
 ];
 
-const sidebarEs = [
+export const sidebarEs = [
   {
     label: 'Primeros pasos',
     autogenerate: { directory: 'primeros-pasos' }
@@ -43,8 +43,8 @@ const sidebarEs = [
 export default {
   defaultLocale,
   locales: {
-    en: { label: 'English', lang: 'en', sidebar: sidebarEn },
-    es: { label: 'Español', lang: 'es', sidebar: sidebarEs }
+    en: { label: 'English', lang: 'en' },
+    es: { label: 'Español', lang: 'es' }
   },
   title: siteLocaleMeta[defaultSiteLocale].title,
   description: siteLocaleMeta[defaultSiteLocale].description,
@@ -59,4 +59,9 @@ export default {
     LanguageSelect: './src/components/LanguageSwitcher.astro'
   },
   sidebar: sidebarEn
+};
+
+export const localeSidebars = {
+  en: sidebarEn,
+  es: sidebarEs
 };
