@@ -17,7 +17,8 @@ export default {
   customCss: ['./src/styles/global.css'],
   components: {
     Head: './src/components/LocalizedHead.astro',
-    SiteTitle: './src/components/LocalizedSiteTitle.astro'
+    SiteTitle: './src/components/LocalizedSiteTitle.astro',
+    LanguageSelect: './src/components/LanguageSwitcher.astro'
   },
   sidebar: [
     {

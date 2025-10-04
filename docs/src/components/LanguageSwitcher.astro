@@ -1,0 +1,171 @@
+---
+import { getCollection } from 'astro:content';
+import config from 'virtual:starlight/user-config';
+
+const { labels, locale: activeLocale, slug: currentSlug } = Astro.props;
+
+const isMultilingual = Boolean(config.isMultilingual);
+const docs = isMultilingual ? await getCollection('docs') : [];
+const availableSlugs = new Set(docs.map((entry) => entry.slug));
+const locales = Object.entries(config.locales ?? {});
+const defaultLocale = config.defaultLocale?.locale ?? locales[0]?.[0] ?? 'root';
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const localeSegments = new Set(locales.filter(([code]) => code !== 'root').map(([code]) => code));
+const activeLocaleCode = activeLocale ?? defaultLocale;
+const selectId = 'language-switcher';
+
+function slugLocale(slug: string): string | undefined {
+  const [first] = slug.split('/');
+  return first && localeSegments.has(first) ? first : undefined;
+}
+
+function localizedSlug(slug: string, locale: string | undefined): string {
+  const currentLocale = slugLocale(slug);
+  if (currentLocale === locale) {
+    return slug;
+  }
+  const targetLocale = locale ?? '';
+  if (currentLocale === slug) {
+    return targetLocale;
+  }
+  if (currentLocale) {
+    const rest = slug.slice(currentLocale.length + 1);
+    return targetLocale ? `${targetLocale}/${rest}` : rest;
+  }
+  return slug ? (targetLocale ? `${targetLocale}/${slug}` : slug) : targetLocale;
+}
+
+function slugToPathname(slug: string | undefined): string {
+  if (!slug || slug === '' || slug === 'index') {
+    return '/';
+  }
+  if (slug.endsWith('/index')) {
+    return `/${slug.slice(0, -'/index'.length)}/`;
+  }
+  return `/${slug}/`;
+}
+
+function withBase(path: string): string {
+  if (!basePath) {
+    return path;
+  }
+  if (path === '/') {
+    return `${basePath || ''}/`;
+  }
+  return `${basePath}${path}`;
+}
+
+function localeHomePath(locale: string): string {
+  return withBase(slugToPathname(locale === 'root' ? '' : locale));
+}
+
+const ariaLabel = labels?.['languageSelect.accessibleLabel'] ?? 'Change language';
+const activeOptionCode = activeLocaleCode ?? 'root';
+const options = locales.map(([code, localeConfig]) => {
+  const normalizedLocale = code === 'root' ? undefined : code;
+  const candidateSlug = currentSlug
+    ? localizedSlug(currentSlug, normalizedLocale)
+    : undefined;
+  const hasCandidate = candidateSlug && availableSlugs.has(candidateSlug);
+  const path = hasCandidate
+    ? withBase(slugToPathname(candidateSlug))
+    : localeHomePath(code);
+  return {
+    code,
+    label: localeConfig?.label ?? code,
+    value: path,
+    selected: code === activeOptionCode,
+  };
+});
+---
+{isMultilingual && (
+  <starlight-lang-switcher>
+    <label class="sr-only" for={selectId}>{ariaLabel}</label>
+    <div class="select-wrapper">
+      <select id={selectId} aria-label={ariaLabel}>
+        {options.map(({ code, label, value, selected }) => (
+          <option value={value} selected={selected} data-locale={code}>
+            {label}
+          </option>
+        ))}
+      </select>
+    </div>
+  </starlight-lang-switcher>
+)}
+
+<style>
+  starlight-lang-switcher {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .select-wrapper {
+    position: relative;
+  }
+
+  select {
+    appearance: none;
+    background-color: transparent;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 999px;
+    color: inherit;
+    font: inherit;
+    padding: 0.35rem 2rem 0.35rem 0.75rem;
+    min-height: 2.25rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  select:focus-visible {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--sl-color-accent) 20%, transparent);
+  }
+
+  select:hover {
+    border-color: var(--sl-color-gray-4);
+  }
+
+  .select-wrapper::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: 0.3rem 0.3rem 0;
+    border-style: solid;
+    border-color: currentColor transparent transparent;
+  }
+</style>
+
+<script>
+  class StarlightLanguageSwitcher extends HTMLElement {
+    connectedCallback() {
+      const select = this.querySelector('select');
+      if (!select) return;
+      select.addEventListener('change', (event) => {
+        const target = event.currentTarget;
+        if (target instanceof HTMLSelectElement && target.value) {
+          window.location.pathname = target.value;
+        }
+      });
+    }
+  }
+
+  if (!customElements.get('starlight-lang-switcher')) {
+    customElements.define('starlight-lang-switcher', StarlightLanguageSwitcher);
+  }
+</script>
