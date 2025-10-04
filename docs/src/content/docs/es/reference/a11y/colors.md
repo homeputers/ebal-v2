@@ -4,7 +4,7 @@ description: "Verifica que las combinaciones de tokens del tema cumplan con los 
 sidebar:
   label: "Contraste de color"
 ---
-> TODO: Traducir el contenido restante al español.
+> TODO: translate body
 
 # Color contrast guard
 

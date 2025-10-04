@@ -4,7 +4,7 @@ description: "Plantilla lista para PR que rastrea el progreso mientras reemplaza
 sidebar:
   label: "Lista i18n"
 ---
-> TODO: Traducir el contenido restante al español.
+> TODO: translate body
 
 # Hardcoded Strings Migration Checklist PR Template
 

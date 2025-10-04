@@ -4,7 +4,7 @@ description: "Referencia rápida para revisar comportamientos críticos de acces
 sidebar:
   label: "Listas"
 ---
-> TODO: Traducir el contenido restante al español.
+> TODO: translate body
 
 # Accessibility Checklists
 

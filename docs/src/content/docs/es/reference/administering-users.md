@@ -4,7 +4,7 @@ description: "Gestiona cuentas a través de los endpoints de la API de administr
 sidebar:
   label: "Usuarios admin"
 ---
-> TODO: Traducir el contenido restante al español.
+> TODO: translate body
 
 # Administering Users
 

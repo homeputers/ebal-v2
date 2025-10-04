@@ -4,7 +4,7 @@ description: "Arquitectura y plan de migración para llevar i18n al front-end de
 sidebar:
   label: "Diseño web i18n"
 ---
-> TODO: Traducir el contenido restante al español.
+> TODO: translate body
 
 # Web Internationalization Design Doc
 

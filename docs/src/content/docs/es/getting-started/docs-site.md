@@ -5,7 +5,7 @@ sidebar:
   label: "Sitio de docs"
   order: 10
 ---
-> TODO: Traducir el contenido restante al español.
+> TODO: translate body
 
 # Ebal v2 Documentation Site
 

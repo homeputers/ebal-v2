@@ -4,7 +4,7 @@ description: "Despliega los contenedores web y API de EBAL en entornos de produc
 sidebar:
   label: "Desplegar a producción"
 ---
-> TODO: Traducir el contenido restante al español.
+> TODO: translate body
 
 # Production Deployment Guide
 
