@@ -1,0 +1,93 @@
+---
+title: "Autenticación y autorización"
+description: "Configura la seguridad, comprende las capacidades de los roles y valida los flujos de sesión."
+sidebar:
+  label: "Autenticación"
+---
+
+# Autenticación y autorización
+
+Este documento explica cómo se configura la autenticación, qué roles pueden acceder a APIs específicas y cómo verificar los flujos de sesión de principio a fin.
+
+## Configuración del entorno
+
+La configuración del backend y del correo se controla con las siguientes variables de entorno (consulta `application.yaml`):
+
+| Propósito | Variable(s) | Predeterminado |
+| --- | --- | --- |
+| Activar/desactivar la cadena de filtros de seguridad | `EBAL_SECURITY_ENABLED` | `true` |
+| Orígenes web permitidos para CORS | `EBAL_WEB_ORIGIN_DEV`, `EBAL_WEB_ORIGIN_PROD` | `http://localhost:5173`, `https://app.ebal.church` |
+| Secreto de firma JWT (mínimo 64 caracteres) | `EBAL_JWT_SECRET` | Cadena aleatoria solo para desarrollo |
+| Tiempo de vida del token de acceso | `EBAL_JWT_ACCESS_TTL` | `PT15M` |
+| Tiempo de vida del token de refresco | `EBAL_JWT_REFRESH_TTL` | `P30D` |
+| Tiempo de vida del token de restablecimiento de contraseña | `EBAL_PASSWORD_RESET_TTL` | `PT1H` |
+| Límite de intentos de inicio de sesión (máx. intentos / ventana) | `EBAL_SECURITY_LOGIN_RATE_LIMIT_MAX`, `EBAL_SECURITY_LOGIN_RATE_LIMIT_WINDOW` | `10`, `PT1M` |
+| Límite para solicitudes de «olvidé mi contraseña» | `EBAL_SECURITY_FORGOT_RATE_LIMIT_MAX`, `EBAL_SECURITY_FORGOT_RATE_LIMIT_WINDOW` | `5`, `PT15M` |
+| URL base del frontend usada en enlaces de restablecimiento | `FRONTEND_BASE_URL` | `http://localhost:5173` |
+| Bandera de SMTP y credenciales del host | `EBAL_MAIL_SMTP_ENABLED`, `EBAL_MAIL_SMTP_HOST`, `EBAL_MAIL_SMTP_PORT`, `EBAL_MAIL_SMTP_USERNAME`, `EBAL_MAIL_SMTP_PASSWORD`, `EBAL_MAIL_SMTP_STARTTLS`, `EBAL_MAIL_SMTP_AUTH`, `EBAL_MAIL_FROM` | Deshabilitado con valores seguros |
+
+Establece `EBAL_SECURITY_ENABLED=false` para omitir la autenticación por completo en experimentos locales. Cuando SMTP está deshabilitado, las solicitudes de restablecimiento se aceptan pero no se envían correos.
+
+## Siembra del administrador predeterminado
+
+Cuando `EBAL_SEED_ENABLED=true`, la aplicación inicia un seeder de administrador. Crea o reactiva a un administrador usando:
+
+- Correo: `EBAL_SEED_ADMIN_EMAIL` (predeterminado `admin@example.com`)
+- Contraseña: `EBAL_SEED_ADMIN_PASSWORD` (predeterminado `ChangeMe123!`)
+
+Si el usuario ya existe, el seeder se asegura de que la cuenta esté activa y otorga el rol `ADMIN`.
+
+## Capacidades por rol
+
+El control de acceso se aplica en `SecurityConfig`. La siguiente matriz resume qué métodos HTTP están permitidos por rol:
+
+| Grupo de endpoints | Admin | Planificador | Músico | Lector |
+| --- | --- | --- | --- | --- |
+| `/api/v1/admin/**` (todos los métodos) | ✅ | ❌ | ❌ | ❌ |
+| `/api/v1/auth/change-password` | ✅ | ✅ | ✅ | ✅ |
+| `/api/v1/me/**` (autoservicio) | ✅ | ✅ | ✅ | ✅ |
+| Lecturas del dominio (`GET` en miembros, grupos, canciones, servicios, conjuntos, elementos del plan, búsqueda) | ✅ | ✅ | ✅ | ✅ |
+| Mutaciones del dominio (`POST`, `PUT`, `PATCH`, `DELETE` en los endpoints anteriores) | ✅ | ✅ | ❌ | ❌ |
+| Endpoints públicos sin autenticación (`/api/v1/auth/login`, `/api/v1/auth/refresh`, `/api/v1/auth/forgot-password`, `/api/v1/auth/reset-password`, `/api/v1/health`, `/api/v1/services/ical`, `/api/v1/storage/health`, Swagger) | Cualquiera |
+
+Aspectos destacados del comportamiento de sesión:
+
+- Los tokens de refresco se rotan en cada llamada a `/auth/refresh`. Un token reutilizado o revocado se rechaza.
+- Los cambios de contraseña y los restablecimientos exitosos revocan todos los tokens de refresco pendientes del usuario, forzando nuevos inicios de sesión en otras sesiones.
+- Los tokens de restablecimiento vencidos o mal formados se rechazan antes de que ocurra cualquier actualización de contraseña.
+
+## Lista de verificación de validación manual
+
+Usa la siguiente lista al validar entornos o releases:
+
+- [ ] Comienza con una base de datos nueva: el administrador predeterminado debe sembrarse y el inicio de sesión debe funcionar con las credenciales sembradas.
+- [ ] Un usuario planificador puede autenticarse pero recibe HTTP 403 al visitar rutas `/admin/*`.
+- [ ] Un usuario músico puede iniciar sesión y ver planes asignados (endpoints GET) pero no puede modificar datos de planificación.
+- [ ] Un usuario lector solo ve planes publicados (endpoints GET) y no puede crear ni editar datos de planificación.
+- [ ] El flujo de «olvidé/restablecer contraseña» invalida las sesiones existentes (los tokens de refresco dejan de funcionar).
+- [ ] Cambiar la contraseña mediante `/auth/change-password` invalida otras sesiones de ese usuario.
+- [ ] Los tokens de refresco se rotan mientras son válidos y dejan de funcionar inmediatamente después de la revocación.
+
+## Promover un usuario a administrador vía SQL
+
+Si todos los administradores quedan bloqueados, asciende otra cuenta directamente en PostgreSQL:
+
+```sql
+-- Replace with the email that should become admin
+WITH target AS (
+  SELECT id
+  FROM users
+  WHERE email = lower('user@example.com')
+)
+UPDATE users
+SET is_active = TRUE,
+    updated_at = now()
+WHERE id IN (SELECT id FROM target);
+
+INSERT INTO user_roles (user_id, role, created_at)
+SELECT id, 'ADMIN', now()
+FROM target
+ON CONFLICT (user_id, role) DO NOTHING;
+```
+
+Después de ejecutar las sentencias, el usuario promovido puede iniciar sesión (o solicitar un restablecimiento) y acceder de inmediato a los endpoints `/api/v1/admin/**`.
