@@ -4,37 +4,36 @@ description: "Gestiona cuentas a través de los endpoints de la API de administr
 sidebar:
   label: "Usuarios admin"
 ---
-> TODO: translate body
 
-# Administering Users
+# Administrar usuarios
 
-The `/api/v1/admin/users` endpoints allow administrators to manage accounts without touching the database directly. All requests require a bearer token with the `ADMIN` role and use the JSON models generated from `spec/openapi.yaml`.
+Los endpoints `/api/v1/admin/users` permiten a los administradores gestionar cuentas sin tocar directamente la base de datos. Todas las solicitudes requieren un token bearer con el rol `ADMIN` y utilizan los modelos JSON generados desde `spec/openapi.yaml`.
 
-## Capabilities
+## Capacidades
 
-- **Search and paginate** with optional query (`q`), role, and activation filters.
-- **Create users** with a display name, explicit roles, and an optional temporary password. Emails are normalized to lowercase and must be unique.
-- **Read single users** to view roles, activation state, and timestamps.
-- **Update users** to change display names, toggle activation, or replace roles.
-- **Delete users** (hard delete) when allowed.
-- **Send password resets** to existing accounts, reusing the same reset token workflow as `/auth/forgot-password`.
+- **Buscar y paginar** con filtros opcionales de consulta (`q`), rol y estado de activación.
+- **Crear usuarios** con nombre para mostrar, roles explícitos y una contraseña temporal opcional. Los correos se normalizan a minúsculas y deben ser únicos.
+- **Leer usuarios individuales** para ver roles, estado de activación y marcas de tiempo.
+- **Actualizar usuarios** para cambiar nombres para mostrar, alternar la activación o reemplazar roles.
+- **Eliminar usuarios** (eliminación definitiva) cuando esté permitido.
+- **Enviar restablecimientos de contraseña** a cuentas existentes, reutilizando el flujo de token de `/auth/forgot-password`.
 
-## Safeguards
+## Medidas de protección
 
-- Email uniqueness is enforced in the database using `citext`, so `User@example.com` and `user@example.com` are considered the same.
-- Optimistic locking prevents silent overwrites by requiring the existing version when updating records.
-- Attempts to delete, deactivate, or demote the last administrator return `400 LAST_ADMIN_FORBIDDEN`.
-- Deactivating or resetting a user revokes all refresh tokens immediately.
-- Password hashes never leave the server; invitations and resets go through the configured `EmailSender` implementation.
+- La unicidad del correo se refuerza en la base de datos mediante `citext`, por lo que `User@example.com` y `user@example.com` se consideran iguales.
+- El bloqueo optimista evita sobrescrituras silenciosas al requerir la versión existente al actualizar registros.
+- Intentar eliminar, desactivar o degradar al último administrador devuelve `400 LAST_ADMIN_FORBIDDEN`.
+- Desactivar o restablecer un usuario revoca todos los tokens de refresco inmediatamente.
+- Los hashes de contraseña nunca salen del servidor; las invitaciones y restablecimientos pasan por la implementación configurada de `EmailSender`.
 
-## Password Workflows
+## Flujos de contraseñas
 
-- When creating a user without a `temporaryPassword`, the service generates a secure random value, stores the hash, and passes the password to the email sender (the dev implementation logs the message).
-- `POST /admin/users/{id}/reset-password` issues a new token using the same TTL as the public reset flow, then sends a reset link via `EmailSender.sendPasswordResetEmail` and revokes active refresh tokens.
+- Al crear un usuario sin `temporaryPassword`, el servicio genera un valor aleatorio seguro, almacena el hash y envía la contraseña al remitente de correo (la implementación de desarrollo registra el mensaje).
+- `POST /admin/users/{id}/reset-password` emite un token nuevo con el mismo TTL que el flujo público de restablecimiento, luego envía un enlace mediante `EmailSender.sendPasswordResetEmail` y revoca los tokens de refresco activos.
 
-## Recovery Tips
+## Consejos de recuperación
 
-If the last admin account becomes locked, you can promote an existing user directly in SQL:
+Si la última cuenta administradora queda bloqueada, puedes promover a un usuario existente directamente en SQL:
 
 ```sql
 UPDATE users SET is_active = TRUE WHERE email = 'user@example.com';
@@ -43,4 +42,4 @@ SELECT id, 'ADMIN' FROM users WHERE email = 'user@example.com'
 ON CONFLICT (user_id, role) DO NOTHING;
 ```
 
-After promoting, log in with that account and manage the rest through the API.
+Después de promoverlo, inicia sesión con esa cuenta y gestiona el resto a través de la API.

@@ -4,32 +4,31 @@ description: "Verifica que las combinaciones de tokens del tema cumplan con los 
 sidebar:
   label: "Contraste de color"
 ---
-> TODO: translate body
 
-# Color contrast guard
+# Guardia de contraste de color
 
-Our design tokens rely on paired foreground/background colors. During development we automatically verify that the pairings satisfy WCAG 2.1 AA contrast for normal text.
+Nuestros tokens de diseño dependen de pares de colores de primer plano y fondo. Durante el desarrollo verificamos automáticamente que las combinaciones satisfagan el contraste WCAG 2.1 AA para texto normal.
 
-## Automatic theme token check
+## Verificación automática de tokens del tema
 
-1. Start the web client in development mode: `cd apps/web && yarn dev`.
-2. Load the app in your browser and open the developer console.
-3. Look for log entries prefixed with `[theme-contrast]`. We currently verify:
-   - `--foreground` on `--background`
-   - `--card-foreground` on `--card`
-   - `--popover-foreground` on `--popover`
-   - `--primary-foreground` on `--primary`
-   - `--secondary-foreground` on `--secondary`
-   - `--muted-foreground` on `--muted`
-   - `--accent-foreground` on `--accent`
-   - `--destructive-foreground` on `--destructive`
-4. If any warning appears, adjust the CSS variables in `apps/web/src/index.css` until the console reports no failures (contrast ratio ≥ 4.5:1).
+1. Inicia el cliente web en modo desarrollo: `cd apps/web && yarn dev`.
+2. Carga la aplicación en tu navegador y abre la consola de desarrollador.
+3. Busca entradas de log con el prefijo `[theme-contrast]`. Actualmente validamos:
+   - `--foreground` sobre `--background`
+   - `--card-foreground` sobre `--card`
+   - `--popover-foreground` sobre `--popover`
+   - `--primary-foreground` sobre `--primary`
+   - `--secondary-foreground` sobre `--secondary`
+   - `--muted-foreground` sobre `--muted`
+   - `--accent-foreground` sobre `--accent`
+   - `--destructive-foreground` sobre `--destructive`
+4. Si aparece alguna advertencia, ajusta las variables CSS en `apps/web/src/index.css` hasta que la consola no informe fallos (relación de contraste ≥ 4.5:1).
 
-## Manual spot checks
+## Revisiones manuales puntuales
 
-When iterating on individual components, you can double-check contrast by:
+Cuando iteres en componentes individuales puedes comprobar el contraste adicionalmente:
 
-- Inspecting the element in devtools, copying the resolved `hsl(var(--token))` value, and pasting it into a contrast checker such as [WebAIM](https://webaim.org/resources/contrastchecker/).
-- For Tailwind utilities that mix tokens (e.g., `bg-primary text-primary-foreground`), verify the pair using the same tool to confirm AA compliance at the component level.
+- Inspecciona el elemento en las herramientas de desarrollo, copia el valor resuelto `hsl(var(--token))` y pégalo en un verificador de contraste como [WebAIM](https://webaim.org/resources/contrastchecker/).
+- Para utilidades de Tailwind que combinan tokens (por ejemplo, `bg-primary text-primary-foreground`), verifica el par con la misma herramienta para confirmar el cumplimiento AA a nivel de componente.
 
-Document any intentional exceptions or ratios that cannot meet AA in this folder so reviewers understand the tradeoff.
+Documenta en esta carpeta cualquier excepción intencional o relación que no pueda cumplir AA para que las personas revisoras comprendan la compensación.

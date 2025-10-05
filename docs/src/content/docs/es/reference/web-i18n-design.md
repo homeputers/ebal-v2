@@ -4,45 +4,44 @@ description: "Arquitectura y plan de migración para llevar i18n al front-end de
 sidebar:
   label: "Diseño web i18n"
 ---
-> TODO: translate body
 
-# Web Internationalization Design Doc
+# Documento de diseño de internacionalización web
 
-## Overview
-Introduce multilingual support to the React 18 + Vite front-end without touching backend services. The solution will integrate i18next for string localization, propagate user language preferences through routing and persisted storage, and standardize formatting via the browser `Intl` APIs while keeping domain data language-neutral.
+## Resumen
+Introduce soporte multilingüe en el front-end React 18 + Vite sin modificar los servicios backend. La solución integrará i18next para la localización de cadenas, propagará las preferencias de idioma del usuario a través del enrutamiento y almacenamiento persistente, y estandarizará el formateo mediante las APIs `Intl` del navegador manteniendo los datos de dominio neutrales al idioma.
 
-## Goals & Non-Goals
-- **Goals**
-  - Support English (`en`) and Spanish (`es`) at launch with an easily extensible structure for additional locales.
-  - Drive language selection from the URL (`/:lang/...`) with persistence to `localStorage` as a fallback.
-  - Forward the active language to APIs through an Axios interceptor using the `Accept-Language` header.
-  - Externalize all UI copy to i18next JSON resources split across required namespaces (`common`, `members`, `songs`, `arrangements`, `services`, `songSets`, `validation`).
-  - Use `Intl` for date, number, and list formatting to match the active locale.
-  - Provide migration guidance to replace hardcoded strings and validation messages.
-  - Establish unit and Playwright smoke testing for the new i18n flow.
-- **Non-Goals**
-  - Backend schema or API changes.
-  - Translating domain data returned from the API (remain language-neutral).
-  - Handling right-to-left layouts (future enhancement).
+## Objetivos y no objetivos
+- **Objetivos**
+  - Admitir inglés (`en`) y español (`es`) desde el lanzamiento con una estructura fácilmente extensible para locales adicionales.
+  - Conducir la selección de idioma desde la URL (`/:lang/...`) con persistencia en `localStorage` como respaldo.
+  - Reenviar el idioma activo a las APIs mediante un interceptor de Axios usando el encabezado `Accept-Language`.
+  - Externalizar todo el texto de la UI a recursos JSON de i18next divididos en los espacios de nombres necesarios (`common`, `members`, `songs`, `arrangements`, `services`, `songSets`, `validation`).
+  - Usar `Intl` para formateo de fechas, números y listas acorde al idioma activo.
+  - Proporcionar guía de migración para reemplazar cadenas codificadas y mensajes de validación.
+  - Establecer pruebas unitarias y de humo con Playwright para el nuevo flujo de i18n.
+- **No objetivos**
+  - Cambios en el esquema o en las APIs del backend.
+  - Traducir datos de dominio devueltos por la API (se mantienen neutrales al idioma).
+  - Manejar diseños de derecha a izquierda (mejora futura).
 
-## Current State Summary
-- Routing: React Router v6 with nested routes under `/apps/web/src/routes` (exact structure TBD, assumption based on project standards).
-- Data: TanStack Query handles server state; Axios used for HTTP client.
-- Forms & validation: React Hook Form + Zod with inline English validation messages.
-- UI copy: Hardcoded English strings inside components.
-- Formatting: Custom utilities or implicit browser defaults.
+## Resumen del estado actual
+- Enrutamiento: React Router v6 con rutas anidadas bajo `/apps/web/src/routes`.
+- Datos: TanStack Query gestiona el estado del servidor; Axios se usa como cliente HTTP.
+- Formularios y validación: React Hook Form + Zod con mensajes de validación en inglés incrustados.
+- Texto de UI: cadenas en inglés codificadas dentro de los componentes.
+- Formateo: utilidades personalizadas o valores predeterminados del navegador.
 
-## Proposed Architecture
+## Arquitectura propuesta
 
-### Folder Layout
+### Estructura de carpetas
 ```
 apps/web/
   src/
     i18n/
-      config.ts             # i18next initialization, resource registration, language detection
-      index.ts               # export helpers/hooks (useI18n, changeLanguage, supportedLocales)
-      constants.ts           # locale codes, storage keys
-      formatters.ts          # Intl wrappers (date, number, relative time)
+      config.ts             # Inicialización de i18next, registro de recursos, detección de idioma
+      index.ts               # Exporta helpers/hooks (useI18n, changeLanguage, supportedLocales)
+      constants.ts           # Códigos de locales, claves de almacenamiento
+      formatters.ts          # Envoltorios de Intl (fecha, número, tiempo relativo)
       resources/
         en/
           common.json
@@ -61,81 +60,81 @@ apps/web/
           songSets.json
           validation.json
     routes/
-      [lang]/                # language-aware route segment wrapper
-        layout.tsx           # reads :lang param, syncs to i18next + localStorage
-        index.tsx            # child routes re-exported (no UI changes otherwise)
+      [lang]/                # Segmento de ruta sensible al idioma
+        layout.tsx           # Lee el parámetro :lang, sincroniza i18next + localStorage
+        index.tsx            # Reexporta rutas hijas (sin cambios de UI)
     providers/
-      queryClient.tsx        # inject language into TanStack Query cache key scope if needed
+      queryClient.tsx        # Inyecta idioma en el alcance de caché de TanStack Query si es necesario
     hooks/
-      useLocaleRouter.ts     # helper for pushing translated URLs, reading lang param
+      useLocaleRouter.ts     # Helper para empujar URLs traducidas y leer :lang
     utils/
-      axiosClient.ts         # Axios instance with Accept-Language interceptor
+      axiosClient.ts         # Instancia Axios con interceptor Accept-Language
 ```
 
-### Key Decisions
-1. **Language as a URL Segment**
-   - Use a top-level dynamic segment `/:lang` that wraps existing route configurations via React Router. Example: `/en/members`, `/es/songs`. Benefits: shareable links, crawlable by search engines, easy bookmarking.
-   - Implement a language guard component that validates the `:lang` param against supported locales and redirects to default (`en`) when invalid. Store the resolved locale in `localStorage` (`ebal.lang`).
-2. **Fallback Language Persistence**
-   - On initial load, detect locale in this order: explicit route `:lang`, `localStorage`, browser navigator languages, default to `en`.
-   - When the user toggles language (e.g., header dropdown), update the URL via `useNavigate`, update `localStorage`, and trigger i18next `changeLanguage`.
-3. **i18next Integration**
-   - Use `i18next`, `react-i18next`, and `i18next-browser-languagedetector` (configured to rely on custom detection logic described above). Initialization occurs before React render in `main.tsx`.
-   - Split resources into namespaces matching domain feature slices. Use lazy loading via `resources` bundling or dynamic imports for additional languages.
-   - Provide typed helper `useAppTranslation(namespace?: string | string[])` returning `t` and `i18n` objects to avoid scattering i18next imports.
-4. **Axios Interceptor for Accept-Language**
-   - Extend the shared Axios instance to set `Accept-Language` header to the active i18next language on each request. Subscribe to i18next `languageChanged` event to update interceptor state or modify the request interceptor to read from `i18next.language` at call time.
-   - Ensure no backend change is required; header piggybacks on existing endpoints.
-5. **TanStack Query Integration**
-   - Maintain cache keys independent of language unless the API response is language-specific (not expected). Ensure query invalidation is not triggered by locale change by excluding locale from query keys. Only UI formatting uses i18n.
-6. **React Hook Form + Zod Localization**
-   - Centralize Zod error map using `zod-i18n-map` or custom map referencing `validation` namespace. Call `z.setErrorMap` during app bootstrap after i18next initialization.
-   - Use `t` helper inside form components for field labels, placeholders, and inline helper text.
-7. **Formatting via Intl**
-   - Create wrapper utilities around `Intl.DateTimeFormat`, `Intl.NumberFormat`, and `Intl.ListFormat` within `formatters.ts`. Functions accept a locale (default to active i18next language) and formatting options.
-   - Replace component-level formatting logic with these helpers while leaving raw domain data untouched.
-8. **Extensibility**
-   - Centralize supported locales and metadata (`displayName`, `flagIcon?`) in `constants.ts`. Document process to add new locale: add entry, provide JSON files, update translation pipeline (if any).
-9. **Build & Performance Considerations**
-   - Use Vite dynamic import for locale JSON to enable code splitting. Evaluate bundling both `en` and `es` eagerly to simplify initial release; revisit for more locales.
-   - Configure TypeScript path aliases (`@i18n/*`) if helpful for developer ergonomics.
+### Decisiones clave
+1. **Idioma como segmento de URL**
+   - Usar un segmento dinámico superior `/:lang` que envuelva la configuración de rutas existente con React Router. Ejemplo: `/en/members`, `/es/songs`. Beneficios: enlaces compartibles, rastreables por buscadores y fáciles de guardar.
+   - Implementar un componente guardián que valide el parámetro `:lang` contra los locales soportados y redirija al predeterminado (`en`) cuando sea inválido. Almacenar el locale resuelto en `localStorage` (`ebal.lang`).
+2. **Persistencia de idioma de respaldo**
+   - En la carga inicial detectar el locale en este orden: parámetro `:lang`, `localStorage`, idiomas del navegador, y por último el valor predeterminado `en`.
+   - Cuando la persona usuaria cambie el idioma (por ejemplo, con un selector en el encabezado), actualizar la URL mediante `useNavigate`, persistir en `localStorage` y disparar `changeLanguage` de i18next.
+3. **Integración con i18next**
+   - Usar `i18next`, `react-i18next` e `i18next-browser-languagedetector` (configurado para depender de la lógica de detección descrita arriba). La inicialización ocurre antes de renderizar React en `main.tsx`.
+   - Dividir los recursos en espacios de nombres que coincidan con las áreas de dominio. Usar carga diferida mediante empaquetado de `resources` o imports dinámicos para idiomas adicionales.
+   - Proveer el helper tipado `useAppTranslation(namespace?: string | string[])` que devuelva los objetos `t` e `i18n` para evitar importar i18next en cada componente.
+4. **Interceptor de Axios para Accept-Language**
+   - Extender la instancia compartida de Axios para establecer el encabezado `Accept-Language` con el idioma activo de i18next en cada petición. Suscribirse al evento `languageChanged` de i18next para actualizar el estado del interceptor o leer `i18next.language` en el momento de la llamada.
+   - No se requiere cambio alguno en el backend; el encabezado viaja con los endpoints existentes.
+5. **Integración con TanStack Query**
+   - Mantener las claves de caché independientes del idioma a menos que la respuesta de la API sea específica por idioma (no se espera). Evitar que un cambio de locale invalide consultas excluyendo el locale de las claves. Solo el formateo de UI depende de i18n.
+6. **Localización de React Hook Form + Zod**
+   - Centralizar el mapa de errores de Zod usando `zod-i18n-map` o un mapa personalizado que consulte el espacio de nombres `validation`. Llamar a `z.setErrorMap` durante el arranque de la app tras la inicialización de i18next.
+   - Usar el helper `t` en componentes de formulario para etiquetas, placeholders y textos de ayuda.
+7. **Formateo mediante Intl**
+   - Crear utilidades envoltorio alrededor de `Intl.DateTimeFormat`, `Intl.NumberFormat` e `Intl.ListFormat` dentro de `formatters.ts`. Las funciones aceptan un locale (por defecto el idioma activo de i18next) y opciones de formateo.
+   - Reemplazar la lógica de formateo en los componentes con estos helpers sin modificar los datos de dominio.
+8. **Extensibilidad**
+   - Centralizar los locales soportados y su metadata (`displayName`, `flagIcon?`) en `constants.ts`. Documentar el proceso para agregar un nuevo idioma: añadir la entrada, proveer archivos JSON y actualizar el pipeline de traducción (si aplica).
+9. **Consideraciones de build y rendimiento**
+   - Usar importaciones dinámicas de Vite para los JSON de locales y habilitar code splitting. Evaluar cargar con antelación `en` y `es` para simplificar el lanzamiento inicial; reconsiderar cuando se agreguen más idiomas.
+   - Configurar alias de rutas en TypeScript (`@i18n/*`) si mejora la ergonomía del desarrollo.
 
-## Migration Guidelines
-1. **Audit Hardcoded Strings**
-   - Use `rg "\"[^"]+\"" apps/web/src` to find candidate strings. Prioritize shared layout, navigation, and form components.
-2. **Create Translation Keys**
-   - Group keys by namespace matching component domain (e.g., `members:list.title`).
-   - Add keys to both `en` and `es` JSON files with identical structure. For new locales, copy `en` as the source of truth.
-3. **Update Components**
-   - Replace hardcoded text with `const { t } = useAppTranslation('members');` and use `t('list.title')`.
-   - For dynamic strings, leverage interpolation (`t('greeting', { name })`).
-   - Ensure component-level default text is removed to avoid drift.
-4. **Forms & Validation**
-   - Replace inline Zod error messages with translation keys in `validation` namespace (e.g., `z.string().min(1, { message: 'validation:members.name.required' })`).
-   - Update React Hook Form error rendering to pass messages through `t`.
-5. **Utilities & Toasts**
-   - Externalize copy in utility functions, notifications, and query error handlers.
-6. **Verification**
-   - Manually toggle locale to confirm translations render and no keys are missing (i18next can log missing keys in development).
+## Guía de migración
+1. **Auditar cadenas codificadas**
+   - Usa `rg "\"[^\"]+\"" apps/web/src` para encontrar posibles cadenas. Prioriza layout compartido, navegación y formularios.
+2. **Crear claves de traducción**
+   - Agrupa las claves por espacio de nombres que coincida con el dominio del componente (p. ej., `members:list.title`).
+   - Añade las claves a los archivos JSON de `en` y `es` con estructura idéntica. Para nuevos locales, copia `en` como fuente de verdad.
+3. **Actualizar componentes**
+   - Sustituye el texto codificado con `const { t } = useAppTranslation('members');` y usa `t('list.title')`.
+   - Para cadenas dinámicas, aprovecha la interpolación (`t('greeting', { name })`).
+   - Asegúrate de eliminar texto predeterminado en los componentes para evitar divergencias.
+4. **Formularios y validación**
+   - Reemplaza mensajes de error en línea de Zod con claves del espacio `validation` (por ejemplo, `z.string().min(1, { message: 'validation:members.name.required' })`).
+   - Actualiza el renderizado de errores de React Hook Form para pasar los mensajes por `t`.
+5. **Utilidades y notificaciones**
+   - Externaliza las cadenas en funciones utilitarias, notificaciones y manejadores de errores de consultas.
+6. **Verificación**
+   - Cambia el locale manualmente para confirmar que las traducciones se renderizan y no faltan claves (i18next puede registrar claves faltantes en desarrollo).
 
-## Testing Strategy
-- **Unit Tests**
-  - Add tests for `i18n/config.ts` to verify supported locales, default language fallback, and storage integration (mock `localStorage`).
-  - Test `axiosClient.ts` interceptor ensures `Accept-Language` header equals active language.
-  - Test `formatters.ts` functions produce locale-specific outputs for dates and numbers.
-  - Component-level tests for representative screens (e.g., Members list) verifying `t` renders localized text and that language route param triggers `changeLanguage`.
-  - Zod error map test to ensure validation messages pull from translation keys.
-- **Playwright Smoke Tests**
-  - Scenario: navigate to `/en/members`, assert English labels; switch language via UI, confirm URL updates to `/es/members`, Accept-Language header is observed via mock API or network assertion, and UI text renders Spanish values.
-  - Scenario: direct navigation to `/es/services` loads Spanish resources on initial load.
-  - Scenario: invalid locale (e.g., `/fr/...`) redirects to default language while preserving path.
+## Estrategia de pruebas
+- **Pruebas unitarias**
+  - Agregar tests para `i18n/config.ts` que verifiquen locales soportados, fallback por defecto e integración con almacenamiento (mock de `localStorage`).
+  - Probar que el interceptor en `axiosClient.ts` establezca `Accept-Language` con el idioma activo.
+  - Validar que las funciones de `formatters.ts` produzcan salidas específicas por locale para fechas y números.
+  - Incluir tests de componentes representativos (por ejemplo, la lista de Miembros) para comprobar que `t` renderiza texto localizado y que el parámetro de idioma en la ruta dispara `changeLanguage`.
+  - Añadir un test para el mapa de errores de Zod que garantice que los mensajes de validación usan claves de traducción.
+- **Pruebas de humo con Playwright**
+  - Escenario: navegar a `/en/members`, afirmar etiquetas en inglés; cambiar el idioma mediante la UI, confirmar que la URL se actualiza a `/es/members`, que el encabezado `Accept-Language` se observa con un mock o aserción de red, y que el texto de la UI aparece en español.
+  - Escenario: navegación directa a `/es/services` carga los recursos en español desde la primera carga.
+  - Escenario: un locale inválido (por ejemplo, `/fr/...`) redirige al idioma predeterminado conservando la ruta.
 
-## Acceptance Criteria
-- The application routes include a language segment with validation and redirection for unsupported locales.
-- Language choice persists across reloads and new tabs (via URL or `localStorage`).
-- i18next initializes before React renders; all UI strings reference translation keys across specified namespaces.
-- Axios client attaches `Accept-Language` header derived from the active locale with no backend changes.
-- Date and number formatting utilities utilize `Intl` with the active language.
-- Migration checklist documented and adopted for updated components.
-- Unit tests cover i18n utilities, and Playwright smoke suite validates end-to-end language switching.
-- Adding a new locale requires only JSON resource creation and constants update—no code restructuring.
+## Criterios de aceptación
+- Las rutas de la aplicación incluyen un segmento de idioma con validación y redirección para locales no soportados.
+- La elección de idioma persiste entre recargas y pestañas nuevas (mediante URL o `localStorage`).
+- i18next se inicializa antes de renderizar React; todas las cadenas de UI hacen referencia a claves en los espacios de nombres definidos.
+- El cliente Axios adjunta el encabezado `Accept-Language` derivado del idioma activo sin cambios en el backend.
+- Las utilidades de formateo emplean `Intl` con el idioma activo.
+- La lista de verificación de migración está documentada y adoptada para los componentes actualizados.
+- Las pruebas unitarias cubren las utilidades de i18n y la suite de humo con Playwright valida el cambio de idioma de extremo a extremo.
+- Agregar un nuevo idioma requiere únicamente crear recursos JSON y actualizar las constantes, sin reestructurar el código.

@@ -4,24 +4,23 @@ description: "Comprende las reglas compartidas de linting JSX a11y y cómo ejecu
 sidebar:
   label: "Línea base de linting"
 ---
-> TODO: translate body
 
-# Accessibility linting baseline
+# Línea base de linting de accesibilidad
 
-We use [`eslint-plugin-jsx-a11y`](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y) to enforce web accessibility affordances in React code. The shared ESLint preset (`packages/config/eslint.cjs`) now extends `plugin:jsx-a11y/strict`, which surfaces high-impact issues without requiring component refactors.
+Usamos [`eslint-plugin-jsx-a11y`](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y) para aplicar criterios de accesibilidad web en el código React. El preset compartido de ESLint (`packages/config/eslint.cjs`) ahora extiende `plugin:jsx-a11y/strict`, lo que identifica problemas de alto impacto sin requerir refactors drásticos.
 
-## Rules enabled
+## Reglas habilitadas
 
-The baseline relies on the plugin defaults plus a couple of TypeScript-friendly tweaks:
+La línea base utiliza los valores predeterminados del plugin más un par de ajustes compatibles con TypeScript:
 
-- **`jsx-a11y/no-autofocus`** &rarr; Disallows autofocus on DOM elements. We ignore non-DOM components so forwardRef wrappers can opt in when they manage focus internally.
-- **`jsx-a11y/label-has-associated-control`** &rarr; Ensures form labels reference inputs either through nesting or `htmlFor`, scanning up to three wrapper levels to accommodate styled components.
-- **`plugin:jsx-a11y/strict` preset** &rarr; Covers landmark, role, keyboard, and ARIA usage issues.
+- **`jsx-a11y/no-autofocus`** → Prohíbe usar `autofocus` en elementos del DOM. Ignoramos componentes que no son DOM para que los wrappers con `forwardRef` puedan habilitarlo cuando gestionan el enfoque internamente.
+- **`jsx-a11y/label-has-associated-control`** → Garantiza que las etiquetas de formulario referencien inputs ya sea anidándolos o con `htmlFor`, analizando hasta tres niveles de envoltorios para soportar componentes estilizados.
+- **Preset `plugin:jsx-a11y/strict`** → Cubre problemas de landmarks, roles, teclado y uso de ARIA.
 
-Run the checks locally with:
+Ejecuta las comprobaciones localmente con:
 
 ```bash
 yarn lint:a11y
 ```
 
-The command delegates to the web workspace (`apps/web`) and runs ESLint on the TypeScript/JSX sources.
+El comando delega al workspace web (`apps/web`) y ejecuta ESLint sobre las fuentes TypeScript/JSX.

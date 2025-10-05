@@ -4,26 +4,25 @@ description: "Plantilla lista para PR que rastrea el progreso mientras reemplaza
 sidebar:
   label: "Lista i18n"
 ---
-> TODO: translate body
 
-# Hardcoded Strings Migration Checklist PR Template
+# Plantilla de lista de verificación para migración de cadenas codificadas
 
-Use this template in pull requests that track removing hardcoded strings from the user interface. Copy the Markdown block below into the PR description and update the checkbox status as features are completed.
+Usa esta plantilla en pull requests que rastrean la eliminación de cadenas codificadas en la interfaz de usuario. Copia el bloque Markdown siguiente en la descripción de la PR y actualiza el estado de cada casilla a medida que se completen las funcionalidades.
 
 ```markdown
-## Migration Checklist
+## Lista de verificación de migración
 
-- [ ] Members
-- [ ] Songs
-- [ ] Arrangements (UI chrome)
-- [ ] Services (plan builder + print)
-- [ ] Song Sets
-- [ ] Validation messages
-- [ ] Nav and common actions
+- [ ] Miembros
+- [ ] Canciones
+- [ ] Arreglos (chrome de la UI)
+- [ ] Servicios (constructor de planes + impresión)
+- [ ] Conjuntos de canciones
+- [ ] Mensajes de validación
+- [ ] Navegación y acciones comunes
 
-**Owner:**
+**Responsable:**
 
-**Reviewed by:**
+**Revisado por:**
 
-**Screenshots en/es:**
+**Capturas es/en:**
 ```

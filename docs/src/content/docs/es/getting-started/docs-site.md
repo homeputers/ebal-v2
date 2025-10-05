@@ -5,53 +5,52 @@ sidebar:
   label: "Sitio de docs"
   order: 10
 ---
-> TODO: translate body
 
-# Ebal v2 Documentation Site
+# Sitio de documentación de Ebal v2
 
-This directory hosts the Astro + Starlight documentation site for Every Breath And Life (Ebal) v2. The site is file-system driven, so the sidebar automatically reflects the structure under `src/content/docs`.
+Este directorio aloja el sitio de documentación de Every Breath And Life (Ebal) v2 construido con Astro + Starlight. El sitio se basa en la estructura del sistema de archivos, por lo que la barra lateral refleja automáticamente el contenido dentro de `src/content/docs`.
 
-## Prerequisites
+## Requisitos previos
 
-- Node.js 18.14+ or 20+
-- Yarn (recommended) or npm/pnpm. The commands below assume Yarn.
+- Node.js 18.14+ o 20+
+- Yarn (recomendado) o npm/pnpm. Los comandos siguientes asumen Yarn.
 
-## Install dependencies
+## Instalar dependencias
 
 ```bash
 cd docs
 yarn install
 ```
 
-## Local development
+## Desarrollo local
 
-Start the Starlight dev server with hot reload:
+Inicia el servidor de desarrollo de Starlight con recarga en caliente:
 
 ```bash
 yarn dev
 ```
 
-Then open the printed local URL in your browser.
+Luego abre la URL local mostrada en tu navegador.
 
-## Build the static site
+## Compilar el sitio estático
 
-Create an optimized production build:
+Crea una compilación optimizada para producción:
 
 ```bash
 yarn build
 ```
 
-You can preview the built site locally:
+Puedes previsualizar el sitio compilado en local:
 
 ```bash
 yarn preview
 ```
 
-## Project layout
+## Estructura del proyecto
 
-- `astro.config.mjs` – Astro configuration, including the Starlight integration.
-- `starlight.config.mjs` – Starlight-specific settings such as title, sidebar groups, and custom styles.
-- `src/content/docs` – Markdown/MDX content organized into sidebar sections.
-- `src/styles` – Optional CSS overrides applied on top of the default Starlight theme.
+- `astro.config.mjs`: configuración de Astro, incluida la integración de Starlight.
+- `starlight.config.mjs`: ajustes específicos de Starlight como título, grupos de la barra lateral y estilos personalizados.
+- `src/content/docs`: contenido Markdown/MDX organizado en secciones de la barra lateral.
+- `src/styles`: sobrescrituras CSS opcionales aplicadas sobre el tema predeterminado de Starlight.
 
-Add or update `.md`/`.mdx` files under `src/content/docs` to grow the documentation. The sidebar will update automatically based on the folder you place a document in.
+Agrega o actualiza archivos `.md`/`.mdx` dentro de `src/content/docs` para ampliar la documentación. La barra lateral se actualizará automáticamente según la carpeta en la que ubiques cada documento.
