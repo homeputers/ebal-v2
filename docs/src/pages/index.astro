@@ -41,17 +41,10 @@ const localePaths = Object.fromEntries(
     return entries;
   })
 );
----
-<!DOCTYPE html>
-<html lang={defaultHtmlLang}>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="refresh" content={`0; url=${fallbackPath}`} />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Redirecting…</title>
-    <script type="module">
-      const localePaths = {JSON.stringify(localePaths)};
-      const fallback = {JSON.stringify(fallbackPath)};
+
+const redirectScript = `
+      const localePaths = ${JSON.stringify(localePaths)};
+      const fallback = ${JSON.stringify(fallbackPath)};
 
       function resolveLocale() {
         if (typeof navigator === 'undefined') {
@@ -87,7 +80,16 @@ const localePaths = Object.fromEntries(
           window.location.replace(target);
         }
       }
-    </script>
+    `;
+---
+<!DOCTYPE html>
+<html lang={defaultHtmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content={`0; url=${fallbackPath}`} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redirecting…</title>
+    <script type="module" set:html={redirectScript}></script>
     <style>
       body {
         display: grid;

@@ -24,19 +24,19 @@ export const sidebarEn = [
 export const sidebarEs = [
   {
     label: 'Primeros pasos',
-    autogenerate: { directory: 'primeros-pasos' }
+    autogenerate: { directory: 'getting-started' }
   },
   {
     label: 'Manuales',
-    autogenerate: { directory: 'manuales' }
+    autogenerate: { directory: 'manuals' }
   },
   {
     label: 'Guías prácticas',
-    autogenerate: { directory: 'guias-practicas' }
+    autogenerate: { directory: 'how-to' }
   },
   {
     label: 'Referencia',
-    autogenerate: { directory: 'referencia' }
+    autogenerate: { directory: 'reference' }
   }
 ];
 

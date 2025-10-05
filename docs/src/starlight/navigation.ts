@@ -8,12 +8,15 @@ import {
 } from '../../node_modules/@astrojs/starlight/utils/navigation.ts';
 import { localeSidebars } from '../../starlight.config.mjs';
 
-const fallbackLocale = config.defaultLocale?.locale ?? 'root';
+const defaultLocaleValue =
+  typeof config.defaultLocale === 'string'
+    ? config.defaultLocale
+    : config.defaultLocale?.locale ?? 'en';
 
 export function getSidebar(pathname: string, locale: string | undefined): SidebarEntry[] {
-  const localeKey = locale ?? fallbackLocale;
+  const localeKey = locale ?? defaultLocaleValue;
   const originalSidebar = config.sidebar;
-  const localizedSidebar = localeSidebars?.[localeKey] ?? localeSidebars?.[fallbackLocale];
+  const localizedSidebar = localeSidebars?.[localeKey] ?? localeSidebars?.[defaultLocaleValue];
 
   if (localizedSidebar) {
     config.sidebar = localizedSidebar;
