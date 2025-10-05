@@ -13,10 +13,20 @@ const defaultLocaleValue =
     ? config.defaultLocale
     : config.defaultLocale?.locale ?? 'en';
 
+function normalizeLocale(locale: string | undefined): string | undefined {
+  if (!locale) {
+    return undefined;
+  }
+  const [language] = locale.split('-');
+  return language || locale;
+}
+
 export function getSidebar(pathname: string, locale: string | undefined): SidebarEntry[] {
-  const localeKey = locale ?? defaultLocaleValue;
+  const normalizedLocale = normalizeLocale(locale);
+  const localeKey = normalizedLocale ?? defaultLocaleValue;
   const originalSidebar = config.sidebar;
-  const localizedSidebar = localeSidebars?.[localeKey] ?? localeSidebars?.[defaultLocaleValue];
+  const localizedSidebar =
+    localeSidebars?.[localeKey] ?? localeSidebars?.[normalizeLocale(defaultLocaleValue)] ?? localeSidebars?.[defaultLocaleValue];
 
   if (localizedSidebar) {
     config.sidebar = localizedSidebar;
@@ -24,7 +34,7 @@ export function getSidebar(pathname: string, locale: string | undefined): Sideba
     config.sidebar = undefined;
   }
 
-  const entries = baseGetSidebar(pathname, locale);
+  const entries = baseGetSidebar(pathname, normalizedLocale ?? locale);
 
   config.sidebar = originalSidebar;
 
