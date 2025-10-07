@@ -8,11 +8,11 @@ info:
     name: MIT
     url: https://opensource.org/license/mit/
 servers:
-  - url: https://api.ballooncraft.dev
+  - url: https://craft.giftballoons.gt
     description: Production server
 security: []
 paths:
-  /health:
+  /api/v1/health:
     get:
       summary: Check API health
       operationId: getHealth
@@ -33,7 +33,7 @@ paths:
           description: Invalid health check request.
         '503':
           description: Service is unavailable.
-  /designs:
+  /api/v1/designs:
     post:
       summary: Submit a new balloon design request
       operationId: submitDesign
@@ -72,7 +72,7 @@ paths:
                 format: uri
         '400':
           description: Invalid design submission.
-  /designs/{id}:
+  /api/v1/designs/{id}:
     get:
       summary: Retrieve a design request status
       operationId: getDesign
