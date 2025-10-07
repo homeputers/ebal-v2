@@ -1,0 +1,158 @@
+openapi: 3.0.3
+info:
+  title: Ballooncraft API
+  version: 0.1.0
+  description: |
+    API for managing balloon design workflows.
+  license:
+    name: MIT
+    url: https://opensource.org/license/mit/
+servers:
+  - url: https://api.ballooncraft.dev
+    description: Production server
+security: []
+paths:
+  /health:
+    get:
+      summary: Check API health
+      operationId: getHealth
+      responses:
+        '200':
+          description: Service is healthy.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                required:
+                  - status
+        '400':
+          description: Invalid health check request.
+        '503':
+          description: Service is unavailable.
+  /designs:
+    post:
+      summary: Submit a new balloon design request
+      operationId: submitDesign
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: Base image for the design.
+                templateId:
+                  type: string
+                  description: Identifier of the template to apply.
+                paletteId:
+                  type: string
+                  description: Identifier of the color palette to apply.
+                options:
+                  type: string
+                  description: JSON-encoded design options.
+              required:
+                - image
+                - templateId
+                - paletteId
+      responses:
+        '202':
+          description: Design request accepted for processing.
+          headers:
+            Location:
+              description: URL to poll for design status.
+              schema:
+                type: string
+                format: uri
+        '400':
+          description: Invalid design submission.
+  /designs/{id}:
+    get:
+      summary: Retrieve a design request status
+      operationId: getDesign
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identifier of the design request.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Design request information retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  status:
+                    $ref: '#/components/schemas/DesignStatus'
+                  summary:
+                    type: object
+                    properties:
+                      template:
+                        $ref: '#/components/schemas/TemplateRef'
+                      palette:
+                        $ref: '#/components/schemas/PaletteRef'
+                      previewImageUrl:
+                        type: string
+                        format: uri
+                        description: URL to a generated preview image, if available.
+                    required:
+                      - template
+                      - palette
+                required:
+                  - id
+                  - status
+        '404':
+          description: Design request not found.
+components:
+  schemas:
+    DesignStatus:
+      type: string
+      description: Current lifecycle state of a design request.
+      enum:
+        - queued
+        - processing
+        - completed
+        - failed
+    PaletteRef:
+      type: object
+      description: Reference information about a color palette.
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        swatches:
+          type: array
+          items:
+            type: string
+            description: Hex value of a color within the palette.
+      required:
+        - id
+        - name
+    TemplateRef:
+      type: object
+      description: Reference information about a template design.
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+          description: Template classification or theme.
+      required:
+        - id
+        - name
