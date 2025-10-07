@@ -136,7 +136,7 @@
                             <inputSpec>${project.basedir}/../../spec/openapi.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <library>spring-boot</library>
-                            <output>${project.build.directory}/generated-sources/openapi</output>
+                            <output>target/generated-sources/openapi</output>
                             <apiPackage>com.homeputers.ebal2.api.generated</apiPackage>
                             <modelPackage>com.homeputers.ebal2.api.generated.model</modelPackage>
                             <configOptions>
@@ -149,6 +149,13 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <generatedSourcesDirectory>target/generated-sources/openapi</generatedSourcesDirectory>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
