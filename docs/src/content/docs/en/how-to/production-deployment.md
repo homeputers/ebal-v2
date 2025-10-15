@@ -193,7 +193,7 @@ VITE_API_URL=https://api.example.com
 
 - Monitor the API container logs for Flyway migration output on first boot to ensure the schema applies successfully.
 - Configure backups for the Postgres database.
-- Set up log aggregation and metrics collection if `EBAL_OTEL_ENABLED=true`.
+- Set up log aggregation and metrics collection if `EBAL_OTEL_ENABLED=true`. See [Enable backend telemetry](./enable-backend-telemetry.md) for configuration details.
 - Regularly pull updated images to receive security patches: `docker compose pull && docker compose up -d`.
 
 Refer to your organization’s infrastructure policies for additional hardening, secrets management, and observability requirements.

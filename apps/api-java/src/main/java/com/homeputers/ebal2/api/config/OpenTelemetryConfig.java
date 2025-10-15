@@ -12,6 +12,8 @@ import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -24,6 +26,8 @@ import org.springframework.util.StringUtils;
 @ConditionalOnProperty(prefix = "ebal.otel", name = "enabled", havingValue = "true")
 public class OpenTelemetryConfig {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenTelemetryConfig.class);
+
     @Bean
     OtlpGrpcSpanExporter otlpGrpcSpanExporter(
             @Value("${ebal.otel.exporter.otlp.endpoint:}") String endpoint
@@ -31,6 +35,9 @@ public class OpenTelemetryConfig {
         var builder = OtlpGrpcSpanExporter.builder();
         if (StringUtils.hasText(endpoint)) {
             builder.setEndpoint(endpoint);
+            LOGGER.info("OpenTelemetry tracing enabled; exporting spans to {}", endpoint);
+        } else {
+            LOGGER.info("OpenTelemetry tracing enabled; using default OTLP gRPC endpoint (http://localhost:4317)");
         }
         return builder.build();
     }
