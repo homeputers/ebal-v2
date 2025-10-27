@@ -13,8 +13,10 @@ import com.homeputers.ebal2.api.generated.model.ForgotPasswordRequest;
 import com.homeputers.ebal2.api.generated.model.MyProfile;
 import com.homeputers.ebal2.api.generated.model.RefreshTokenRequest;
 import com.homeputers.ebal2.api.generated.model.ResetPasswordRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,7 +39,9 @@ import java.util.Locale;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -67,8 +71,16 @@ class AuthControllerTest extends AbstractIntegrationTest {
     @MockBean
     private EmailSender emailSender;
 
+    @MockBean
+    private AuthAuditLogger authAuditLogger;
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void resetAuditLogger() {
+        Mockito.reset(authAuditLogger);
+    }
 
     @Test
     void loginIssuesTokenPairAndAllowsProfileLookup() {
@@ -76,7 +88,28 @@ class AuthControllerTest extends AbstractIntegrationTest {
         OffsetDateTime now = OffsetDateTime.now();
         userMapper.updateAvatar(userId, "https://cdn.example.com/avatar.png", now);
 
-        AuthTokenPair tokens = authenticate(EMAIL, PASSWORD);
+        AuthLoginRequest loginRequest = new AuthLoginRequest();
+        loginRequest.setEmail(EMAIL);
+        loginRequest.setPassword(PASSWORD);
+
+        ResponseEntity<AuthTokenPair> response = restTemplate.postForEntity(
+                "/api/v1/auth/login",
+                loginRequest,
+                AuthTokenPair.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        List<String> cookies = response.getHeaders().get(HttpHeaders.SET_COOKIE);
+        assertThat(cookies).isNotNull();
+        assertThat(cookies).isNotEmpty();
+        String cookie = cookies.get(0);
+        assertThat(cookie).contains("refresh_token=");
+        assertThat(cookie).contains("Path=/api/v1/auth/refresh");
+        assertThat(cookie).contains("HttpOnly");
+        assertThat(cookie).contains("Secure");
+        assertThat(cookie).contains("SameSite=None");
+
+        AuthTokenPair tokens = response.getBody();
+        assertThat(tokens).isNotNull();
         assertThat(tokens.getAccessToken()).isNotBlank();
         assertThat(tokens.getRefreshToken()).isNotBlank();
         assertThat(tokens.getExpiresIn()).isPositive();
@@ -98,6 +131,9 @@ class AuthControllerTest extends AbstractIntegrationTest {
         assertThat(meResponse.getBody().getAvatarUrl()).isNotNull();
         assertThat(meResponse.getBody().getAvatarUrl().isPresent()).isTrue();
         assertThat(meResponse.getBody().getAvatarUrl().get()).hasToString("https://cdn.example.com/avatar.png");
+
+        verify(authAuditLogger).loginSuccess(eq(EMAIL), anyString(), anyString());
+        verify(authAuditLogger, never()).loginFailure(anyString(), anyString(), anyString());
     }
 
     @Test
@@ -115,6 +151,9 @@ class AuthControllerTest extends AbstractIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getDetail()).isEqualTo("Invalid email or password.");
+        assertThat(response.getHeaders().get(HttpHeaders.SET_COOKIE)).isNullOrEmpty();
+        verify(authAuditLogger).loginFailure(eq(EMAIL), anyString(), anyString());
+        verify(authAuditLogger, never()).loginSuccess(anyString(), anyString(), anyString());
     }
 
     @Test
