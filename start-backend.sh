@@ -9,6 +9,10 @@ export SPRING_DATASOURCE_URL="$JDBC_URL"
 export SPRING_DATASOURCE_USERNAME="$PGUSER"
 export SPRING_DATASOURCE_PASSWORD="$PGPASSWORD"
 
+export EBAL_SEED_ENABLED=true
+export EBAL_SEED_ADMIN_EMAIL=admin@example.com
+export EBAL_SEED_ADMIN_PASSWORD=ChangeMe123!
+
 cd apps/api-java
 
 ./mvnw spring-boot:run
