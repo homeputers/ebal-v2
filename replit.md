@@ -12,6 +12,9 @@ The ebal-v2 project is a monorepo housing the next generation of the Every Breat
   - Configured PostgreSQL database with Flyway migrations
   - Set up Java 21 (Zulu JDK) for Spring Boot backend
   - Configured Vite to run on port 5000 with host allowance for Replit proxy
+  - Fixed HMR WebSocket configuration for external access
+  - Configured backend CORS to allow Replit dev domain
+  - Seeded initial admin user for login
   - Both frontend and backend workflows configured and running
 
 ## Project Architecture
@@ -119,8 +122,16 @@ The project is configured for deployment as a VM on Replit:
 - **API Documentation**: http://localhost:8080/v3/api-docs (when backend is running)
 - **Health Check**: http://localhost:8080/api/v1/health
 
+## Initial Login Credentials
+An admin user has been seeded for initial access:
+- **Email**: admin@example.com
+- **Password**: ChangeMe123!
+
+**Important**: Change this password immediately after first login.
+
 ## Notes
 - The frontend proxies all `/api` requests to the backend
 - Database migrations run automatically when the backend starts
 - Both workflows must be running for the application to function fully
 - The project uses a monorepo structure with Yarn workspaces
+- CORS is configured to allow the Replit dev domain automatically
