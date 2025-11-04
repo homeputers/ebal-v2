@@ -18,7 +18,9 @@ export default defineConfig({
       '.repl.co',
     ],
     hmr: {
-      clientPort: 5000,
+      protocol: 'wss',
+      host: process.env.REPLIT_DEV_DOMAIN,
+      clientPort: 443,
     },
     proxy: {
       // Browser calls /api/...; Vite proxies to :8080
