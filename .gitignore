@@ -27,6 +27,18 @@ target/
 
 # Environment files
 .env
+.env.local
+.env.*.local
+
+# Replit
+.replit.nix
 
 apps/api-java/uploads
 apps/web/test-results
+
+# Playwright
+apps/web/playwright-report/
+apps/web/.playwright/
+
+# Test coverage
+apps/web/coverage/
