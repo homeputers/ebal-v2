@@ -8,6 +8,11 @@ The ebal-v2 project is a monorepo housing the next generation of the Every Breat
 - **Shared Infrastructure**: Reusable TypeScript configs and types
 
 ## Recent Changes
+- **2025-11-08**: Updated branding assets
+  - Replaced corrupted logo.png with valid EBaL logo (circular design with play button)
+  - Generated multi-resolution favicons (16x16, 32x32, 48x48, 180x180, 192x192, 512x512)
+  - Created favicon.ico for browser tab display
+  - All icons stored in apps/web/public/icons/
 - **2025-11-04**: Successfully set up project in Replit environment
   - Configured PostgreSQL database with Flyway migrations
   - Set up Java 21 (Zulu JDK) for Spring Boot backend
